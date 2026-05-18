@@ -1,32 +1,35 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-export const Route = createFileRoute('/auth/login')({
+export const Route = createFileRoute("/auth/login")({
   component: LoginPage,
-})
+});
 
 function LoginPage() {
-  const navigate = useNavigate()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
     if (error) {
-      setError(error.message)
+      setError(error.message);
     } else {
-      await navigate({ to: '/teams' })
+      await navigate({ to: "/teams" });
     }
 
-    setLoading(false)
+    setLoading(false);
   }
 
   return (
@@ -38,7 +41,10 @@ function LoginPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-dugout-dark mb-1">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-dugout-dark mb-1"
+          >
             Email
           </label>
           <input
@@ -54,7 +60,10 @@ function LoginPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-dugout-dark mb-1">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-dugout-dark mb-1"
+          >
             Password
           </label>
           <input
@@ -70,7 +79,9 @@ function LoginPage() {
         </div>
 
         {error && (
-          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3">{error}</p>
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3">
+            {error}
+          </p>
         )}
 
         <button
@@ -78,16 +89,16 @@ function LoginPage() {
           disabled={loading}
           className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-base active:bg-brand-600 disabled:opacity-50"
         >
-          {loading ? 'Signing in…' : 'Sign In'}
+          {loading ? "Signing in…" : "Sign In"}
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-dugout-mid">
-        Don't have an account?{' '}
+        Don't have an account?{" "}
         <a href="/auth/signup" className="text-brand-600 font-medium">
           Sign up
         </a>
       </p>
     </div>
-  )
+  );
 }

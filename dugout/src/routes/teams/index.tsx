@@ -1,16 +1,16 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { supabase } from '@/lib/supabase'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { supabase } from "@/lib/supabase";
 
-export const Route = createFileRoute('/teams/')({
+export const Route = createFileRoute("/teams/")({
   component: TeamsPage,
-})
+});
 
 function TeamsPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   async function handleSignOut() {
-    await supabase.auth.signOut()
-    await navigate({ to: '/auth/login' })
+    await supabase.auth.signOut();
+    await navigate({ to: "/auth/login" });
   }
 
   return (
@@ -29,7 +29,9 @@ function TeamsPage() {
       {/* Empty state */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 text-center">
         <div className="text-6xl mb-4">⚾</div>
-        <h2 className="text-xl font-bold text-dugout-dark mb-2">No teams yet</h2>
+        <h2 className="text-xl font-bold text-dugout-dark mb-2">
+          No teams yet
+        </h2>
         <p className="text-dugout-mid mb-8">
           Create your first team or ask your coach for an invite link.
         </p>
@@ -38,5 +40,5 @@ function TeamsPage() {
         </button>
       </main>
     </div>
-  )
+  );
 }

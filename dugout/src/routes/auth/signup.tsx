@@ -1,23 +1,23 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
-export const Route = createFileRoute('/auth/signup')({
+export const Route = createFileRoute("/auth/signup")({
   component: SignupPage,
-})
+});
 
 function SignupPage() {
-  const navigate = useNavigate()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -25,15 +25,15 @@ function SignupPage() {
       options: {
         data: { full_name: name },
       },
-    })
+    });
 
     if (error) {
-      setError(error.message)
+      setError(error.message);
     } else {
-      await navigate({ to: '/teams' })
+      await navigate({ to: "/teams" });
     }
 
-    setLoading(false)
+    setLoading(false);
   }
 
   return (
@@ -45,7 +45,10 @@ function SignupPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-dugout-dark mb-1">
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-dugout-dark mb-1"
+          >
             Full Name
           </label>
           <input
@@ -61,7 +64,10 @@ function SignupPage() {
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-dugout-dark mb-1">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-dugout-dark mb-1"
+          >
             Email
           </label>
           <input
@@ -77,7 +83,10 @@ function SignupPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-dugout-dark mb-1">
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-dugout-dark mb-1"
+          >
             Password
           </label>
           <input
@@ -94,7 +103,9 @@ function SignupPage() {
         </div>
 
         {error && (
-          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3">{error}</p>
+          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3">
+            {error}
+          </p>
         )}
 
         <button
@@ -102,16 +113,16 @@ function SignupPage() {
           disabled={loading}
           className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-base active:bg-brand-600 disabled:opacity-50"
         >
-          {loading ? 'Creating account…' : 'Create Account'}
+          {loading ? "Creating account…" : "Create Account"}
         </button>
       </form>
 
       <p className="mt-6 text-center text-sm text-dugout-mid">
-        Already have an account?{' '}
+        Already have an account?{" "}
         <a href="/auth/login" className="text-brand-600 font-medium">
           Sign in
         </a>
       </p>
     </div>
-  )
+  );
 }
