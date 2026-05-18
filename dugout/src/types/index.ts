@@ -1,6 +1,10 @@
-// Shared application types used across features
+// Re-export generated Supabase types for convenience
+export type { Database, Tables, TablesInsert, TablesUpdate } from "./database";
 
-export type TeamRole = "admin" | "coach" | "manager" | "player" | "parent";
-export type EventType = "game" | "practice" | "tournament" | "other";
-export type AttendanceStatus = "yes" | "no" | "maybe";
-export type PaymentStatus = "pending" | "paid" | "waived" | "overdue";
+// Enum aliases derived from the database schema
+import type { Database } from "./database";
+
+export type TeamRole = Database["public"]["Enums"]["team_role"];
+export type EventType = Database["public"]["Enums"]["event_type"];
+export type AttendanceStatus = Database["public"]["Enums"]["attendance_status"];
+export type PaymentStatus = Database["public"]["Enums"]["payment_status"];

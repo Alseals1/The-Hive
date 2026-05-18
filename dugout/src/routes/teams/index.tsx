@@ -1,5 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useMyTeams } from "@/features/teams/hooks/useTeams";
+import { TeamCard } from "@/features/teams/components/TeamCard";
+import { CreateTeamForm } from "@/features/teams/components/CreateTeamForm";
+import { PageShell, PageHeader } from "@/components/shared/PageShell";
+import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { ErrorMessage } from "@/components/shared/ErrorMessage";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 export const Route = createFileRoute("/teams/")({
   component: TeamsPage,
@@ -7,38 +15,94 @@ export const Route = createFileRoute("/teams/")({
 
 function TeamsPage() {
   const navigate = useNavigate();
+  const { data: teams, isLoading, isError, refetch } = useMyTeams();
+  const [showCreate, setShowCreate] = useState(false);
 
   async function handleSignOut() {
     await supabase.auth.signOut();
     await navigate({ to: "/auth/login" });
   }
 
-  return (
-    <div className="min-h-screen bg-stone-50 flex flex-col">
-      {/* Header */}
-      <header className="bg-white border-b border-stone-200 px-4 py-4 flex items-center justify-between sticky top-0 z-10">
-        <h1 className="text-xl font-bold text-dugout-dark">⚾ My Teams</h1>
-        <button
-          onClick={handleSignOut}
-          className="text-sm text-dugout-mid active:text-dugout-dark"
-        >
-          Sign out
-        </button>
-      </header>
+  function handleTeamClick(teamId: string) {
+    navigate({ to: "/teams/$teamId/schedule", params: { teamId } });
+  }
 
-      {/* Empty state */}
-      <main className="flex-1 flex flex-col items-center justify-center px-6 text-center">
-        <div className="text-6xl mb-4">⚾</div>
-        <h2 className="text-xl font-bold text-dugout-dark mb-2">
-          No teams yet
-        </h2>
-        <p className="text-dugout-mid mb-8">
-          Create your first team or ask your coach for an invite link.
-        </p>
-        <button className="w-full max-w-xs bg-brand-500 text-white font-semibold py-3 rounded-xl text-base active:bg-brand-600">
-          + Create a Team
-        </button>
-      </main>
-    </div>
+  function handleCreateSuccess(teamId: string) {
+    setShowCreate(false);
+    navigate({ to: "/teams/$teamId/schedule", params: { teamId } });
+  }
+
+  return (
+    <PageShell
+      header={
+        <PageHeader
+          title="⚾ My Teams"
+          action={
+            <button
+              onClick={handleSignOut}
+              className="text-sm text-dugout-mid active:text-dugout-dark py-2 px-1"
+            >
+              Sign out
+            </button>
+          }
+        />
+      }
+    >
+      {showCreate ? (
+        <CreateTeamForm
+          onSuccess={handleCreateSuccess}
+          onCancel={() => setShowCreate(false)}
+        />
+      ) : (
+        <div className="px-4 py-4 space-y-3">
+          {isLoading && (
+            <div className="flex justify-center py-12">
+              <LoadingSpinner />
+            </div>
+          )}
+
+          {isError && (
+            <ErrorMessage
+              message="Couldn't load your teams."
+              onRetry={refetch}
+            />
+          )}
+
+          {!isLoading && !isError && teams?.length === 0 && (
+            <EmptyState
+              icon="⚾"
+              title="No teams yet"
+              description="Create your first team or ask your coach for an invite link."
+              action={{
+                label: "+ Create a Team",
+                onClick: () => setShowCreate(true),
+              }}
+            />
+          )}
+
+          {teams && teams.length > 0 && (
+            <>
+              {teams.map((team) => (
+                <TeamCard
+                  key={team.id}
+                  id={team.id}
+                  name={team.name}
+                  sport={team.sport}
+                  season={team.season}
+                  role={team.role}
+                  onClick={() => handleTeamClick(team.id)}
+                />
+              ))}
+              <button
+                onClick={() => setShowCreate(true)}
+                className="w-full py-3 rounded-xl border-2 border-dashed border-stone-300 text-dugout-mid text-sm font-medium active:bg-stone-100"
+              >
+                + Create another team
+              </button>
+            </>
+          )}
+        </div>
+      )}
+    </PageShell>
   );
 }

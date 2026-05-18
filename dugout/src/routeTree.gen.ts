@@ -11,8 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TeamsIndexRouteImport } from './routes/teams/index'
+import { Route as TeamsTeamIdRouteImport } from './routes/teams/$teamId'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as TeamsTeamIdScheduleRouteImport } from './routes/teams/$teamId/schedule'
+import { Route as TeamsTeamIdRosterRouteImport } from './routes/teams/$teamId/roster'
+import { Route as TeamsTeamIdPaymentsRouteImport } from './routes/teams/$teamId/payments'
+import { Route as TeamsTeamIdAnnouncementsRouteImport } from './routes/teams/$teamId/announcements'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,6 +27,11 @@ const IndexRoute = IndexRouteImport.update({
 const TeamsIndexRoute = TeamsIndexRouteImport.update({
   id: '/teams/',
   path: '/teams/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TeamsTeamIdRoute = TeamsTeamIdRouteImport.update({
+  id: '/teams/$teamId',
+  path: '/teams/$teamId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthSignupRoute = AuthSignupRouteImport.update({
@@ -34,38 +44,103 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TeamsTeamIdScheduleRoute = TeamsTeamIdScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
+  getParentRoute: () => TeamsTeamIdRoute,
+} as any)
+const TeamsTeamIdRosterRoute = TeamsTeamIdRosterRouteImport.update({
+  id: '/roster',
+  path: '/roster',
+  getParentRoute: () => TeamsTeamIdRoute,
+} as any)
+const TeamsTeamIdPaymentsRoute = TeamsTeamIdPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => TeamsTeamIdRoute,
+} as any)
+const TeamsTeamIdAnnouncementsRoute =
+  TeamsTeamIdAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => TeamsTeamIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/teams/': typeof TeamsIndexRoute
+  '/teams/$teamId/announcements': typeof TeamsTeamIdAnnouncementsRoute
+  '/teams/$teamId/payments': typeof TeamsTeamIdPaymentsRoute
+  '/teams/$teamId/roster': typeof TeamsTeamIdRosterRoute
+  '/teams/$teamId/schedule': typeof TeamsTeamIdScheduleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/teams': typeof TeamsIndexRoute
+  '/teams/$teamId/announcements': typeof TeamsTeamIdAnnouncementsRoute
+  '/teams/$teamId/payments': typeof TeamsTeamIdPaymentsRoute
+  '/teams/$teamId/roster': typeof TeamsTeamIdRosterRoute
+  '/teams/$teamId/schedule': typeof TeamsTeamIdScheduleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
+  '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/teams/': typeof TeamsIndexRoute
+  '/teams/$teamId/announcements': typeof TeamsTeamIdAnnouncementsRoute
+  '/teams/$teamId/payments': typeof TeamsTeamIdPaymentsRoute
+  '/teams/$teamId/roster': typeof TeamsTeamIdRosterRoute
+  '/teams/$teamId/schedule': typeof TeamsTeamIdScheduleRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth/login' | '/auth/signup' | '/teams/'
+  fullPaths:
+    | '/'
+    | '/auth/login'
+    | '/auth/signup'
+    | '/teams/$teamId'
+    | '/teams/'
+    | '/teams/$teamId/announcements'
+    | '/teams/$teamId/payments'
+    | '/teams/$teamId/roster'
+    | '/teams/$teamId/schedule'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth/login' | '/auth/signup' | '/teams'
-  id: '__root__' | '/' | '/auth/login' | '/auth/signup' | '/teams/'
+  to:
+    | '/'
+    | '/auth/login'
+    | '/auth/signup'
+    | '/teams/$teamId'
+    | '/teams'
+    | '/teams/$teamId/announcements'
+    | '/teams/$teamId/payments'
+    | '/teams/$teamId/roster'
+    | '/teams/$teamId/schedule'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth/login'
+    | '/auth/signup'
+    | '/teams/$teamId'
+    | '/teams/'
+    | '/teams/$teamId/announcements'
+    | '/teams/$teamId/payments'
+    | '/teams/$teamId/roster'
+    | '/teams/$teamId/schedule'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
+  TeamsTeamIdRoute: typeof TeamsTeamIdRouteWithChildren
   TeamsIndexRoute: typeof TeamsIndexRoute
 }
 
@@ -85,6 +160,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/teams/$teamId': {
+      id: '/teams/$teamId'
+      path: '/teams/$teamId'
+      fullPath: '/teams/$teamId'
+      preLoaderRoute: typeof TeamsTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/signup': {
       id: '/auth/signup'
       path: '/auth/signup'
@@ -99,13 +181,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/teams/$teamId/schedule': {
+      id: '/teams/$teamId/schedule'
+      path: '/schedule'
+      fullPath: '/teams/$teamId/schedule'
+      preLoaderRoute: typeof TeamsTeamIdScheduleRouteImport
+      parentRoute: typeof TeamsTeamIdRoute
+    }
+    '/teams/$teamId/roster': {
+      id: '/teams/$teamId/roster'
+      path: '/roster'
+      fullPath: '/teams/$teamId/roster'
+      preLoaderRoute: typeof TeamsTeamIdRosterRouteImport
+      parentRoute: typeof TeamsTeamIdRoute
+    }
+    '/teams/$teamId/payments': {
+      id: '/teams/$teamId/payments'
+      path: '/payments'
+      fullPath: '/teams/$teamId/payments'
+      preLoaderRoute: typeof TeamsTeamIdPaymentsRouteImport
+      parentRoute: typeof TeamsTeamIdRoute
+    }
+    '/teams/$teamId/announcements': {
+      id: '/teams/$teamId/announcements'
+      path: '/announcements'
+      fullPath: '/teams/$teamId/announcements'
+      preLoaderRoute: typeof TeamsTeamIdAnnouncementsRouteImport
+      parentRoute: typeof TeamsTeamIdRoute
+    }
   }
 }
+
+interface TeamsTeamIdRouteChildren {
+  TeamsTeamIdAnnouncementsRoute: typeof TeamsTeamIdAnnouncementsRoute
+  TeamsTeamIdPaymentsRoute: typeof TeamsTeamIdPaymentsRoute
+  TeamsTeamIdRosterRoute: typeof TeamsTeamIdRosterRoute
+  TeamsTeamIdScheduleRoute: typeof TeamsTeamIdScheduleRoute
+}
+
+const TeamsTeamIdRouteChildren: TeamsTeamIdRouteChildren = {
+  TeamsTeamIdAnnouncementsRoute: TeamsTeamIdAnnouncementsRoute,
+  TeamsTeamIdPaymentsRoute: TeamsTeamIdPaymentsRoute,
+  TeamsTeamIdRosterRoute: TeamsTeamIdRosterRoute,
+  TeamsTeamIdScheduleRoute: TeamsTeamIdScheduleRoute,
+}
+
+const TeamsTeamIdRouteWithChildren = TeamsTeamIdRoute._addFileChildren(
+  TeamsTeamIdRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
+  TeamsTeamIdRoute: TeamsTeamIdRouteWithChildren,
   TeamsIndexRoute: TeamsIndexRoute,
 }
 export const routeTree = rootRouteImport
