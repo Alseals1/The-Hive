@@ -41,6 +41,7 @@ export const AnnouncementsPage: FC = () => {
       header={
         <PageHeader
           title="News"
+          backTo="/teams"
           action={
             canPost ? (
               <button

@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 import { supabase } from "@/lib/supabase";
-import { useMyTeams } from "@/features/teams/hooks/useTeams";
+import { useMyTeams, useCanCreateTeam } from "@/features/teams/hooks/useTeams";
 import { TeamCard } from "@/features/teams/components/TeamCard";
 import { CreateTeamForm } from "@/features/teams/components/CreateTeamForm";
 import { PageShell, PageHeader } from "@/components/shared/PageShell";
@@ -17,6 +17,7 @@ export const Route = createFileRoute("/teams/")({
 function TeamsPage() {
   const navigate = useNavigate();
   const { data: teams, isLoading, isError, refetch } = useMyTeams();
+  const { data: canCreate = false } = useCanCreateTeam();
   const [showCreate, setShowCreate] = useState(false);
 
   async function handleSignOut() {
@@ -73,11 +74,16 @@ function TeamsPage() {
             <EmptyState
               icon={<Plus size={24} />}
               title="No teams yet"
-              description="Create your first team or ask your coach for an invite code."
-              action={{
-                label: "Create a Team",
-                onClick: () => setShowCreate(true),
-              }}
+              description={
+                canCreate
+                  ? "Create your first team or ask your coach for an invite code."
+                  : "Ask your coach for an invite code to join a team."
+              }
+              action={
+                canCreate
+                  ? { label: "Create a Team", onClick: () => setShowCreate(true) }
+                  : undefined
+              }
             />
           )}
 
@@ -94,12 +100,14 @@ function TeamsPage() {
                   onClick={() => handleTeamClick(team.id)}
                 />
               ))}
-              <button
-                onClick={() => setShowCreate(true)}
-                className="w-full py-3.5 rounded-xl border border-dashed border-pitch-600 text-pitch-400 text-xs font-display font-600 uppercase tracking-wider active:bg-pitch-800 transition-colors"
-              >
-                + Create another team
-              </button>
+              {canCreate && (
+                <button
+                  onClick={() => setShowCreate(true)}
+                  className="w-full py-3.5 rounded-xl border border-dashed border-pitch-600 text-pitch-400 text-xs font-display font-600 uppercase tracking-wider active:bg-pitch-800 transition-colors"
+                >
+                  + Create another team
+                </button>
+              )}
             </>
           )}
         </div>

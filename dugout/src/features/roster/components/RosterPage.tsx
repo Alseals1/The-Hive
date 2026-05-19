@@ -24,6 +24,7 @@ export const RosterPage: FC = () => {
       header={
         <PageHeader
           title="Roster"
+          backTo="/teams"
           action={
             canInvite ? (
               <button

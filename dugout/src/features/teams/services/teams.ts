@@ -35,6 +35,22 @@ export async function getMyTeams() {
   }));
 }
 
+export async function getCanCreateTeam(): Promise<boolean> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return false;
+
+  const { data } = await supabase
+    .from("profiles")
+    .select("can_create_team")
+    .eq("id", user.id)
+    .single();
+
+  return data?.can_create_team ?? false;
+}
+
 export async function createTeam(
   input: Pick<TablesInsert<"teams">, "name" | "season">,
 ) {

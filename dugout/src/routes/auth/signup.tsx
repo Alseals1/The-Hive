@@ -9,11 +9,19 @@ export const Route = createFileRoute("/auth/signup")({
 const inputCls = "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
 const labelCls = "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
 
+type AccountType = "organizer" | "member";
+
+const ACCOUNT_TYPES: { value: AccountType; label: string; description: string }[] = [
+  { value: "organizer", label: "Coach / Admin",   description: "I manage or coach a team"   },
+  { value: "member",    label: "Parent / Player",  description: "I'm joining a team"         },
+];
+
 function SignupPage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [accountType, setAccountType] = useState<AccountType>("member");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -22,18 +30,26 @@ function SignupPage() {
     setError(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { full_name: name } },
     });
 
-    if (error) {
-      setError(error.message);
-    } else {
-      await navigate({ to: "/teams" });
+    if (signUpError) {
+      setError(signUpError.message);
+      setLoading(false);
+      return;
     }
 
+    if (data.user && accountType === "organizer") {
+      await supabase
+        .from("profiles")
+        .update({ can_create_team: true })
+        .eq("id", data.user.id);
+    }
+
+    await navigate({ to: "/teams" });
     setLoading(false);
   }
 
@@ -52,6 +68,34 @@ function SignupPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Account type */}
+        <div>
+          <p className={labelCls}>I am a</p>
+          <div className="grid grid-cols-2 gap-2">
+            {ACCOUNT_TYPES.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setAccountType(opt.value)}
+                className={`flex flex-col gap-0.5 px-3 py-3 rounded-xl border text-left transition-colors ${
+                  accountType === opt.value
+                    ? "border-ember bg-ember-muted"
+                    : "border-pitch-700 bg-pitch-800"
+                }`}
+              >
+                <span className={`text-sm font-display font-600 uppercase tracking-wide ${
+                  accountType === opt.value ? "text-ember" : "text-pitch-100"
+                }`}>
+                  {opt.label}
+                </span>
+                <span className="text-[11px] text-pitch-400 font-body leading-snug">
+                  {opt.description}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div>
           <label htmlFor="name" className={labelCls}>Full Name</label>
           <input

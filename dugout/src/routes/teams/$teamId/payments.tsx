@@ -12,7 +12,7 @@ function PaymentsPage() {
   return (
     <PageShell
       withNav
-      header={<PageHeader title="Payments" />}
+      header={<PageHeader title="Payments" backTo="/teams" />}
       footer={<TeamBottomNav teamId={teamId} />}
     >
       <div className="px-4 py-6">

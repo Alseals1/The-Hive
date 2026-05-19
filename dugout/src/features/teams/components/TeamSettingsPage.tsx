@@ -42,7 +42,7 @@ export const TeamSettingsPage: FC = () => {
 
   return (
     <PageShell
-      header={<PageHeader title="Settings" />}
+      header={<PageHeader title="Settings" backTo="/teams" />}
       footer={<TeamBottomNav teamId={teamId} />}
       withNav
     >

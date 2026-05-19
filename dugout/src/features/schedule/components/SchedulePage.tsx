@@ -46,6 +46,7 @@ export const SchedulePage: FC = () => {
       header={
         <PageHeader
           title="Schedule"
+          backTo="/teams"
           action={
             canManage ? (
               <button

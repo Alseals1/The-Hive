@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FC } from "react";
-import { X, Plus, Trash2, MapPin, Clock } from "lucide-react";
-import type { EventWithAttendance } from "../types";
+import { X, Plus, Trash2, MapPin, Clock, Pencil } from "lucide-react";
+import type { EventWithAttendance, SubEvent } from "../types";
 import { useTournamentSubEvents, useDeleteSubEvent } from "../hooks/useEvents";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { CreateSubEventSheet } from "./CreateSubEventSheet";
@@ -34,12 +34,24 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
   canManage,
   onClose,
 }) => {
+  const [editingSubEvent, setEditingSubEvent] = useState<SubEvent | undefined>(undefined);
   const [showAddSub, setShowAddSub] = useState(false);
+
   const { data: subEvents, isLoading } = useTournamentSubEvents(tournament.id);
   const { mutate: deleteSub, isPending: isDeleting } = useDeleteSubEvent(
     teamId,
     tournament.id,
   );
+
+  function handleEdit(sub: SubEvent) {
+    setEditingSubEvent(sub);
+    setShowAddSub(true);
+  }
+
+  function handleCloseSubSheet() {
+    setShowAddSub(false);
+    setEditingSubEvent(undefined);
+  }
 
   return (
     <>
@@ -95,7 +107,7 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
               </p>
               {canManage && (
                 <button
-                  onClick={() => setShowAddSub(true)}
+                  onClick={() => { setEditingSubEvent(undefined); setShowAddSub(true); }}
                   className="flex items-center gap-1.5 text-xs font-display font-600 uppercase tracking-wider text-ember active:text-ember-600"
                 >
                   <Plus size={13} />
@@ -112,9 +124,7 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
 
             {!isLoading && (!subEvents || subEvents.length === 0) && (
               <div className="py-8 text-center">
-                <p className="text-sm text-pitch-400 font-body">
-                  No itinerary yet.
-                </p>
+                <p className="text-sm text-pitch-400 font-body">No itinerary yet.</p>
                 {canManage && (
                   <button
                     onClick={() => setShowAddSub(true)}
@@ -140,7 +150,7 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
                       </span>
                     </div>
 
-                    {/* Divider dot */}
+                    {/* Dot */}
                     <div className="w-1.5 h-1.5 rounded-full bg-ember flex-shrink-0" />
 
                     {/* Title */}
@@ -155,16 +165,25 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
                       </span>
                     )}
 
-                    {/* Delete */}
+                    {/* Admin actions */}
                     {canManage && (
-                      <button
-                        onClick={() => deleteSub(sub.id)}
-                        disabled={isDeleting}
-                        className="flex-shrink-0 text-pitch-500 active:text-red-400 disabled:opacity-30 p-1"
-                        aria-label="Remove"
-                      >
-                        <Trash2 size={13} />
-                      </button>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <button
+                          onClick={() => handleEdit(sub)}
+                          className="text-pitch-500 active:text-pitch-200 p-1"
+                          aria-label="Edit"
+                        >
+                          <Pencil size={12} />
+                        </button>
+                        <button
+                          onClick={() => deleteSub(sub.id)}
+                          disabled={isDeleting}
+                          className="text-pitch-500 active:text-red-400 disabled:opacity-30 p-1"
+                          aria-label="Remove"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
                     )}
                   </div>
                 ))}
@@ -172,11 +191,11 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
             )}
           </div>
 
-          {/* Bottom CTA for coaches */}
+          {/* Bottom CTA */}
           {canManage && (
             <div className="px-4 pb-8 pt-2 flex-shrink-0 border-t border-pitch-700">
               <button
-                onClick={() => setShowAddSub(true)}
+                onClick={() => { setEditingSubEvent(undefined); setShowAddSub(true); }}
                 className="w-full py-3.5 rounded-xl border border-dashed border-pitch-600 text-pitch-400 text-xs font-display font-600 uppercase tracking-wider active:bg-pitch-700"
               >
                 + Add to Itinerary
@@ -190,7 +209,8 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
         <CreateSubEventSheet
           teamId={teamId}
           parentEventId={tournament.id}
-          onClose={() => setShowAddSub(false)}
+          onClose={handleCloseSubSheet}
+          existing={editingSubEvent}
         />
       )}
     </>

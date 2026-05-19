@@ -1,12 +1,14 @@
 import { useState } from "react";
 import type { FC } from "react";
 import { X } from "lucide-react";
-import { useCreateSubEvent } from "../hooks/useEvents";
+import { useCreateSubEvent, useUpdateEvent } from "../hooks/useEvents";
+import type { SubEvent } from "../types";
 
 interface CreateSubEventSheetProps {
   teamId: string;
   parentEventId: string;
   onClose: () => void;
+  existing?: SubEvent;
 }
 
 const inputCls =
@@ -14,31 +16,61 @@ const inputCls =
 const labelCls =
   "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
 
+function toLocalDatetimeValue(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
   teamId,
   parentEventId,
   onClose,
+  existing,
 }) => {
-  const [title, setTitle] = useState("");
-  const [startsAt, setStartsAt] = useState("");
-  const [endsAt, setEndsAt] = useState("");
+  const isEditing = !!existing;
 
-  const { mutate, isPending, error } = useCreateSubEvent(teamId, parentEventId);
+  const [title, setTitle] = useState(existing?.title ?? "");
+  const [startsAt, setStartsAt] = useState(toLocalDatetimeValue(existing?.starts_at));
+  const [endsAt, setEndsAt] = useState(toLocalDatetimeValue(existing?.ends_at));
+
+  const { mutate: create, isPending: isCreating, error: createError } =
+    useCreateSubEvent(teamId, parentEventId);
+  const { mutate: update, isPending: isUpdating, error: updateError } =
+    useUpdateEvent(teamId);
+
+  const isPending = isCreating || isUpdating;
+  const error = createError ?? updateError;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !startsAt) return;
 
-    mutate(
-      {
-        team_id: teamId,
-        parent_event_id: parentEventId,
-        title: title.trim(),
-        starts_at: new Date(startsAt).toISOString(),
-        ends_at: endsAt ? new Date(endsAt).toISOString() : null,
-      },
-      { onSuccess: onClose },
-    );
+    if (isEditing && existing) {
+      update(
+        {
+          eventId: existing.id,
+          patch: {
+            title: title.trim(),
+            starts_at: new Date(startsAt).toISOString(),
+            ends_at: endsAt ? new Date(endsAt).toISOString() : null,
+          },
+        },
+        { onSuccess: onClose },
+      );
+    } else {
+      create(
+        {
+          team_id: teamId,
+          parent_event_id: parentEventId,
+          title: title.trim(),
+          starts_at: new Date(startsAt).toISOString(),
+          ends_at: endsAt ? new Date(endsAt).toISOString() : null,
+        },
+        { onSuccess: onClose },
+      );
+    }
   }
 
   return (
@@ -53,7 +85,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
 
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-display text-xl font-700 uppercase tracking-wide text-pitch-50">
-            Add to Itinerary
+            {isEditing ? "Edit Item" : "Add to Itinerary"}
           </h2>
           <button
             onClick={onClose}
@@ -122,7 +154,9 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
             disabled={isPending || !title.trim() || !startsAt}
             className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm disabled:opacity-40"
           >
-            {isPending ? "Adding…" : "Add to Itinerary"}
+            {isPending
+              ? isEditing ? "Saving…" : "Adding…"
+              : isEditing ? "Save Changes" : "Add to Itinerary"}
           </button>
         </form>
       </div>
