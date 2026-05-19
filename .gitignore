@@ -1,0 +1,6 @@
+# Supabase CLI temp files
+supabase/.temp/
+
+# Agent skills
+.agents/
+skills-lock.json
