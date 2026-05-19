@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { XCircle } from "lucide-react";
 import { useInviteByToken, useAcceptInvite } from "@/features/teams/hooks/useInvites";
-import { PageShell } from "@/components/shared/PageShell";
-import { PageHeader } from "@/components/shared/PageShell";
+import { PageShell, PageHeader } from "@/components/shared/PageShell";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
 export const Route = createFileRoute("/invite/$token")({
@@ -35,16 +35,18 @@ function InviteAcceptPage() {
 
         {!isLoading && !invite && (
           <>
-            <div className="text-5xl mb-4">❌</div>
-            <h2 className="text-xl font-bold text-dugout-dark mb-2">
+            <div className="w-16 h-16 rounded-2xl bg-pitch-700 flex items-center justify-center mb-5">
+              <XCircle size={28} className="text-red-400" />
+            </div>
+            <h2 className="font-display text-2xl font-700 uppercase tracking-wide text-pitch-50 mb-2">
               Invite Invalid
             </h2>
-            <p className="text-sm text-dugout-mid mb-8">
+            <p className="text-sm text-pitch-300 mb-8 max-w-xs leading-relaxed">
               This invite link has expired, already been used, or doesn't exist.
             </p>
             <button
               onClick={() => navigate({ to: "/auth/login" })}
-              className="px-6 py-3 rounded-xl bg-brand-500 text-white text-base font-semibold w-full max-w-xs"
+              className="px-6 py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm w-full max-w-xs"
             >
               Go to Login
             </button>
@@ -53,39 +55,41 @@ function InviteAcceptPage() {
 
         {!isLoading && invite && teamData && (
           <>
-            <div className="text-5xl mb-4">⚾</div>
-            <h2 className="text-xl font-bold text-dugout-dark mb-2">
-              You're invited!
+            <div className="w-16 h-16 rounded-2xl bg-ember-muted border border-ember/20 flex items-center justify-center mb-5">
+              <span className="font-display text-3xl font-800 text-ember">D</span>
+            </div>
+            <h2 className="font-display text-2xl font-700 uppercase tracking-wide text-pitch-50 mb-2">
+              You're invited
             </h2>
-            <p className="text-dugout-mid text-sm mb-1">
+            <p className="text-pitch-300 text-sm mb-1">
               Join{" "}
-              <span className="font-semibold text-dugout-dark">
+              <span className="font-display font-700 uppercase text-pitch-50">
                 {teamData.name}
-              </span>{" "}
+              </span>
+            </p>
+            <p className="text-sm text-pitch-400 mb-1">
               as a{" "}
-              <span className="font-semibold text-brand-500">
+              <span className="text-ember font-display font-600 uppercase tracking-wide">
                 {invite.role}
               </span>
             </p>
             {teamData.season && (
-              <p className="text-xs text-dugout-light mb-8">
+              <p className="text-xs text-pitch-500 mb-8">
                 {teamData.season} season
               </p>
             )}
             {!teamData.season && <div className="mb-8" />}
 
             {error && (
-              <p className="text-sm text-red-500 mb-4">
-                {error instanceof Error
-                  ? error.message
-                  : "Something went wrong."}
+              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-4 w-full max-w-xs">
+                {error instanceof Error ? error.message : "Something went wrong."}
               </p>
             )}
 
             <button
               onClick={handleAccept}
               disabled={isPending}
-              className="px-6 py-3 rounded-xl bg-brand-500 text-white text-base font-semibold w-full max-w-xs disabled:opacity-50"
+              className="px-6 py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm w-full max-w-xs disabled:opacity-40"
             >
               {isPending ? "Joining…" : "Join Team"}
             </button>

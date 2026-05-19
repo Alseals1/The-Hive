@@ -6,6 +6,9 @@ export const Route = createFileRoute("/auth/signup")({
   component: SignupPage,
 });
 
+const inputCls = "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
+const labelCls = "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
+
 function SignupPage() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -22,9 +25,7 @@ function SignupPage() {
     const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: { full_name: name },
-      },
+      options: { data: { full_name: name } },
     });
 
     if (error) {
@@ -37,20 +38,22 @@ function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col justify-center px-6">
-      <div className="mb-8 text-center">
-        <h1 className="text-3xl font-bold text-dugout-dark">⚾ Dugout</h1>
-        <p className="text-dugout-mid mt-1">Create your account</p>
+    <div className="min-h-screen bg-pitch-900 flex flex-col justify-center px-6">
+      <div className="mb-10">
+        <p className="font-display text-xs font-600 uppercase tracking-[0.2em] text-ember mb-2">
+          Youth Baseball
+        </p>
+        <h1 className="font-display text-5xl font-800 uppercase tracking-tight text-pitch-50 leading-none">
+          Dugout
+        </h1>
+        <p className="text-sm text-pitch-400 mt-3 font-body">
+          Create your account to get started.
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label
-            htmlFor="name"
-            className="block text-sm font-medium text-dugout-dark mb-1"
-          >
-            Full Name
-          </label>
+          <label htmlFor="name" className={labelCls}>Full Name</label>
           <input
             id="name"
             type="text"
@@ -58,18 +61,13 @@ function SignupPage() {
             autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className={inputCls}
             placeholder="Alex Johnson"
           />
         </div>
 
         <div>
-          <label
-            htmlFor="email"
-            className="block text-sm font-medium text-dugout-dark mb-1"
-          >
-            Email
-          </label>
+          <label htmlFor="email" className={labelCls}>Email</label>
           <input
             id="email"
             type="email"
@@ -77,18 +75,13 @@ function SignupPage() {
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className={inputCls}
             placeholder="you@example.com"
           />
         </div>
 
         <div>
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium text-dugout-dark mb-1"
-          >
-            Password
-          </label>
+          <label htmlFor="password" className={labelCls}>Password</label>
           <input
             id="password"
             type="password"
@@ -97,13 +90,13 @@ function SignupPage() {
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-brand-500"
+            className={inputCls}
             placeholder="Minimum 8 characters"
           />
         </div>
 
         {error && (
-          <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3">
+          <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
             {error}
           </p>
         )}
@@ -111,15 +104,15 @@ function SignupPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-brand-500 text-white font-semibold py-3 rounded-xl text-base active:bg-brand-600 disabled:opacity-50"
+          className="w-full bg-ember text-white font-display font-700 uppercase tracking-wider py-3.5 rounded-xl text-sm active:bg-ember-600 disabled:opacity-40 transition-colors mt-2"
         >
           {loading ? "Creating account…" : "Create Account"}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-dugout-mid">
+      <p className="mt-8 text-center text-sm text-pitch-400">
         Already have an account?{" "}
-        <a href="/auth/login" className="text-brand-600 font-medium">
+        <a href="/auth/login" className="text-ember font-display font-600 uppercase tracking-wider text-xs">
           Sign in
         </a>
       </p>

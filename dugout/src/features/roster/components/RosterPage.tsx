@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 import { useState } from 'react';
 import { useParams, useRouteContext } from '@tanstack/react-router';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Users } from 'lucide-react';
 import { PageShell, PageHeader } from '@/components/shared/PageShell';
 import { TeamBottomNav } from '@/components/shared/BottomNav';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -28,7 +28,7 @@ export const RosterPage: FC = () => {
             canInvite ? (
               <button
                 onClick={() => setShowInvite(true)}
-                className="p-2 rounded-lg text-dugout-mid hover:bg-stone-100 active:bg-stone-200"
+                className="p-2 rounded-lg text-pitch-300 active:bg-pitch-700"
                 aria-label="Invite member"
               >
                 <UserPlus size={22} />
@@ -39,7 +39,7 @@ export const RosterPage: FC = () => {
       }
       footer={<TeamBottomNav teamId={teamId} />}
       withNav
-      className="px-4 py-6"
+      className="px-4 py-4"
     >
       {showInvite && (
         <InviteSheet teamId={teamId} onClose={() => setShowInvite(false)} />
@@ -60,7 +60,7 @@ export const RosterPage: FC = () => {
 
       {!isLoading && !error && (!members || members.length === 0) && (
         <EmptyState
-          icon="👥"
+          icon={<Users size={24} />}
           title="No members yet"
           description="Team members will appear here once they join"
         />

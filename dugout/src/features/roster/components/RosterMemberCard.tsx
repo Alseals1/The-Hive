@@ -7,11 +7,6 @@ interface RosterMemberCardProps {
   member: RosterMember;
 }
 
-/**
- * Get initials from a name
- * @param name Full name
- * @returns Two letter initials
- */
 function getInitials(name: string | null): string {
   if (!name) return '?';
   const parts = name.trim().split(' ').filter(Boolean);
@@ -20,10 +15,6 @@ function getInitials(name: string | null): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-/**
- * RosterMemberCard - Displays individual team member with avatar, name, role badge, and email
- * Memoized to prevent unnecessary re-renders
- */
 export const RosterMemberCard: FC<RosterMemberCardProps> = memo(({ member }) => {
   const colors = ROLE_COLORS[member.role];
   const roleLabel = ROLE_LABELS[member.role];
@@ -31,40 +22,36 @@ export const RosterMemberCard: FC<RosterMemberCardProps> = memo(({ member }) => 
   const hasAvatar = member.profile.avatar_url;
 
   return (
-    <div className="bg-white rounded-card border border-stone-200 p-4 flex items-start gap-3 min-h-[56px]">
+    <div className="bg-pitch-800 rounded-card border border-pitch-700 p-4 flex items-center gap-3">
       {/* Avatar */}
       <div
-        className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-sm"
-        style={{
-          backgroundImage: hasAvatar ? `url(${member.profile.avatar_url})` : undefined,
-          backgroundColor: hasAvatar ? undefined : '#e7e5e4',
+        className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-display font-700 text-sm bg-pitch-700"
+        style={hasAvatar ? {
+          backgroundImage: `url(${member.profile.avatar_url})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-        }}
+        } : undefined}
       >
-        {!hasAvatar && <span className="text-dugout-dark">{initials}</span>}
+        {!hasAvatar && (
+          <span className="text-pitch-300">{initials}</span>
+        )}
       </div>
 
       {/* Member Info */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-base font-semibold text-dugout-dark truncate">
-              {member.profile.full_name || 'Unknown'}
-            </h3>
-            {member.profile.email && (
-              <p className="text-xs text-dugout-mid truncate mt-0.5">
-                {member.profile.email}
-              </p>
-            )}
-          </div>
-          {/* Role Badge */}
-          <span
-            className={`shrink-0 text-xs font-semibold px-2 py-1 rounded-full whitespace-nowrap ${colors.bg} ${colors.text}`}
-          >
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="font-display text-base font-700 uppercase tracking-wide text-pitch-50 truncate leading-tight">
+            {member.profile.full_name || 'Unknown'}
+          </h3>
+          <span className={`shrink-0 text-[11px] font-display font-600 uppercase tracking-wider px-2 py-0.5 rounded-md ${colors.bg} ${colors.text}`}>
             {roleLabel}
           </span>
         </div>
+        {member.profile.email && (
+          <p className="text-xs text-pitch-400 truncate mt-0.5">
+            {member.profile.email}
+          </p>
+        )}
       </div>
     </div>
   );

@@ -30,11 +30,11 @@ export const ROLE_COLORS: Record<
   TeamRole,
   { bg: string; text: string }
 > = {
-  admin: { bg: "bg-red-50", text: "text-red-700" },
-  coach: { bg: "bg-field-50", text: "text-field-700" },
-  player: { bg: "bg-purple-50", text: "text-purple-700" },
-  parent: { bg: "bg-stone-100", text: "text-stone-600" },
-  manager: { bg: "bg-blue-50", text: "text-blue-700" },
+  admin:   { bg: "bg-ember-muted",        text: "text-ember"      },
+  coach:   { bg: "bg-field-muted",         text: "text-field"      },
+  player:  { bg: "bg-purple-500/10",       text: "text-purple-400" },
+  parent:  { bg: "bg-pitch-600",           text: "text-pitch-200"  },
+  manager: { bg: "bg-blue-500/10",         text: "text-blue-400"   },
 };
 
 /**

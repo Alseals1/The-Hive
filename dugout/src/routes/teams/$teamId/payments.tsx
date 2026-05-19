@@ -16,7 +16,7 @@ function PaymentsPage() {
       footer={<TeamBottomNav teamId={teamId} />}
     >
       <div className="px-4 py-6">
-        <p className="text-dugout-mid text-sm text-center py-10">
+        <p className="text-pitch-400 text-sm text-center py-10 font-body">
           No payments due.
         </p>
       </div>

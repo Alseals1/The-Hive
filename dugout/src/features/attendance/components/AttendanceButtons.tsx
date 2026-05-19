@@ -25,15 +25,13 @@ export const AttendanceButtons: FC<AttendanceButtonsProps> = ({
             key={option.status}
             type="button"
             disabled={isPending}
-            onClick={() =>
-              mutate({ eventId, status: option.status })
-            }
-            className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-xl border text-xs font-medium transition-colors disabled:opacity-50 ${
+            onClick={() => mutate({ eventId, status: option.status })}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-display font-600 uppercase tracking-wider transition-colors disabled:opacity-40 ${
               isActive ? option.activeColor : option.color
             }`}
           >
-            <span className="text-base leading-none">{option.emoji}</span>
-            <span>{option.label}</span>
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${isActive ? option.dotColor : 'bg-pitch-500'}`} />
+            {option.label}
           </button>
         );
       })}

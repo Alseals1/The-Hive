@@ -28,9 +28,9 @@ export const EVENT_TYPE_LABELS: Record<EventType, string> = {
   other: "Other",
 };
 
-export const EVENT_TYPE_EMOJI: Record<EventType, string> = {
-  game: "⚾",
-  practice: "🏃",
-  tournament: "🏆",
-  other: "📌",
+export const EVENT_TYPE_ICON: Record<EventType, string> = {
+  game: "trophy",
+  practice: "zap",
+  tournament: "award",
+  other: "calendar-days",
 };

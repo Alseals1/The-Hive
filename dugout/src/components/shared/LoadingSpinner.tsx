@@ -19,13 +19,13 @@ export const LoadingSpinner: FC<LoadingSpinnerProps> = ({
     <div
       role="status"
       aria-label="Loading"
-      className={`rounded-full border-stone-200 border-t-brand-500 animate-spin ${sizeClasses[size]} ${className}`}
+      className={`rounded-full border-pitch-700 border-t-ember animate-spin ${sizeClasses[size]} ${className}`}
     />
   );
 };
 
 export const FullPageSpinner: FC = () => (
-  <div className="min-h-screen flex items-center justify-center bg-stone-50">
+  <div className="min-h-screen flex items-center justify-center bg-pitch-900">
     <LoadingSpinner size="lg" />
   </div>
 );

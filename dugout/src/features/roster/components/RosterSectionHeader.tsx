@@ -9,9 +9,11 @@ interface RosterSectionHeaderProps {
 
 export const RosterSectionHeader: FC<RosterSectionHeaderProps> = ({ role, count }) => {
   return (
-    <div className="mt-6 mb-3 px-4 flex items-baseline gap-2">
-      <h2 className="text-lg font-bold text-dugout-dark">{ROLE_LABELS[role]}</h2>
-      <span className="text-sm text-dugout-mid font-medium">({count})</span>
+    <div className="mt-6 mb-3 flex items-baseline gap-2">
+      <h2 className="font-display text-sm font-700 uppercase tracking-widest text-pitch-400">
+        {ROLE_LABELS[role]}
+      </h2>
+      <span className="text-xs text-pitch-500 font-display font-600">{count}</span>
     </div>
   );
 };

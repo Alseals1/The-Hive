@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { FC } from "react";
-import { CalendarPlus } from "lucide-react";
+import { CalendarPlus, Calendar } from "lucide-react";
 import { useParams, useRouteContext } from "@tanstack/react-router";
 import { PageShell, PageHeader } from "@/components/shared/PageShell";
 import { TeamBottomNav } from "@/components/shared/BottomNav";
@@ -36,7 +36,7 @@ export const SchedulePage: FC = () => {
             canManage ? (
               <button
                 onClick={() => setShowCreate(true)}
-                className="p-2 rounded-lg text-dugout-mid hover:bg-stone-100 active:bg-stone-200"
+                className="p-2 rounded-lg text-pitch-300 active:bg-pitch-700"
                 aria-label="Add event"
               >
                 <CalendarPlus size={22} />
@@ -73,7 +73,7 @@ export const SchedulePage: FC = () => {
 
         {!isLoading && !error && (events ?? []).length === 0 && (
           <EmptyState
-            icon="📅"
+            icon={<Calendar size={24} />}
             title="No events yet"
             description={
               canManage
@@ -96,8 +96,8 @@ export const SchedulePage: FC = () => {
             {/* Upcoming */}
             {upcoming.length > 0 && (
               <section>
-                <h2 className="text-sm font-semibold text-stone-700 mb-3 uppercase tracking-wide">
-                  Upcoming ({upcoming.length})
+                <h2 className="font-display text-xs font-600 uppercase tracking-widest text-pitch-400 mb-3">
+                  Upcoming · {upcoming.length}
                 </h2>
                 <div className="space-y-3">
                   {upcoming.map((event) => (
@@ -116,10 +116,10 @@ export const SchedulePage: FC = () => {
             {/* Past */}
             {past.length > 0 && (
               <section>
-                <h2 className="text-sm font-semibold text-stone-400 mb-3 uppercase tracking-wide">
-                  Past ({past.length})
+                <h2 className="font-display text-xs font-600 uppercase tracking-widest text-pitch-500 mb-3">
+                  Past · {past.length}
                 </h2>
-                <div className="space-y-3 opacity-60">
+                <div className="space-y-3 opacity-50">
                   {past.map((event) => (
                     <EventCard
                       key={event.id}

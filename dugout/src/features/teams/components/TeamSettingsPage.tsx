@@ -7,6 +7,9 @@ import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { useTeam, useUpdateTeam } from "../hooks/useSettings";
 
+const inputCls = "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
+const labelCls = "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
+
 export const TeamSettingsPage: FC = () => {
   const { teamId } = useParams({ from: "/teams/$teamId/settings" });
   const { userRole } = useRouteContext({ from: "/teams/$teamId" });
@@ -17,7 +20,6 @@ export const TeamSettingsPage: FC = () => {
   const [season, setSeason] = useState("");
   const [sport, setSport] = useState("baseball");
 
-  // Sync form when team data loads
   useEffect(() => {
     if (team) {
       setName(team.name ?? "");
@@ -40,7 +42,7 @@ export const TeamSettingsPage: FC = () => {
 
   return (
     <PageShell
-      header={<PageHeader title="Team Settings" />}
+      header={<PageHeader title="Settings" />}
       footer={<TeamBottomNav teamId={teamId} />}
       withNav
     >
@@ -57,22 +59,17 @@ export const TeamSettingsPage: FC = () => {
 
         {!isLoading && !error && team && (
           <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Read-only notice for non-admins */}
             {!canEdit && (
-              <div className="px-4 py-3 bg-stone-100 rounded-xl">
-                <p className="text-sm text-dugout-mid">
+              <div className="px-4 py-3 bg-pitch-700 rounded-xl border border-pitch-600">
+                <p className="text-sm text-pitch-300 font-body">
                   Only team admins can edit settings.
                 </p>
               </div>
             )}
 
-            {/* Team Name */}
             <div>
-              <label
-                htmlFor="settings-name"
-                className="block text-sm font-medium text-dugout-dark mb-1"
-              >
-                Team Name <span className="text-red-500">*</span>
+              <label htmlFor="settings-name" className={labelCls}>
+                Team Name <span className="text-ember">*</span>
               </label>
               <input
                 id="settings-name"
@@ -82,18 +79,12 @@ export const TeamSettingsPage: FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Riverside Rockets"
-                className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:bg-stone-100 disabled:text-dugout-mid"
+                className={inputCls}
               />
             </div>
 
-            {/* Sport */}
             <div>
-              <label
-                htmlFor="settings-sport"
-                className="block text-sm font-medium text-dugout-dark mb-1"
-              >
-                Sport
-              </label>
+              <label htmlFor="settings-sport" className={labelCls}>Sport</label>
               <input
                 id="settings-sport"
                 type="text"
@@ -101,18 +92,14 @@ export const TeamSettingsPage: FC = () => {
                 value={sport}
                 onChange={(e) => setSport(e.target.value)}
                 placeholder="Baseball"
-                className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:bg-stone-100 disabled:text-dugout-mid"
+                className={inputCls}
               />
             </div>
 
-            {/* Season */}
             <div>
-              <label
-                htmlFor="settings-season"
-                className="block text-sm font-medium text-dugout-dark mb-1"
-              >
+              <label htmlFor="settings-season" className={labelCls}>
                 Season{" "}
-                <span className="text-dugout-light text-xs font-normal">(optional)</span>
+                <span className="text-pitch-500 text-[10px] normal-case tracking-normal font-body font-400">optional</span>
               </label>
               <input
                 id="settings-season"
@@ -121,19 +108,19 @@ export const TeamSettingsPage: FC = () => {
                 value={season}
                 onChange={(e) => setSeason(e.target.value)}
                 placeholder="Spring 2026"
-                className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-brand-500 disabled:bg-stone-100 disabled:text-dugout-mid"
+                className={inputCls}
               />
             </div>
 
             {updateError && (
-              <p className="text-sm text-red-500">
+              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
                 {updateError instanceof Error ? updateError.message : "Failed to save."}
               </p>
             )}
 
             {isSuccess && (
-              <p className="text-sm text-field-600 font-medium">
-                ✓ Settings saved
+              <p className="text-sm text-field font-display font-600 uppercase tracking-wider">
+                Saved
               </p>
             )}
 
@@ -141,7 +128,7 @@ export const TeamSettingsPage: FC = () => {
               <button
                 type="submit"
                 disabled={isPending || !name.trim()}
-                className="w-full py-3 rounded-xl bg-brand-500 text-white text-base font-semibold disabled:opacity-50"
+                className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm disabled:opacity-40"
               >
                 {isPending ? "Saving…" : "Save Changes"}
               </button>

@@ -5,29 +5,29 @@ export type AttendanceRecord = Tables<"attendance">;
 export const ATTENDANCE_OPTIONS: {
   status: AttendanceStatus;
   label: string;
-  emoji: string;
   color: string;
   activeColor: string;
+  dotColor: string;
 }[] = [
   {
     status: "yes",
     label: "Going",
-    emoji: "✅",
-    color: "border-stone-200 text-dugout-mid",
-    activeColor: "border-field-500 bg-field-50 text-field-700",
+    color: "border-pitch-600 text-pitch-300",
+    activeColor: "border-field bg-field-muted text-field",
+    dotColor: "bg-field",
   },
   {
     status: "maybe",
     label: "Maybe",
-    emoji: "🤔",
-    color: "border-stone-200 text-dugout-mid",
-    activeColor: "border-yellow-400 bg-yellow-50 text-yellow-700",
+    color: "border-pitch-600 text-pitch-300",
+    activeColor: "border-yellow-400 bg-yellow-400/10 text-yellow-400",
+    dotColor: "bg-yellow-400",
   },
   {
     status: "no",
     label: "Can't Go",
-    emoji: "❌",
-    color: "border-stone-200 text-dugout-mid",
-    activeColor: "border-red-400 bg-red-50 text-red-600",
+    color: "border-pitch-600 text-pitch-300",
+    activeColor: "border-red-500 bg-red-500/10 text-red-400",
+    dotColor: "bg-red-500",
   },
 ];

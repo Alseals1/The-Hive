@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Plus } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useMyTeams } from "@/features/teams/hooks/useTeams";
 import { TeamCard } from "@/features/teams/components/TeamCard";
@@ -36,11 +37,11 @@ function TeamsPage() {
     <PageShell
       header={
         <PageHeader
-          title="⚾ My Teams"
+          title="My Teams"
           action={
             <button
               onClick={handleSignOut}
-              className="text-sm text-dugout-mid active:text-dugout-dark py-2 px-1"
+              className="text-xs font-display font-600 uppercase tracking-wider text-pitch-400 active:text-pitch-200 py-2 px-1"
             >
               Sign out
             </button>
@@ -70,11 +71,11 @@ function TeamsPage() {
 
           {!isLoading && !isError && teams?.length === 0 && (
             <EmptyState
-              icon="⚾"
+              icon={<Plus size={24} />}
               title="No teams yet"
-              description="Create your first team or ask your coach for an invite link."
+              description="Create your first team or ask your coach for an invite code."
               action={{
-                label: "+ Create a Team",
+                label: "Create a Team",
                 onClick: () => setShowCreate(true),
               }}
             />
@@ -95,7 +96,7 @@ function TeamsPage() {
               ))}
               <button
                 onClick={() => setShowCreate(true)}
-                className="w-full py-3 rounded-xl border-2 border-dashed border-stone-300 text-dugout-mid text-sm font-medium active:bg-stone-100"
+                className="w-full py-3.5 rounded-xl border border-dashed border-pitch-600 text-pitch-400 text-xs font-display font-600 uppercase tracking-wider active:bg-pitch-800 transition-colors"
               >
                 + Create another team
               </button>

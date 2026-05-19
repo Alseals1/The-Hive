@@ -1,9 +1,9 @@
 import { useState } from "react";
 import type { FC } from "react";
-import { X } from "lucide-react";
+import { X, Trophy, Zap, Award, CalendarDays } from "lucide-react";
 import { useCreateEvent } from "../hooks/useEvents";
 import type { EventType } from "@/types";
-import { EVENT_TYPE_LABELS, EVENT_TYPE_EMOJI } from "../types";
+import { EVENT_TYPE_LABELS } from "../types";
 
 interface CreateEventSheetProps {
   teamId: string;
@@ -12,10 +12,20 @@ interface CreateEventSheetProps {
 
 const EVENT_TYPES: EventType[] = ["game", "practice", "tournament", "other"];
 
-export const CreateEventSheet: FC<CreateEventSheetProps> = ({
-  teamId,
-  onClose,
-}) => {
+const inputCls = "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
+const labelCls = "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
+
+function EventTypeButtonIcon({ type }: { type: EventType }) {
+  const cls = "flex-shrink-0";
+  switch (type) {
+    case "game":       return <Trophy size={16} className={cls} />;
+    case "practice":   return <Zap size={16} className={cls} />;
+    case "tournament": return <Award size={16} className={cls} />;
+    default:           return <CalendarDays size={16} className={cls} />;
+  }
+}
+
+export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose }) => {
   const [title, setTitle] = useState("");
   const [type, setType] = useState<EventType>("practice");
   const [location, setLocation] = useState("");
@@ -46,18 +56,20 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end">
       <div
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-black/60"
         onClick={onClose}
         aria-hidden="true"
       />
-      <div className="relative bg-white rounded-t-2xl px-4 pt-4 pb-10 z-10 max-h-[90vh] overflow-y-auto">
-        <div className="w-10 h-1 bg-stone-300 rounded-full mx-auto mb-5" />
+      <div className="relative bg-pitch-800 border-t border-pitch-700 rounded-t-2xl px-4 pt-4 pb-10 z-10 max-h-[90vh] overflow-y-auto">
+        <div className="w-10 h-1 bg-pitch-600 rounded-full mx-auto mb-5" />
 
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-bold text-dugout-dark">Add Event</h2>
+          <h2 className="font-display text-xl font-700 uppercase tracking-wide text-pitch-50">
+            Add Event
+          </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg text-dugout-mid hover:bg-stone-100"
+            className="p-2 rounded-lg text-pitch-400 active:bg-pitch-700"
             aria-label="Close"
           >
             <X size={20} />
@@ -67,24 +79,20 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Event Type */}
           <div>
-            <p className="text-sm font-medium text-dugout-dark mb-2">
-              Event Type
-            </p>
+            <p className={labelCls}>Event Type</p>
             <div className="grid grid-cols-4 gap-2">
               {EVENT_TYPES.map((t) => (
                 <button
                   key={t}
                   type="button"
                   onClick={() => setType(t)}
-                  className={`flex flex-col items-center gap-1 py-2 rounded-xl border text-xs font-medium transition-colors ${
+                  className={`flex flex-col items-center gap-1.5 py-2.5 rounded-xl border text-[11px] font-display font-600 uppercase tracking-wide transition-colors ${
                     type === t
-                      ? "border-brand-500 bg-brand-50 text-brand-600"
-                      : "border-stone-200 text-dugout-mid"
+                      ? "border-ember bg-ember-muted text-ember"
+                      : "border-pitch-700 text-pitch-400"
                   }`}
                 >
-                  <span className="text-lg leading-none">
-                    {EVENT_TYPE_EMOJI[t]}
-                  </span>
+                  <EventTypeButtonIcon type={t} />
                   <span>{EVENT_TYPE_LABELS[t]}</span>
                 </button>
               ))}
@@ -93,11 +101,8 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({
 
           {/* Title */}
           <div>
-            <label
-              htmlFor="event-title"
-              className="block text-sm font-medium text-dugout-dark mb-1"
-            >
-              Title <span className="text-red-500">*</span>
+            <label htmlFor="event-title" className={labelCls}>
+              Title <span className="text-ember">*</span>
             </label>
             <input
               id="event-title"
@@ -106,18 +111,15 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="vs. Eagles"
-              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className={inputCls}
             />
           </div>
 
           {/* Date/Time */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label
-                htmlFor="event-starts"
-                className="block text-sm font-medium text-dugout-dark mb-1"
-              >
-                Starts <span className="text-red-500">*</span>
+              <label htmlFor="event-starts" className={labelCls}>
+                Starts <span className="text-ember">*</span>
               </label>
               <input
                 id="event-starts"
@@ -125,18 +127,13 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({
                 required
                 value={startsAt}
                 onChange={(e) => setStartsAt(e.target.value)}
-                className="w-full px-3 py-3 rounded-xl border border-stone-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className={inputCls}
               />
             </div>
             <div>
-              <label
-                htmlFor="event-ends"
-                className="block text-sm font-medium text-dugout-dark mb-1"
-              >
+              <label htmlFor="event-ends" className={labelCls}>
                 Ends{" "}
-                <span className="text-dugout-light text-xs font-normal">
-                  (opt)
-                </span>
+                <span className="text-pitch-500 text-[10px] normal-case tracking-normal font-body font-400">opt</span>
               </label>
               <input
                 id="event-ends"
@@ -144,21 +141,16 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({
                 value={endsAt}
                 min={startsAt}
                 onChange={(e) => setEndsAt(e.target.value)}
-                className="w-full px-3 py-3 rounded-xl border border-stone-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className={inputCls}
               />
             </div>
           </div>
 
           {/* Location */}
           <div>
-            <label
-              htmlFor="event-location"
-              className="block text-sm font-medium text-dugout-dark mb-1"
-            >
+            <label htmlFor="event-location" className={labelCls}>
               Location{" "}
-              <span className="text-dugout-light text-xs font-normal">
-                (opt)
-              </span>
+              <span className="text-pitch-500 text-[10px] normal-case tracking-normal font-body font-400">opt</span>
             </label>
             <input
               id="event-location"
@@ -166,20 +158,15 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Riverside Park Field 3"
-              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className={inputCls}
             />
           </div>
 
           {/* Description */}
           <div>
-            <label
-              htmlFor="event-desc"
-              className="block text-sm font-medium text-dugout-dark mb-1"
-            >
+            <label htmlFor="event-desc" className={labelCls}>
               Notes{" "}
-              <span className="text-dugout-light text-xs font-normal">
-                (opt)
-              </span>
+              <span className="text-pitch-500 text-[10px] normal-case tracking-normal font-body font-400">opt</span>
             </label>
             <textarea
               id="event-desc"
@@ -187,12 +174,12 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
               placeholder="Bring batting helmets…"
-              className="w-full px-4 py-3 rounded-xl border border-stone-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+              className={`${inputCls} resize-none`}
             />
           </div>
 
           {error && (
-            <p className="text-sm text-red-500">
+            <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
               {error instanceof Error ? error.message : "Failed to create event."}
             </p>
           )}
@@ -200,7 +187,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({
           <button
             type="submit"
             disabled={isPending || !title.trim() || !startsAt}
-            className="w-full py-3 rounded-xl bg-brand-500 text-white text-base font-semibold disabled:opacity-50"
+            className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm disabled:opacity-40"
           >
             {isPending ? "Adding…" : "Add Event"}
           </button>

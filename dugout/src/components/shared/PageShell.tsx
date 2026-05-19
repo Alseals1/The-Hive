@@ -4,7 +4,6 @@ interface PageShellProps {
   children: ReactNode;
   header?: ReactNode;
   footer?: ReactNode;
-  /** Use when a BottomNav is present — adds 64px padding to avoid overlap */
   withNav?: boolean;
   className?: string;
 }
@@ -17,9 +16,9 @@ export const PageShell: FC<PageShellProps> = ({
   className = "",
 }) => {
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col">
+    <div className="min-h-screen bg-pitch-900 flex flex-col">
       {header && (
-        <header className="bg-white border-b border-stone-200 sticky top-0 z-10">
+        <header className="bg-pitch-900 border-b border-pitch-700 sticky top-0 z-10 backdrop-blur-sm">
           {header}
         </header>
       )}
@@ -37,17 +36,17 @@ interface PageHeaderProps {
   action?: ReactNode;
 }
 
-export const PageHeader: FC<PageHeaderProps> = ({
-  title,
-  subtitle,
-  action,
-}) => (
-  <div className="flex items-center justify-between px-4 py-4">
+export const PageHeader: FC<PageHeaderProps> = ({ title, subtitle, action }) => (
+  <div className="flex items-center justify-between px-4 py-3">
     <div>
-      <h1 className="text-xl font-bold text-dugout-dark leading-tight">
+      <h1 className="font-display text-2xl font-700 tracking-wide text-pitch-50 uppercase leading-tight">
         {title}
       </h1>
-      {subtitle && <p className="text-sm text-dugout-mid mt-0.5">{subtitle}</p>}
+      {subtitle && (
+        <p className="text-xs font-body font-medium text-pitch-300 mt-0.5 tracking-wide">
+          {subtitle}
+        </p>
+      )}
     </div>
     {action && <div>{action}</div>}
   </div>
