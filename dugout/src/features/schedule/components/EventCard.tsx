@@ -1,6 +1,6 @@
 import { memo } from "react";
 import type { FC } from "react";
-import { MapPin, Clock, Trophy, Zap, Award, CalendarDays } from "lucide-react";
+import { MapPin, Clock, Trophy, Zap, Award, CalendarDays, ChevronRight } from "lucide-react";
 import type { EventType } from "@/types";
 import type { EventWithAttendance } from "../types";
 import { EVENT_TYPE_LABELS } from "../types";
@@ -12,6 +12,7 @@ interface EventCardProps {
   canDelete?: boolean;
   onDelete?: (eventId: string) => void;
   onEdit?: (event: EventWithAttendance) => void;
+  onViewTournament?: (event: EventWithAttendance) => void;
 }
 
 function EventTypeIcon({ type }: { type: EventType }) {
@@ -39,7 +40,7 @@ function formatEventDate(startsAt: string): { date: string; time: string } {
 }
 
 export const EventCard: FC<EventCardProps> = memo(
-  ({ event, teamId, canDelete, onDelete, onEdit }) => {
+  ({ event, teamId, canDelete, onDelete, onEdit, onViewTournament }) => {
     const { date, time } = formatEventDate(event.starts_at);
     const typeLabel = EVENT_TYPE_LABELS[event.type];
 
@@ -97,6 +98,17 @@ export const EventCard: FC<EventCardProps> = memo(
             currentStatus={event.myStatus}
           />
         </div>
+
+        {/* Tournament itinerary affordance */}
+        {event.type === "tournament" && onViewTournament && (
+          <button
+            onClick={() => onViewTournament(event)}
+            className="w-full px-4 py-3 border-t border-pitch-700 flex items-center justify-between text-xs font-display font-600 uppercase tracking-wider text-pitch-300 active:bg-pitch-700 transition-colors"
+          >
+            <span>View Itinerary</span>
+            <ChevronRight size={14} />
+          </button>
+        )}
 
         {/* Admin actions */}
         {canDelete && (onEdit || onDelete) && (

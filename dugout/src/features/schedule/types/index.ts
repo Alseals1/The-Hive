@@ -10,6 +10,23 @@ export type EventInsert = {
   location?: string | null;
   starts_at: string;
   ends_at?: string | null;
+  parent_event_id?: string | null;
+};
+
+export type SubEventInsert = {
+  team_id: string;
+  parent_event_id: string;
+  title: string;
+  starts_at: string;
+  ends_at?: string | null;
+};
+
+export interface SubEvent {
+  id: string;
+  title: string;
+  starts_at: string;
+  ends_at: string | null;
+  type: EventType;
 };
 
 export interface EventWithAttendance extends Event {
@@ -28,6 +45,7 @@ export type EventPatch = {
   location?: string | null;
   starts_at?: string;
   ends_at?: string | null;
+  parent_event_id?: string | null;
 };
 
 export const EVENT_TYPE_LABELS: Record<EventType, string> = {

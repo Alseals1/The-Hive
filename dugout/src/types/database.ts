@@ -176,6 +176,7 @@ export type Database = {
           ends_at: string | null
           id: string
           location: string | null
+          parent_event_id: string | null
           starts_at: string
           team_id: string
           title: string
@@ -189,6 +190,7 @@ export type Database = {
           ends_at?: string | null
           id?: string
           location?: string | null
+          parent_event_id?: string | null
           starts_at: string
           team_id: string
           title: string
@@ -202,6 +204,7 @@ export type Database = {
           ends_at?: string | null
           id?: string
           location?: string | null
+          parent_event_id?: string | null
           starts_at?: string
           team_id?: string
           title?: string
@@ -214,6 +217,13 @@ export type Database = {
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_parent_event_id_fkey"
+            columns: ["parent_event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
             referencedColumns: ["id"]
           },
           {

@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { useTeamEvents, useDeleteEvent } from "../hooks/useEvents";
 import { EventCard } from "./EventCard";
 import { CreateEventSheet } from "./CreateEventSheet";
+import { TournamentSheet } from "./TournamentSheet";
 import type { EventWithAttendance } from "../types";
 
 export const SchedulePage: FC = () => {
@@ -19,6 +20,7 @@ export const SchedulePage: FC = () => {
   const { mutate: deleteEvent } = useDeleteEvent(teamId);
   const [showCreate, setShowCreate] = useState(false);
   const [editing, setEditing] = useState<EventWithAttendance | undefined>(undefined);
+  const [tournament, setTournament] = useState<EventWithAttendance | undefined>(undefined);
 
   function handleEdit(event: EventWithAttendance) {
     setEditing(event);
@@ -65,6 +67,15 @@ export const SchedulePage: FC = () => {
           teamId={teamId}
           onClose={handleCloseSheet}
           existing={editing}
+        />
+      )}
+
+      {tournament && (
+        <TournamentSheet
+          tournament={tournament}
+          teamId={teamId}
+          canManage={canManage}
+          onClose={() => setTournament(undefined)}
         />
       )}
 
@@ -121,6 +132,7 @@ export const SchedulePage: FC = () => {
                       canDelete={canManage}
                       onDelete={deleteEvent}
                       onEdit={canManage ? handleEdit : undefined}
+                      onViewTournament={setTournament}
                     />
                   ))}
                 </div>
@@ -142,6 +154,7 @@ export const SchedulePage: FC = () => {
                       canDelete={canManage}
                       onDelete={deleteEvent}
                       onEdit={canManage ? handleEdit : undefined}
+                      onViewTournament={setTournament}
                     />
                   ))}
                 </div>

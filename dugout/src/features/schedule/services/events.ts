@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import type { EventInsert, EventPatch } from "../types";
+import type { EventInsert, EventPatch, SubEventInsert, SubEvent } from "../types";
 
 /**
  * Fetch all upcoming events for a team, with the current user's RSVP status.
@@ -33,6 +33,7 @@ export async function getTeamEvents(teamId: string) {
     `,
     )
     .eq("team_id", teamId)
+    .is("parent_event_id", null)
     .order("starts_at", { ascending: true });
 
   if (error) throw new Error(error.message);
@@ -57,6 +58,7 @@ export async function getTeamEvents(teamId: string) {
       location: event.location,
       starts_at: event.starts_at,
       ends_at: event.ends_at,
+      parent_event_id: event.parent_event_id ?? null,
       created_by: event.created_by,
       created_at: event.created_at,
       updated_at: event.updated_at,
@@ -83,6 +85,40 @@ export async function createEvent(input: EventInsert) {
 
   if (error) throw new Error(error.message);
   return data;
+}
+
+/**
+ * Fetch sub-events (itinerary items) for a tournament event.
+ */
+export async function getTournamentSubEvents(parentEventId: string): Promise<SubEvent[]> {
+  const { data, error } = await supabase
+    .from("events")
+    .select("id, title, starts_at, ends_at, type")
+    .eq("parent_event_id", parentEventId)
+    .order("starts_at", { ascending: true });
+
+  if (error) throw new Error(error.message);
+  return (data ?? []) as SubEvent[];
+}
+
+/**
+ * Create a sub-event (itinerary item) under a tournament. Admins/coaches only.
+ */
+export async function createSubEvent(input: SubEventInsert): Promise<void> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  const { error } = await supabase.from("events").insert({
+    team_id: input.team_id,
+    parent_event_id: input.parent_event_id,
+    title: input.title,
+    type: "other",
+    starts_at: input.starts_at,
+    ends_at: input.ends_at ?? null,
+    created_by: user.id,
+  });
+
+  if (error) throw new Error(error.message);
 }
 
 /**
