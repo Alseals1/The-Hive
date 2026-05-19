@@ -104,30 +104,40 @@ function SignupPage() {
         <div>
           <p className={labelCls}>I am a</p>
           <div className="grid grid-cols-2 gap-2">
-            {ACCOUNT_TYPES.map((opt) => (
-              <button
-                key={opt.value}
-                type="button"
-                onClick={() => setAccountType(opt.value)}
-                className={`flex flex-col gap-0.5 px-3 py-3 rounded-xl border text-left transition-colors ${
-                  accountType === opt.value
-                    ? "border-ember bg-ember-muted"
-                    : "border-pitch-700 bg-pitch-800"
-                }`}
-              >
-                <span
-                  className={`text-sm font-display font-600 uppercase tracking-wide ${
-                    accountType === opt.value ? "text-ember" : "text-pitch-100"
-                  }`}
+            {ACCOUNT_TYPES.map((opt) => {
+              const isSelected = accountType === opt.value;
+              const locked = !!pendingToken;
+              return (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => !locked && setAccountType(opt.value)}
+                  disabled={locked && !isSelected}
+                  className={`flex flex-col gap-0.5 px-3 py-3 rounded-xl border text-left transition-colors ${
+                    isSelected
+                      ? "border-ember bg-ember-muted"
+                      : "border-pitch-700 bg-pitch-800 opacity-30"
+                  } ${locked ? "cursor-default" : ""}`}
                 >
-                  {opt.label}
-                </span>
-                <span className="text-[11px] text-pitch-400 font-body leading-snug">
-                  {opt.description}
-                </span>
-              </button>
-            ))}
+                  <span
+                    className={`text-sm font-display font-600 uppercase tracking-wide ${
+                      isSelected ? "text-ember" : "text-pitch-100"
+                    }`}
+                  >
+                    {opt.label}
+                  </span>
+                  <span className="text-[11px] text-pitch-400 font-body leading-snug">
+                    {opt.description}
+                  </span>
+                </button>
+              );
+            })}
           </div>
+          {pendingToken && (
+            <p className="text-[11px] text-pitch-500 font-body mt-1">
+              Role set by your invite — cannot be changed.
+            </p>
+          )}
         </div>
 
         <div>
