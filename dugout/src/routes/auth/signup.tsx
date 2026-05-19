@@ -6,14 +6,28 @@ export const Route = createFileRoute("/auth/signup")({
   component: SignupPage,
 });
 
-const inputCls = "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
-const labelCls = "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
+const inputCls =
+  "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
+const labelCls =
+  "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
 
 type AccountType = "organizer" | "member";
 
-const ACCOUNT_TYPES: { value: AccountType; label: string; description: string }[] = [
-  { value: "organizer", label: "Coach / Admin",   description: "I manage or coach a team"   },
-  { value: "member",    label: "Parent / Player",  description: "I'm joining a team"         },
+const ACCOUNT_TYPES: {
+  value: AccountType;
+  label: string;
+  description: string;
+}[] = [
+  {
+    value: "organizer",
+    label: "Coach / Admin",
+    description: "I manage or coach a team",
+  },
+  {
+    value: "member",
+    label: "Parent / Player",
+    description: "I'm joining a team",
+  },
 ];
 
 function SignupPage() {
@@ -57,7 +71,7 @@ function SignupPage() {
     <div className="min-h-screen bg-pitch-900 flex flex-col justify-center px-6">
       <div className="mb-10">
         <p className="font-display text-xs font-600 uppercase tracking-[0.2em] text-ember mb-2">
-          Youth Baseball
+          The Hive
         </p>
         <h1 className="font-display text-5xl font-800 uppercase tracking-tight text-pitch-50 leading-none">
           Dugout
@@ -83,9 +97,11 @@ function SignupPage() {
                     : "border-pitch-700 bg-pitch-800"
                 }`}
               >
-                <span className={`text-sm font-display font-600 uppercase tracking-wide ${
-                  accountType === opt.value ? "text-ember" : "text-pitch-100"
-                }`}>
+                <span
+                  className={`text-sm font-display font-600 uppercase tracking-wide ${
+                    accountType === opt.value ? "text-ember" : "text-pitch-100"
+                  }`}
+                >
                   {opt.label}
                 </span>
                 <span className="text-[11px] text-pitch-400 font-body leading-snug">
@@ -97,7 +113,9 @@ function SignupPage() {
         </div>
 
         <div>
-          <label htmlFor="name" className={labelCls}>Full Name</label>
+          <label htmlFor="name" className={labelCls}>
+            Full Name
+          </label>
           <input
             id="name"
             type="text"
@@ -111,7 +129,9 @@ function SignupPage() {
         </div>
 
         <div>
-          <label htmlFor="email" className={labelCls}>Email</label>
+          <label htmlFor="email" className={labelCls}>
+            Email
+          </label>
           <input
             id="email"
             type="email"
@@ -125,7 +145,9 @@ function SignupPage() {
         </div>
 
         <div>
-          <label htmlFor="password" className={labelCls}>Password</label>
+          <label htmlFor="password" className={labelCls}>
+            Password
+          </label>
           <input
             id="password"
             type="password"
@@ -156,7 +178,10 @@ function SignupPage() {
 
       <p className="mt-8 text-center text-sm text-pitch-400">
         Already have an account?{" "}
-        <a href="/auth/login" className="text-ember font-display font-600 uppercase tracking-wider text-xs">
+        <a
+          href="/auth/login"
+          className="text-ember font-display font-600 uppercase tracking-wider text-xs"
+        >
           Sign in
         </a>
       </p>
