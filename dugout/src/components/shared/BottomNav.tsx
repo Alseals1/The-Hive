@@ -12,6 +12,7 @@ const teamNavItems = (teamId: string): NavItem[] => [
   { to: `/teams/${teamId}/announcements`, label: 'News', icon: '📣' },
   { to: `/teams/${teamId}/roster`, label: 'Roster', icon: '👥' },
   { to: `/teams/${teamId}/payments`, label: 'Payments', icon: '💳' },
+  { to: `/teams/${teamId}/settings`, label: 'Settings', icon: '⚙️' },
 ]
 
 export function TeamBottomNav({ teamId }: { teamId: string }) {

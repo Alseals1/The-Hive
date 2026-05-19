@@ -1,24 +1,50 @@
 import type { FC } from 'react';
-import { useParams } from '@tanstack/react-router';
+import { useState } from 'react';
+import { useParams, useRouteContext } from '@tanstack/react-router';
+import { UserPlus } from 'lucide-react';
 import { PageShell, PageHeader } from '@/components/shared/PageShell';
 import { TeamBottomNav } from '@/components/shared/BottomNav';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { InviteSheet } from '@/features/teams/components/InviteSheet';
 import { useRoster } from '../hooks/useRoster';
 import { RosterList } from './RosterList';
 
 export const RosterPage: FC = () => {
   const { teamId } = useParams({ from: '/teams/$teamId/roster' });
+  const { userRole } = useRouteContext({ from: '/teams/$teamId' });
   const { data: members, isLoading, error, refetch } = useRoster(teamId);
+  const [showInvite, setShowInvite] = useState(false);
+
+  const canInvite = userRole === 'admin' || userRole === 'coach';
 
   return (
     <PageShell
-      header={<PageHeader title="Roster" />}
+      header={
+        <PageHeader
+          title="Roster"
+          action={
+            canInvite ? (
+              <button
+                onClick={() => setShowInvite(true)}
+                className="p-2 rounded-lg text-dugout-mid hover:bg-stone-100 active:bg-stone-200"
+                aria-label="Invite member"
+              >
+                <UserPlus size={22} />
+              </button>
+            ) : undefined
+          }
+        />
+      }
       footer={<TeamBottomNav teamId={teamId} />}
       withNav
       className="px-4 py-6"
     >
+      {showInvite && (
+        <InviteSheet teamId={teamId} onClose={() => setShowInvite(false)} />
+      )}
+
       {isLoading && (
         <div className="flex items-center justify-center py-12">
           <LoadingSpinner size="lg" />
