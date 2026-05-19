@@ -21,6 +21,15 @@ export interface EventWithAttendance extends Event {
   };
 }
 
+export type EventPatch = {
+  title?: string;
+  type?: EventType;
+  description?: string | null;
+  location?: string | null;
+  starts_at?: string;
+  ends_at?: string | null;
+};
+
 export const EVENT_TYPE_LABELS: Record<EventType, string> = {
   game: "Game",
   practice: "Practice",

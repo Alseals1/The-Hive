@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { useTeamEvents, useDeleteEvent } from "../hooks/useEvents";
 import { EventCard } from "./EventCard";
 import { CreateEventSheet } from "./CreateEventSheet";
+import type { EventWithAttendance } from "../types";
 
 export const SchedulePage: FC = () => {
   const { teamId } = useParams({ from: "/teams/$teamId/schedule" });
@@ -17,6 +18,17 @@ export const SchedulePage: FC = () => {
   const { data: events, isLoading, error, refetch } = useTeamEvents(teamId);
   const { mutate: deleteEvent } = useDeleteEvent(teamId);
   const [showCreate, setShowCreate] = useState(false);
+  const [editing, setEditing] = useState<EventWithAttendance | undefined>(undefined);
+
+  function handleEdit(event: EventWithAttendance) {
+    setEditing(event);
+    setShowCreate(true);
+  }
+
+  function handleCloseSheet() {
+    setShowCreate(false);
+    setEditing(undefined);
+  }
 
   const canManage = userRole === "admin" || userRole === "coach";
 
@@ -51,7 +63,8 @@ export const SchedulePage: FC = () => {
       {showCreate && (
         <CreateEventSheet
           teamId={teamId}
-          onClose={() => setShowCreate(false)}
+          onClose={handleCloseSheet}
+          existing={editing}
         />
       )}
 
@@ -107,6 +120,7 @@ export const SchedulePage: FC = () => {
                       teamId={teamId}
                       canDelete={canManage}
                       onDelete={deleteEvent}
+                      onEdit={canManage ? handleEdit : undefined}
                     />
                   ))}
                 </div>
@@ -127,6 +141,7 @@ export const SchedulePage: FC = () => {
                       teamId={teamId}
                       canDelete={canManage}
                       onDelete={deleteEvent}
+                      onEdit={canManage ? handleEdit : undefined}
                     />
                   ))}
                 </div>

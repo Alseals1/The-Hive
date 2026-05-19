@@ -11,6 +11,7 @@ interface EventCardProps {
   teamId: string;
   canDelete?: boolean;
   onDelete?: (eventId: string) => void;
+  onEdit?: (event: EventWithAttendance) => void;
 }
 
 function EventTypeIcon({ type }: { type: EventType }) {
@@ -38,7 +39,7 @@ function formatEventDate(startsAt: string): { date: string; time: string } {
 }
 
 export const EventCard: FC<EventCardProps> = memo(
-  ({ event, teamId, canDelete, onDelete }) => {
+  ({ event, teamId, canDelete, onDelete, onEdit }) => {
     const { date, time } = formatEventDate(event.starts_at);
     const typeLabel = EVENT_TYPE_LABELS[event.type];
 
@@ -97,15 +98,25 @@ export const EventCard: FC<EventCardProps> = memo(
           />
         </div>
 
-        {/* Delete (admins only) */}
-        {canDelete && onDelete && (
-          <div className="border-t border-pitch-700 px-4 py-2.5">
-            <button
-              onClick={() => onDelete(event.id)}
-              className="text-xs text-red-500 font-display font-600 uppercase tracking-wider active:text-red-400"
-            >
-              Delete event
-            </button>
+        {/* Admin actions */}
+        {canDelete && (onEdit || onDelete) && (
+          <div className="border-t border-pitch-700 px-4 py-2.5 flex items-center justify-end gap-4">
+            {onEdit && (
+              <button
+                onClick={() => onEdit(event)}
+                className="text-xs text-pitch-300 font-display font-600 uppercase tracking-wider active:text-pitch-100"
+              >
+                Edit
+              </button>
+            )}
+            {onDelete && (
+              <button
+                onClick={() => onDelete(event.id)}
+                className="text-xs text-red-500 font-display font-600 uppercase tracking-wider active:text-red-400"
+              >
+                Delete
+              </button>
+            )}
           </div>
         )}
       </div>

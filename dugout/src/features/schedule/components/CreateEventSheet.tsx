@@ -1,19 +1,28 @@
 import { useState } from "react";
 import type { FC } from "react";
 import { X, Trophy, Zap, Award, CalendarDays } from "lucide-react";
-import { useCreateEvent } from "../hooks/useEvents";
+import { useCreateEvent, useUpdateEvent } from "../hooks/useEvents";
 import type { EventType } from "@/types";
+import type { EventWithAttendance } from "../types";
 import { EVENT_TYPE_LABELS } from "../types";
 
 interface CreateEventSheetProps {
   teamId: string;
   onClose: () => void;
+  existing?: EventWithAttendance;
 }
 
 const EVENT_TYPES: EventType[] = ["game", "practice", "tournament", "other"];
 
 const inputCls = "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
 const labelCls = "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
+
+function toLocalDatetimeValue(iso: string | null | undefined): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 function EventTypeButtonIcon({ type }: { type: EventType }) {
   const cls = "flex-shrink-0";
@@ -25,32 +34,40 @@ function EventTypeButtonIcon({ type }: { type: EventType }) {
   }
 }
 
-export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose }) => {
-  const [title, setTitle] = useState("");
-  const [type, setType] = useState<EventType>("practice");
-  const [location, setLocation] = useState("");
-  const [startsAt, setStartsAt] = useState("");
-  const [endsAt, setEndsAt] = useState("");
-  const [description, setDescription] = useState("");
+export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, existing }) => {
+  const isEditing = !!existing;
 
-  const { mutate, isPending, error } = useCreateEvent(teamId);
+  const [title, setTitle] = useState(existing?.title ?? "");
+  const [type, setType] = useState<EventType>(existing?.type ?? "practice");
+  const [location, setLocation] = useState(existing?.location ?? "");
+  const [startsAt, setStartsAt] = useState(toLocalDatetimeValue(existing?.starts_at));
+  const [endsAt, setEndsAt] = useState(toLocalDatetimeValue(existing?.ends_at));
+  const [description, setDescription] = useState(existing?.description ?? "");
+
+  const { mutate: create, isPending: isCreating, error: createError } = useCreateEvent(teamId);
+  const { mutate: update, isPending: isUpdating, error: updateError } = useUpdateEvent(teamId);
+
+  const isPending = isCreating || isUpdating;
+  const error = createError ?? updateError;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!title.trim() || !startsAt) return;
 
-    mutate(
-      {
-        team_id: teamId,
-        title: title.trim(),
-        type,
-        location: location.trim() || null,
-        starts_at: new Date(startsAt).toISOString(),
-        ends_at: endsAt ? new Date(endsAt).toISOString() : null,
-        description: description.trim() || null,
-      },
-      { onSuccess: onClose },
-    );
+    const patch = {
+      title: title.trim(),
+      type,
+      location: location.trim() || null,
+      starts_at: new Date(startsAt).toISOString(),
+      ends_at: endsAt ? new Date(endsAt).toISOString() : null,
+      description: description.trim() || null,
+    };
+
+    if (isEditing && existing) {
+      update({ eventId: existing.id, patch }, { onSuccess: onClose });
+    } else {
+      create({ team_id: teamId, ...patch }, { onSuccess: onClose });
+    }
   }
 
   return (
@@ -65,7 +82,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose })
 
         <div className="flex items-center justify-between mb-6">
           <h2 className="font-display text-xl font-700 uppercase tracking-wide text-pitch-50">
-            Add Event
+            {isEditing ? "Edit Event" : "Add Event"}
           </h2>
           <button
             onClick={onClose}
@@ -180,7 +197,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose })
 
           {error && (
             <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
-              {error instanceof Error ? error.message : "Failed to create event."}
+              {error instanceof Error ? error.message : "Something went wrong."}
             </p>
           )}
 
@@ -189,7 +206,9 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose })
             disabled={isPending || !title.trim() || !startsAt}
             className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm disabled:opacity-40"
           >
-            {isPending ? "Adding…" : "Add Event"}
+            {isPending
+              ? isEditing ? "Saving…" : "Adding…"
+              : isEditing ? "Save Changes" : "Add Event"}
           </button>
         </form>
       </div>

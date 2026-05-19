@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import type { EventInsert } from "../types";
+import type { EventInsert, EventPatch } from "../types";
 
 /**
  * Fetch all upcoming events for a team, with the current user's RSVP status.
@@ -83,6 +83,17 @@ export async function createEvent(input: EventInsert) {
 
   if (error) throw new Error(error.message);
   return data;
+}
+
+/**
+ * Update an event. Admins/coaches only (enforced by RLS).
+ */
+export async function updateEvent(eventId: string, patch: EventPatch) {
+  const { error } = await supabase
+    .from("events")
+    .update(patch)
+    .eq("id", eventId);
+  if (error) throw new Error(error.message);
 }
 
 /**

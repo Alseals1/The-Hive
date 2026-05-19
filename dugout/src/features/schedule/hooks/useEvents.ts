@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getTeamEvents, createEvent, deleteEvent } from "../services/events";
-import type { EventInsert } from "../types";
+import { getTeamEvents, createEvent, updateEvent, deleteEvent } from "../services/events";
+import type { EventInsert, EventPatch } from "../types";
 
 export function useTeamEvents(teamId: string) {
   return useQuery({
@@ -16,6 +16,18 @@ export function useCreateEvent(teamId: string) {
 
   return useMutation({
     mutationFn: (input: EventInsert) => createEvent(input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["events", teamId] });
+    },
+  });
+}
+
+export function useUpdateEvent(teamId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ eventId, patch }: { eventId: string; patch: EventPatch }) =>
+      updateEvent(eventId, patch),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events", teamId] });
     },
