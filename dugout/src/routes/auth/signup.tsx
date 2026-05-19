@@ -30,12 +30,23 @@ const ACCOUNT_TYPES: {
   },
 ];
 
+function roleToAccountType(role: string | null): AccountType {
+  if (role === "coach" || role === "admin" || role === "manager") return "organizer";
+  return "member";
+}
+
 function SignupPage() {
   const navigate = useNavigate();
+
+  const pendingToken = sessionStorage.getItem("invite_token");
+  const pendingRole  = sessionStorage.getItem("invite_role");
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [accountType, setAccountType] = useState<AccountType>("member");
+  const [accountType, setAccountType] = useState<AccountType>(
+    roleToAccountType(pendingRole),
+  );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -63,7 +74,14 @@ function SignupPage() {
         .eq("id", data.user.id);
     }
 
-    await navigate({ to: "/teams" });
+    if (pendingToken) {
+      sessionStorage.removeItem("invite_token");
+      sessionStorage.removeItem("invite_role");
+      await navigate({ to: "/invite/$token", params: { token: pendingToken } });
+    } else {
+      await navigate({ to: "/teams" });
+    }
+
     setLoading(false);
   }
 

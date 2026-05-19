@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { XCircle } from "lucide-react";
+import { XCircle, LogIn, UserPlus } from "lucide-react";
 import { useInviteByToken, useAcceptInvite } from "@/features/teams/hooks/useInvites";
+import { useUser } from "@/hooks/useAuth";
 import { PageShell, PageHeader } from "@/components/shared/PageShell";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 
@@ -8,17 +9,34 @@ export const Route = createFileRoute("/invite/$token")({
   component: InviteAcceptPage,
 });
 
+function roleToAccountType(role: string): "organizer" | "member" {
+  return role === "coach" || role === "admin" || role === "manager"
+    ? "organizer"
+    : "member";
+}
+
 function InviteAcceptPage() {
   const { token } = Route.useParams();
   const navigate = useNavigate();
-  const { data: invite, isLoading } = useInviteByToken(token);
+  const { user, isLoading: authLoading } = useUser();
+  const { data: invite, isLoading: inviteLoading } = useInviteByToken(token);
   const { mutate: accept, isPending, error } = useAcceptInvite();
+
+  const isLoading = authLoading || inviteLoading;
 
   const teamData = invite
     ? Array.isArray(invite.teams)
       ? invite.teams[0]
       : invite.teams
     : null;
+
+  function storeAndGo(to: "/auth/signup" | "/auth/login") {
+    sessionStorage.setItem("invite_token", token);
+    if (invite?.role) {
+      sessionStorage.setItem("invite_role", invite.role);
+    }
+    navigate({ to });
+  }
 
   function handleAccept() {
     accept(token, {
@@ -74,25 +92,47 @@ function InviteAcceptPage() {
               </span>
             </p>
             {teamData.season && (
-              <p className="text-xs text-pitch-500 mb-8">
-                {teamData.season} season
-              </p>
+              <p className="text-xs text-pitch-500 mb-8">{teamData.season} season</p>
             )}
             {!teamData.season && <div className="mb-8" />}
 
-            {error && (
-              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-4 w-full max-w-xs">
-                {error instanceof Error ? error.message : "Something went wrong."}
-              </p>
+            {/* Not authenticated — show signup / login options */}
+            {!user && (
+              <div className="w-full max-w-xs space-y-3">
+                <button
+                  onClick={() => storeAndGo("/auth/signup")}
+                  className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm flex items-center justify-center gap-2"
+                >
+                  <UserPlus size={16} />
+                  Create Account & Join
+                </button>
+                <button
+                  onClick={() => storeAndGo("/auth/login")}
+                  className="w-full py-3.5 rounded-xl border border-pitch-600 text-pitch-200 font-display font-600 uppercase tracking-wider text-sm flex items-center justify-center gap-2 active:bg-pitch-800"
+                >
+                  <LogIn size={16} />
+                  Sign In & Join
+                </button>
+              </div>
             )}
 
-            <button
-              onClick={handleAccept}
-              disabled={isPending}
-              className="px-6 py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm w-full max-w-xs disabled:opacity-40"
-            >
-              {isPending ? "Joining…" : "Join Team"}
-            </button>
+            {/* Authenticated — show join button */}
+            {user && (
+              <>
+                {error && (
+                  <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 mb-4 w-full max-w-xs">
+                    {error instanceof Error ? error.message : "Something went wrong."}
+                  </p>
+                )}
+                <button
+                  onClick={handleAccept}
+                  disabled={isPending}
+                  className="px-6 py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm w-full max-w-xs disabled:opacity-40"
+                >
+                  {isPending ? "Joining…" : "Join Team"}
+                </button>
+              </>
+            )}
           </>
         )}
       </div>

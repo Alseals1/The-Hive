@@ -23,15 +23,19 @@ function LoginPage() {
     setError(null);
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setError(error.message);
     } else {
-      await navigate({ to: "/teams" });
+      const pendingToken = sessionStorage.getItem("invite_token");
+      if (pendingToken) {
+        sessionStorage.removeItem("invite_token");
+        sessionStorage.removeItem("invite_role");
+        await navigate({ to: "/invite/$token", params: { token: pendingToken } });
+      } else {
+        await navigate({ to: "/teams" });
+      }
     }
 
     setLoading(false);
