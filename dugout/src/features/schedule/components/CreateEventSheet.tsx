@@ -2,6 +2,9 @@ import { useState } from "react";
 import type { FC } from "react";
 import { X, Trophy, Zap, Award, CalendarDays } from "lucide-react";
 import { useCreateEvent, useUpdateEvent } from "../hooks/useEvents";
+import { createEventSchema } from "@/lib/validationSchemas";
+import { FormError } from "@/components/shared/FormError";
+import { Input } from "@/components/ui/input";
 import type { EventType } from "@/types";
 import type { EventWithAttendance } from "../types";
 import { EVENT_TYPE_LABELS } from "../types";
@@ -14,8 +17,12 @@ interface CreateEventSheetProps {
 
 const EVENT_TYPES: EventType[] = ["game", "practice", "tournament", "other"];
 
-const inputCls = "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
 const labelCls = "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
+
+type CreateEventErrors = {
+  title?: string;
+  startsAt?: string;
+};
 
 function toLocalDatetimeValue(iso: string | null | undefined): string {
   if (!iso) return "";
@@ -43,6 +50,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
   const [startsAt, setStartsAt] = useState(toLocalDatetimeValue(existing?.starts_at));
   const [endsAt, setEndsAt] = useState(toLocalDatetimeValue(existing?.ends_at));
   const [description, setDescription] = useState(existing?.description ?? "");
+  const [fieldErrors, setFieldErrors] = useState<CreateEventErrors>({});
 
   const { mutate: create, isPending: isCreating, error: createError } = useCreateEvent(teamId);
   const { mutate: update, isPending: isUpdating, error: updateError } = useUpdateEvent(teamId);
@@ -50,9 +58,29 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
   const isPending = isCreating || isUpdating;
   const error = createError ?? updateError;
 
+  function validate(): CreateEventErrors {
+    const result = createEventSchema.safeParse({ title, startsAt });
+    if (!result.success) {
+      const errs: CreateEventErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (field === "title" || field === "startsAt") {
+          errs[field] = issue.message;
+        }
+      });
+      return errs;
+    }
+    return {};
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !startsAt) return;
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      return;
+    }
+    setFieldErrors({});
 
     const patch = {
       title: title.trim(),
@@ -121,14 +149,16 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
             <label htmlFor="event-title" className={labelCls}>
               Title <span className="text-ember">*</span>
             </label>
-            <input
+            <Input
               id="event-title"
               type="text"
-              required
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: undefined }));
+              }}
               placeholder="vs. Eagles"
-              className={inputCls}
+              error={fieldErrors.title}
             />
           </div>
 
@@ -141,11 +171,14 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
               <input
                 id="event-starts"
                 type="datetime-local"
-                required
                 value={startsAt}
-                onChange={(e) => setStartsAt(e.target.value)}
-                className={inputCls}
+                onChange={(e) => {
+                  setStartsAt(e.target.value);
+                  if (fieldErrors.startsAt) setFieldErrors(prev => ({ ...prev, startsAt: undefined }));
+                }}
+                className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
               />
+              <FormError message={fieldErrors.startsAt} />
             </div>
             <div>
               <label htmlFor="event-ends" className={labelCls}>
@@ -158,7 +191,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
                 value={endsAt}
                 min={startsAt}
                 onChange={(e) => setEndsAt(e.target.value)}
-                className={inputCls}
+                className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
               />
             </div>
           </div>
@@ -175,7 +208,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Riverside Park Field 3"
-              className={inputCls}
+              className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
             />
           </div>
 
@@ -191,7 +224,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
               placeholder="Bring batting helmets…"
-              className={`${inputCls} resize-none`}
+              className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors resize-none"
             />
           </div>
 
@@ -203,7 +236,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
 
           <button
             type="submit"
-            disabled={isPending || !title.trim() || !startsAt}
+            disabled={isPending}
             className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm disabled:opacity-40"
           >
             {isPending

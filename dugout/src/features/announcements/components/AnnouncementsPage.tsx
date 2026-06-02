@@ -7,6 +7,7 @@ import { TeamBottomNav } from "@/components/shared/BottomNav";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useTeamAnnouncements, useDeleteAnnouncement } from "../hooks/useAnnouncements";
 import { AnnouncementCard } from "./AnnouncementCard";
 import { CreateAnnouncementSheet } from "./CreateAnnouncementSheet";
@@ -17,12 +18,13 @@ export const AnnouncementsPage: FC = () => {
   const { userRole } = useRouteContext({ from: "/teams/$teamId" });
   const { data: announcements, isLoading, error, refetch } =
     useTeamAnnouncements(teamId);
-  const { mutate: deleteAnnouncement } = useDeleteAnnouncement(teamId);
+  const { mutate: deleteAnnouncement, isPending: isDeleting } = useDeleteAnnouncement(teamId);
 
   const [showSheet, setShowSheet] = useState(false);
   const [editing, setEditing] = useState<AnnouncementWithReactions | undefined>(
     undefined,
   );
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   const canPost = userRole === "admin" || userRole === "coach";
 
@@ -110,12 +112,27 @@ export const AnnouncementsPage: FC = () => {
                 teamId={teamId}
                 canPost={canPost}
                 onEdit={handleEdit}
-                onDelete={deleteAnnouncement}
+                onDelete={setDeleteConfirmId}
               />
             ))}
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={deleteConfirmId !== null}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={() => {
+          if (deleteConfirmId) {
+            deleteAnnouncement(deleteConfirmId, {
+              onSuccess: () => setDeleteConfirmId(null),
+            });
+          }
+        }}
+        title="Delete Announcement?"
+        description="This announcement will be permanently removed."
+        isPending={isDeleting}
+      />
     </PageShell>
   );
 };

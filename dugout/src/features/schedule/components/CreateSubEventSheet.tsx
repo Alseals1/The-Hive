@@ -2,6 +2,9 @@ import { useState } from "react";
 import type { FC } from "react";
 import { X } from "lucide-react";
 import { useCreateSubEvent, useUpdateEvent } from "../hooks/useEvents";
+import { createSubEventSchema } from "@/lib/validationSchemas";
+import { FormError } from "@/components/shared/FormError";
+import { Input } from "@/components/ui/input";
 import type { SubEvent } from "../types";
 
 interface CreateSubEventSheetProps {
@@ -11,10 +14,13 @@ interface CreateSubEventSheetProps {
   existing?: SubEvent;
 }
 
-const inputCls =
-  "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
 const labelCls =
   "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
+
+type CreateSubEventErrors = {
+  title?: string;
+  startsAt?: string;
+};
 
 function toLocalDatetimeValue(iso: string | null | undefined): string {
   if (!iso) return "";
@@ -34,6 +40,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
   const [title, setTitle] = useState(existing?.title ?? "");
   const [startsAt, setStartsAt] = useState(toLocalDatetimeValue(existing?.starts_at));
   const [endsAt, setEndsAt] = useState(toLocalDatetimeValue(existing?.ends_at));
+  const [fieldErrors, setFieldErrors] = useState<CreateSubEventErrors>({});
 
   const { mutate: create, isPending: isCreating, error: createError } =
     useCreateSubEvent(teamId, parentEventId);
@@ -43,9 +50,29 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
   const isPending = isCreating || isUpdating;
   const error = createError ?? updateError;
 
+  function validate(): CreateSubEventErrors {
+    const result = createSubEventSchema.safeParse({ title, startsAt });
+    if (!result.success) {
+      const errs: CreateSubEventErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (field === "title" || field === "startsAt") {
+          errs[field] = issue.message;
+        }
+      });
+      return errs;
+    }
+    return {};
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !startsAt) return;
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      return;
+    }
+    setFieldErrors({});
 
     if (isEditing && existing) {
       update(
@@ -101,14 +128,16 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
             <label htmlFor="sub-title" className={labelCls}>
               Title <span className="text-ember">*</span>
             </label>
-            <input
+            <Input
               id="sub-title"
               type="text"
-              required
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: undefined }));
+              }}
               placeholder="Game 1 vs Eagles"
-              className={inputCls}
+              error={fieldErrors.title}
               autoFocus
             />
           </div>
@@ -121,11 +150,14 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
               <input
                 id="sub-starts"
                 type="datetime-local"
-                required
                 value={startsAt}
-                onChange={(e) => setStartsAt(e.target.value)}
-                className={inputCls}
+                onChange={(e) => {
+                  setStartsAt(e.target.value);
+                  if (fieldErrors.startsAt) setFieldErrors(prev => ({ ...prev, startsAt: undefined }));
+                }}
+                className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
               />
+              <FormError message={fieldErrors.startsAt} />
             </div>
             <div>
               <label htmlFor="sub-ends" className={labelCls}>
@@ -138,7 +170,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
                 value={endsAt}
                 min={startsAt}
                 onChange={(e) => setEndsAt(e.target.value)}
-                className={inputCls}
+                className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
               />
             </div>
           </div>
@@ -151,7 +183,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
 
           <button
             type="submit"
-            disabled={isPending || !title.trim() || !startsAt}
+            disabled={isPending}
             className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm disabled:opacity-40"
           >
             {isPending

@@ -80,3 +80,45 @@ export async function createTeam(
 
   return team;
 }
+
+export async function deleteTeam(teamId: string) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Not authenticated");
+
+  // Verify user is admin
+  const { data: member, error: checkError } = await supabase
+    .from("team_members")
+    .select("role")
+    .eq("team_id", teamId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (checkError || member?.role !== "admin") {
+    throw new Error("Only admins can delete the team");
+  }
+
+  // Delete the team (cascade will handle team_members)
+  const { error } = await supabase.from("teams").delete().eq("id", teamId);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function leaveTeam(teamId: string) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) throw new Error("Not authenticated");
+
+  // Remove user from team_members
+  const { error } = await supabase
+    .from("team_members")
+    .delete()
+    .eq("team_id", teamId)
+    .eq("user_id", user.id);
+
+  if (error) throw new Error(error.message);
+}

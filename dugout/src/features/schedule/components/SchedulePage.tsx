@@ -7,6 +7,7 @@ import { TeamBottomNav } from "@/components/shared/BottomNav";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useTeamEvents, useDeleteEvent } from "../hooks/useEvents";
 import { EventCard } from "./EventCard";
 import { CreateEventSheet } from "./CreateEventSheet";
@@ -18,11 +19,12 @@ export const SchedulePage: FC = () => {
   const { teamId } = useParams({ from: "/teams/$teamId/schedule" });
   const { userRole } = useRouteContext({ from: "/teams/$teamId" });
   const { data: events, isLoading, error, refetch } = useTeamEvents(teamId);
-  const { mutate: deleteEvent } = useDeleteEvent(teamId);
+  const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent(teamId);
   const [showCreate, setShowCreate] = useState(false);
   const [editing, setEditing] = useState<EventWithAttendance | undefined>(undefined);
   const [tournament, setTournament] = useState<EventWithAttendance | undefined>(undefined);
   const [suppliesEvent, setSuppliesEvent] = useState<EventWithAttendance | undefined>(undefined);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   function handleEdit(event: EventWithAttendance) {
     setEditing(event);
@@ -142,7 +144,7 @@ export const SchedulePage: FC = () => {
                       event={event}
                       teamId={teamId}
                       canDelete={canManage}
-                      onDelete={deleteEvent}
+                      onDelete={canManage ? setDeleteConfirmId : undefined}
                       onEdit={canManage ? handleEdit : undefined}
                       onViewTournament={setTournament}
                       onViewSupplies={setSuppliesEvent}
@@ -165,7 +167,7 @@ export const SchedulePage: FC = () => {
                       event={event}
                       teamId={teamId}
                       canDelete={canManage}
-                      onDelete={deleteEvent}
+                      onDelete={canManage ? setDeleteConfirmId : undefined}
                       onEdit={canManage ? handleEdit : undefined}
                       onViewTournament={setTournament}
                       onViewSupplies={setSuppliesEvent}
@@ -177,6 +179,21 @@ export const SchedulePage: FC = () => {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        open={deleteConfirmId !== null}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={() => {
+          if (deleteConfirmId) {
+            deleteEvent(deleteConfirmId, {
+              onSuccess: () => setDeleteConfirmId(null),
+            });
+          }
+        }}
+        title="Delete Event?"
+        description="This will permanently delete the event and all attendance data."
+        isPending={isDeleting}
+      />
     </PageShell>
   );
 };

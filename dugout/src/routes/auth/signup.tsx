@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { signupSchema } from "@/lib/validationSchemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -60,21 +61,18 @@ function SignupPage() {
   const [passwordTouched, setPasswordTouched] = useState(false);
 
   function validate(): SignupErrors {
-    const errs: SignupErrors = {};
-    if (!name.trim()) {
-      errs.name = "Full name is required.";
+    const result = signupSchema.safeParse({ name, email, password });
+    if (!result.success) {
+      const fieldErrors: SignupErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (field === "name" || field === "email" || field === "password") {
+          fieldErrors[field] = issue.message;
+        }
+      });
+      return fieldErrors;
     }
-    if (!email.trim()) {
-      errs.email = "Email is required.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errs.email = "Enter a valid email address.";
-    }
-    if (!password) {
-      errs.password = "Password is required.";
-    } else if (password.length < 8) {
-      errs.password = "Password must be at least 8 characters.";
-    }
-    return errs;
+    return {};
   }
 
   async function handleSubmit(e: React.FormEvent) {

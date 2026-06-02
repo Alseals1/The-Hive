@@ -5,7 +5,8 @@ import { PageShell, PageHeader } from "@/components/shared/PageShell";
 import { TeamBottomNav } from "@/components/shared/BottomNav";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
-import { useTeam, useUpdateTeam } from "../hooks/useSettings";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
+import { useTeam, useUpdateTeam, useDeleteTeam, useLeaveTeam } from "../hooks/useSettings";
 
 const inputCls = "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
 const labelCls = "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
@@ -15,10 +16,13 @@ export const TeamSettingsPage: FC = () => {
   const { userRole } = useRouteContext({ from: "/teams/$teamId" });
   const { data: team, isLoading, error } = useTeam(teamId);
   const { mutate: update, isPending, error: updateError, isSuccess } = useUpdateTeam(teamId);
+  const { mutate: doDeleteTeam, isPending: isDeleting } = useDeleteTeam(teamId);
+  const { mutate: doLeaveTeam, isPending: isLeaving } = useLeaveTeam(teamId);
 
   const [name, setName] = useState("");
   const [season, setSeason] = useState("");
   const [sport, setSport] = useState("baseball");
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
     if (team) {
@@ -29,6 +33,8 @@ export const TeamSettingsPage: FC = () => {
   }, [team]);
 
   const canEdit = userRole === "admin";
+  const isAdmin = userRole === "admin";
+  const isDangerous = isDeleting || isLeaving;
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -133,9 +139,44 @@ export const TeamSettingsPage: FC = () => {
                 {isPending ? "Saving…" : "Save Changes"}
               </button>
             )}
+
+            {/* Danger Zone */}
+            <div className="mt-8 pt-8 border-t border-pitch-700">
+              <h3 className="font-display text-sm font-600 uppercase tracking-wider text-red-400 mb-4">
+                Danger Zone
+              </h3>
+              <button
+                type="button"
+                onClick={() => setDeleteConfirmId(isAdmin ? "delete-team" : "leave-team")}
+                className="w-full py-3 px-4 rounded-xl bg-red-600/10 border border-red-600 text-red-400 font-display font-600 uppercase tracking-wider text-sm hover:bg-red-600/20 transition-colors disabled:opacity-40"
+                disabled={isDangerous}
+              >
+                {isAdmin ? "Delete Team" : "Leave Team"}
+              </button>
+            </div>
           </form>
         )}
       </div>
+
+      <ConfirmDialog
+        open={deleteConfirmId !== null}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={() => {
+          if (deleteConfirmId === "delete-team") {
+            doDeleteTeam();
+          } else if (deleteConfirmId === "leave-team") {
+            doLeaveTeam();
+          }
+        }}
+        title={isAdmin ? "Delete Team?" : "Leave Team?"}
+        description={
+          isAdmin
+            ? "This will permanently delete the team and remove all members. This cannot be undone."
+            : "You will be removed from this team."
+        }
+        confirmLabel={isAdmin ? "Delete Team" : "Leave Team"}
+        isPending={isDangerous}
+      />
     </PageShell>
   );
 };

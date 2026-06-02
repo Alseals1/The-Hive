@@ -1,5 +1,7 @@
 import { useState } from "react";
 import type { FC } from "react";
+import { createTeamSchema } from "@/lib/validationSchemas";
+import { Input } from "@/components/ui/input";
 import { useCreateTeam } from "../hooks/useTeams";
 
 interface CreateTeamFormProps {
@@ -7,16 +9,40 @@ interface CreateTeamFormProps {
   onCancel: () => void;
 }
 
-const inputCls = "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
 const labelCls = "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
+
+type CreateTeamErrors = {
+  name?: string;
+};
 
 export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel }) => {
   const [name, setName] = useState("");
   const [season, setSeason] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<CreateTeamErrors>({});
   const { mutate, isPending, error } = useCreateTeam();
+
+  function validate(): CreateTeamErrors {
+    const result = createTeamSchema.safeParse({ name });
+    if (!result.success) {
+      const errs: CreateTeamErrors = {};
+      result.error.issues.forEach((issue) => {
+        if (issue.path[0] === "name") {
+          errs.name = issue.message;
+        }
+      });
+      return errs;
+    }
+    return {};
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      return;
+    }
+    setFieldErrors({});
     mutate(
       { name: name.trim(), season: season.trim() || null },
       { onSuccess: (team) => onSuccess(team.id) },
@@ -34,14 +60,16 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
           <label htmlFor="team-name" className={labelCls}>
             Team Name <span className="text-ember">*</span>
           </label>
-          <input
+          <Input
             id="team-name"
             type="text"
-            required
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (fieldErrors.name) setFieldErrors(prev => ({ ...prev, name: undefined }));
+            }}
             placeholder="Riverside Rockets"
-            className={inputCls}
+            error={fieldErrors.name}
           />
         </div>
 
@@ -58,7 +86,7 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
             value={season}
             onChange={(e) => setSeason(e.target.value)}
             placeholder="Spring 2026"
-            className={inputCls}
+            className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
           />
         </div>
 
@@ -78,7 +106,7 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
           </button>
           <button
             type="submit"
-            disabled={isPending || !name.trim()}
+            disabled={isPending}
             className="flex-1 py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-xs active:bg-ember-600 disabled:opacity-40"
           >
             {isPending ? "Creating…" : "Create Team"}

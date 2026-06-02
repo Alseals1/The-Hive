@@ -1,6 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { loginSchema } from "@/lib/validationSchemas";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -25,16 +26,18 @@ function LoginPage() {
   const [fieldErrors, setFieldErrors] = useState<LoginErrors>({});
 
   function validate(): LoginErrors {
-    const errs: LoginErrors = {};
-    if (!email.trim()) {
-      errs.email = "Email is required.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      errs.email = "Enter a valid email address.";
+    const result = loginSchema.safeParse({ email, password });
+    if (!result.success) {
+      const fieldErrors: LoginErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (field === "email" || field === "password") {
+          fieldErrors[field] = issue.message;
+        }
+      });
+      return fieldErrors;
     }
-    if (!password) {
-      errs.password = "Password is required.";
-    }
-    return errs;
+    return {};
   }
 
   async function handleSubmit(e: React.FormEvent) {

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import type { FC } from 'react';
 import { Plus } from 'lucide-react';
 import type { RosterMember, RosterSection } from '../types';
@@ -5,6 +6,7 @@ import { ROLE_PRIORITY, ROLE_LABELS } from '../types';
 import type { TeamRole } from '@/types';
 import type { ExpectedMember } from '@/features/teams/services/expectedMembers';
 import { useDeleteExpectedMember } from '@/features/teams/hooks/useExpectedMembers';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { RosterSectionHeader } from './RosterSectionHeader';
 import { RosterGrid } from './RosterGrid';
 import { ExpectedMemberRow } from './ExpectedMemberRow';
@@ -69,9 +71,10 @@ export const RosterList: FC<RosterListProps> = ({
   onAddExpected,
 }) => {
   const sections = groupAndSortMembers(members);
-  const { mutate: deleteExpected } = useDeleteExpectedMember(
+  const { mutate: deleteExpected, isPending: isDeleting } = useDeleteExpectedMember(
     teamId || members[0]?.team_id || ''
   );
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   return (
     <div className="pb-4">
@@ -95,7 +98,7 @@ export const RosterList: FC<RosterListProps> = ({
               <ExpectedMemberRow
                 key={member.id}
                 member={member}
-                onDelete={() => deleteExpected(member.id)}
+                onDelete={() => setDeleteConfirmId(member.id)}
                 canDelete={canInvite}
               />
             ))}
@@ -115,6 +118,21 @@ export const RosterList: FC<RosterListProps> = ({
           </span>
         </button>
       )}
+
+      <ConfirmDialog
+        open={deleteConfirmId !== null}
+        onClose={() => setDeleteConfirmId(null)}
+        onConfirm={() => {
+          if (deleteConfirmId) {
+            deleteExpected(deleteConfirmId, {
+              onSuccess: () => setDeleteConfirmId(null),
+            });
+          }
+        }}
+        title="Remove Member?"
+        description="This expected member will be removed from the roster."
+        isPending={isDeleting}
+      />
     </div>
   );
 };

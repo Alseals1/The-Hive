@@ -1,6 +1,9 @@
 import { useState } from "react";
 import type { FC } from "react";
 import { X, Pin } from "lucide-react";
+import { createAnnouncementSchema } from "@/lib/validationSchemas";
+import { FormError } from "@/components/shared/FormError";
+import { Input } from "@/components/ui/input";
 import type { AnnouncementWithReactions } from "../types";
 import {
   useCreateAnnouncement,
@@ -13,10 +16,13 @@ interface CreateAnnouncementSheetProps {
   existing?: AnnouncementWithReactions;
 }
 
-const inputCls =
-  "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
 const labelCls =
   "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
+
+type CreateAnnouncementErrors = {
+  title?: string;
+  body?: string;
+};
 
 export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
   teamId,
@@ -28,6 +34,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
   const [title, setTitle] = useState(existing?.title ?? "");
   const [body, setBody] = useState(existing?.body ?? "");
   const [pinned, setPinned] = useState(existing?.pinned ?? false);
+  const [fieldErrors, setFieldErrors] = useState<CreateAnnouncementErrors>({});
 
   const { mutate: create, isPending: isCreating, error: createError } =
     useCreateAnnouncement(teamId);
@@ -37,9 +44,29 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
   const isPending = isCreating || isUpdating;
   const error = createError ?? updateError;
 
+  function validate(): CreateAnnouncementErrors {
+    const result = createAnnouncementSchema.safeParse({ title, body });
+    if (!result.success) {
+      const errs: CreateAnnouncementErrors = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0];
+        if (field === "title" || field === "body") {
+          errs[field] = issue.message;
+        }
+      });
+      return errs;
+    }
+    return {};
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim() || !body.trim()) return;
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      return;
+    }
+    setFieldErrors({});
 
     if (isEditing && existing) {
       update(
@@ -84,14 +111,16 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
             <label htmlFor="ann-title" className={labelCls}>
               Title <span className="text-ember">*</span>
             </label>
-            <input
+            <Input
               id="ann-title"
               type="text"
-              required
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e) => {
+                setTitle(e.target.value);
+                if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: undefined }));
+              }}
               placeholder="Practice rescheduled"
-              className={inputCls}
+              error={fieldErrors.title}
             />
           </div>
 
@@ -102,13 +131,16 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
             </label>
             <textarea
               id="ann-body"
-              required
               value={body}
-              onChange={(e) => setBody(e.target.value)}
+              onChange={(e) => {
+                setBody(e.target.value);
+                if (fieldErrors.body) setFieldErrors(prev => ({ ...prev, body: undefined }));
+              }}
               rows={5}
               placeholder="Write your announcement here…"
-              className={`${inputCls} resize-none`}
+              className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors resize-none"
             />
+            <FormError message={fieldErrors.body} />
           </div>
 
           {/* Pin toggle */}
@@ -145,7 +177,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
 
           <button
             type="submit"
-            disabled={isPending || !title.trim() || !body.trim()}
+            disabled={isPending}
             className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm disabled:opacity-40"
           >
             {isPending
