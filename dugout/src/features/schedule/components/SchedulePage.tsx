@@ -11,6 +11,7 @@ import { useTeamEvents, useDeleteEvent } from "../hooks/useEvents";
 import { EventCard } from "./EventCard";
 import { CreateEventSheet } from "./CreateEventSheet";
 import { TournamentSheet } from "./TournamentSheet";
+import { SupplyListSheet } from "./SupplyListSheet";
 import type { EventWithAttendance } from "../types";
 
 export const SchedulePage: FC = () => {
@@ -21,6 +22,7 @@ export const SchedulePage: FC = () => {
   const [showCreate, setShowCreate] = useState(false);
   const [editing, setEditing] = useState<EventWithAttendance | undefined>(undefined);
   const [tournament, setTournament] = useState<EventWithAttendance | undefined>(undefined);
+  const [suppliesEvent, setSuppliesEvent] = useState<EventWithAttendance | undefined>(undefined);
 
   function handleEdit(event: EventWithAttendance) {
     setEditing(event);
@@ -80,6 +82,15 @@ export const SchedulePage: FC = () => {
         />
       )}
 
+      {suppliesEvent && (
+        <SupplyListSheet
+          event={suppliesEvent}
+          teamId={teamId}
+          userRole={userRole}
+          onClose={() => setSuppliesEvent(undefined)}
+        />
+      )}
+
       <div className="px-4 py-6">
         {isLoading && (
           <div className="flex items-center justify-center py-16">
@@ -134,6 +145,7 @@ export const SchedulePage: FC = () => {
                       onDelete={deleteEvent}
                       onEdit={canManage ? handleEdit : undefined}
                       onViewTournament={setTournament}
+                      onViewSupplies={setSuppliesEvent}
                     />
                   ))}
                 </div>
@@ -156,6 +168,7 @@ export const SchedulePage: FC = () => {
                       onDelete={deleteEvent}
                       onEdit={canManage ? handleEdit : undefined}
                       onViewTournament={setTournament}
+                      onViewSupplies={setSuppliesEvent}
                     />
                   ))}
                 </div>

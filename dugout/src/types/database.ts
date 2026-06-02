@@ -235,6 +235,94 @@ export type Database = {
           },
         ]
       }
+      event_supply_claims: {
+        Row: {
+          created_at: string
+          id: string
+          item_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          item_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          item_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_supply_claims_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: true
+            referencedRelation: "event_supply_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_supply_claims_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_supply_items: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          event_id: string
+          id: string
+          label: string
+          sort_order: number
+          team_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          event_id: string
+          id?: string
+          label: string
+          sort_order?: number
+          team_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          event_id?: string
+          id?: string
+          label?: string
+          sort_order?: number
+          team_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_supply_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_supply_items_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_supply_items_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount_cents: number
