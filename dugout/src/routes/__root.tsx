@@ -6,7 +6,8 @@ export const Route = createRootRoute({
     const publicPaths = ["/auth/login", "/auth/signup"];
     const isPublic =
       publicPaths.some((p) => location.pathname.startsWith(p)) ||
-      location.pathname.startsWith("/invite/");
+      location.pathname.startsWith("/invite/") ||
+      location.pathname.startsWith("/join/");
 
     if (!isPublic) {
       const {

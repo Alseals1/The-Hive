@@ -55,10 +55,14 @@ function LoginPage() {
       setError(error.message);
     } else {
       const pendingToken = sessionStorage.getItem("invite_token");
+      const pendingJoinCode = sessionStorage.getItem("join_code");
       if (pendingToken) {
         sessionStorage.removeItem("invite_token");
         sessionStorage.removeItem("invite_role");
         await navigate({ to: "/invite/$token", params: { token: pendingToken } });
+      } else if (pendingJoinCode) {
+        sessionStorage.removeItem("join_code");
+        await navigate({ to: "/join/$code", params: { code: pendingJoinCode } });
       } else {
         await navigate({ to: "/teams" });
       }

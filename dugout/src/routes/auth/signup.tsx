@@ -46,6 +46,7 @@ function SignupPage() {
 
   const pendingToken = sessionStorage.getItem("invite_token");
   const pendingRole  = sessionStorage.getItem("invite_role");
+  const pendingJoinCode = sessionStorage.getItem("join_code");
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -111,6 +112,9 @@ function SignupPage() {
       sessionStorage.removeItem("invite_token");
       sessionStorage.removeItem("invite_role");
       await navigate({ to: "/invite/$token", params: { token: pendingToken } });
+    } else if (pendingJoinCode) {
+      sessionStorage.removeItem("join_code");
+      await navigate({ to: "/join/$code", params: { code: pendingJoinCode } });
     } else {
       await navigate({ to: "/teams" });
     }
@@ -139,7 +143,7 @@ function SignupPage() {
           <div className="grid grid-cols-2 gap-2">
             {ACCOUNT_TYPES.map((opt) => {
               const isSelected = accountType === opt.value;
-              const locked = !!pendingToken;
+              const locked = !!pendingToken || !!pendingJoinCode;
               return (
                 <button
                   key={opt.value}
@@ -166,7 +170,7 @@ function SignupPage() {
               );
             })}
           </div>
-          {pendingToken && (
+          {(pendingToken || pendingJoinCode) && (
             <p className="text-[11px] text-pitch-500 font-body mt-1">
               Role set by your invite — cannot be changed.
             </p>

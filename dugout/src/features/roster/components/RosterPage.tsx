@@ -8,6 +8,8 @@ import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { ErrorMessage } from '@/components/shared/ErrorMessage';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { InviteSheet } from '@/features/teams/components/InviteSheet';
+import { AddExpectedMemberSheet } from '@/features/teams/components/AddExpectedMemberSheet';
+import { useExpectedMembers } from '@/features/teams/hooks/useExpectedMembers';
 import { useRoster } from '../hooks/useRoster';
 import { RosterList } from './RosterList';
 
@@ -15,7 +17,9 @@ export const RosterPage: FC = () => {
   const { teamId } = useParams({ from: '/teams/$teamId/roster' });
   const { userRole } = useRouteContext({ from: '/teams/$teamId' });
   const { data: members, isLoading, error, refetch } = useRoster(teamId);
+  const { data: expectedMembers } = useExpectedMembers(teamId);
   const [showInvite, setShowInvite] = useState(false);
+  const [showAddExpected, setShowAddExpected] = useState(false);
 
   const canInvite = userRole === 'admin' || userRole === 'coach';
 
@@ -46,6 +50,13 @@ export const RosterPage: FC = () => {
         <InviteSheet teamId={teamId} onClose={() => setShowInvite(false)} />
       )}
 
+      {showAddExpected && (
+        <AddExpectedMemberSheet
+          teamId={teamId}
+          onClose={() => setShowAddExpected(false)}
+        />
+      )}
+
       {isLoading && (
         <div className="flex items-center justify-center py-12">
           <LoadingSpinner size="lg" />
@@ -68,7 +79,13 @@ export const RosterPage: FC = () => {
       )}
 
       {!isLoading && !error && members && members.length > 0 && (
-        <RosterList members={members} />
+        <RosterList
+          members={members}
+          teamId={teamId}
+          expectedMembers={expectedMembers}
+          canInvite={canInvite}
+          onAddExpected={() => setShowAddExpected(true)}
+        />
       )}
     </PageShell>
   );

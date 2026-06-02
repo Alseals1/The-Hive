@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TeamsIndexRouteImport } from './routes/teams/index'
 import { Route as TeamsTeamIdRouteImport } from './routes/teams/$teamId'
+import { Route as JoinCodeRouteImport } from './routes/join/$code'
 import { Route as InviteTokenRouteImport } from './routes/invite/$token'
 import { Route as AuthSignupRouteImport } from './routes/auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
@@ -34,6 +35,11 @@ const TeamsIndexRoute = TeamsIndexRouteImport.update({
 const TeamsTeamIdRoute = TeamsTeamIdRouteImport.update({
   id: '/teams/$teamId',
   path: '/teams/$teamId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinCodeRoute = JoinCodeRouteImport.update({
+  id: '/join/$code',
+  path: '/join/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InviteTokenRoute = InviteTokenRouteImport.update({
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/join/$code': typeof JoinCodeRoute
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/teams/': typeof TeamsIndexRoute
   '/teams/$teamId/announcements': typeof TeamsTeamIdAnnouncementsRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/join/$code': typeof JoinCodeRoute
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/teams': typeof TeamsIndexRoute
   '/teams/$teamId/announcements': typeof TeamsTeamIdAnnouncementsRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/signup': typeof AuthSignupRoute
   '/invite/$token': typeof InviteTokenRoute
+  '/join/$code': typeof JoinCodeRoute
   '/teams/$teamId': typeof TeamsTeamIdRouteWithChildren
   '/teams/': typeof TeamsIndexRoute
   '/teams/$teamId/announcements': typeof TeamsTeamIdAnnouncementsRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/invite/$token'
+    | '/join/$code'
     | '/teams/$teamId'
     | '/teams/'
     | '/teams/$teamId/announcements'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/invite/$token'
+    | '/join/$code'
     | '/teams/$teamId'
     | '/teams'
     | '/teams/$teamId/announcements'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/signup'
     | '/invite/$token'
+    | '/join/$code'
     | '/teams/$teamId'
     | '/teams/'
     | '/teams/$teamId/announcements'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthSignupRoute: typeof AuthSignupRoute
   InviteTokenRoute: typeof InviteTokenRoute
+  JoinCodeRoute: typeof JoinCodeRoute
   TeamsTeamIdRoute: typeof TeamsTeamIdRouteWithChildren
   TeamsIndexRoute: typeof TeamsIndexRoute
 }
@@ -190,6 +203,13 @@ declare module '@tanstack/react-router' {
       path: '/teams/$teamId'
       fullPath: '/teams/$teamId'
       preLoaderRoute: typeof TeamsTeamIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join/$code': {
+      id: '/join/$code'
+      path: '/join/$code'
+      fullPath: '/join/$code'
+      preLoaderRoute: typeof JoinCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/invite/$token': {
@@ -276,6 +296,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthSignupRoute: AuthSignupRoute,
   InviteTokenRoute: InviteTokenRoute,
+  JoinCodeRoute: JoinCodeRoute,
   TeamsTeamIdRoute: TeamsTeamIdRouteWithChildren,
   TeamsIndexRoute: TeamsIndexRoute,
 }
