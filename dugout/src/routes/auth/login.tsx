@@ -1,15 +1,20 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/auth/login")({
   component: LoginPage,
 });
 
-const inputCls =
-  "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
 const labelCls =
   "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
+
+type LoginErrors = {
+  email?: string;
+  password?: string;
+};
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -17,9 +22,30 @@ function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<LoginErrors>({});
+
+  function validate(): LoginErrors {
+    const errs: LoginErrors = {};
+    if (!email.trim()) {
+      errs.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errs.email = "Enter a valid email address.";
+    }
+    if (!password) {
+      errs.password = "Password is required.";
+    }
+    return errs;
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      return;
+    }
+
+    setFieldErrors({});
     setError(null);
     setLoading(true);
 
@@ -60,15 +86,17 @@ function LoginPage() {
           <label htmlFor="email" className={labelCls}>
             Email
           </label>
-          <input
+          <Input
             id="email"
             type="email"
-            required
             autoComplete="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={inputCls}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: undefined }));
+            }}
             placeholder="you@example.com"
+            error={fieldErrors.email}
           />
         </div>
 
@@ -76,15 +104,17 @@ function LoginPage() {
           <label htmlFor="password" className={labelCls}>
             Password
           </label>
-          <input
+          <Input
             id="password"
             type="password"
-            required
             autoComplete="current-password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={inputCls}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: undefined }));
+            }}
             placeholder="••••••••"
+            error={fieldErrors.password}
           />
         </div>
 
@@ -94,13 +124,9 @@ function LoginPage() {
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-ember text-white font-display font-700 uppercase tracking-wider py-3.5 rounded-xl text-sm active:bg-ember-600 disabled:opacity-40 transition-colors mt-2"
-        >
+        <Button loading={loading} type="submit" className="mt-2">
           {loading ? "Signing in…" : "Sign In"}
-        </button>
+        </Button>
       </form>
 
       <p className="mt-8 text-center text-sm text-pitch-400">

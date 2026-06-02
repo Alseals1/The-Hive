@@ -1,13 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export const Route = createFileRoute("/auth/signup")({
   component: SignupPage,
 });
 
-const inputCls =
-  "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors";
 const labelCls =
   "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
 
@@ -35,6 +35,12 @@ function roleToAccountType(role: string | null): AccountType {
   return "member";
 }
 
+type SignupErrors = {
+  name?: string;
+  email?: string;
+  password?: string;
+};
+
 function SignupPage() {
   const navigate = useNavigate();
 
@@ -49,9 +55,36 @@ function SignupPage() {
   );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<SignupErrors>({});
+  const [passwordTouched, setPasswordTouched] = useState(false);
+
+  function validate(): SignupErrors {
+    const errs: SignupErrors = {};
+    if (!name.trim()) {
+      errs.name = "Full name is required.";
+    }
+    if (!email.trim()) {
+      errs.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errs.email = "Enter a valid email address.";
+    }
+    if (!password) {
+      errs.password = "Password is required.";
+    } else if (password.length < 8) {
+      errs.password = "Password must be at least 8 characters.";
+    }
+    return errs;
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      return;
+    }
+
+    setFieldErrors({});
     setError(null);
     setLoading(true);
 
@@ -144,15 +177,17 @@ function SignupPage() {
           <label htmlFor="name" className={labelCls}>
             Full Name
           </label>
-          <input
+          <Input
             id="name"
             type="text"
-            required
             autoComplete="name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
-            className={inputCls}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (fieldErrors.name) setFieldErrors(prev => ({ ...prev, name: undefined }));
+            }}
             placeholder="Alex Johnson"
+            error={fieldErrors.name}
           />
         </div>
 
@@ -160,15 +195,17 @@ function SignupPage() {
           <label htmlFor="email" className={labelCls}>
             Email
           </label>
-          <input
+          <Input
             id="email"
             type="email"
-            required
             autoComplete="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={inputCls}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (fieldErrors.email) setFieldErrors(prev => ({ ...prev, email: undefined }));
+            }}
             placeholder="you@example.com"
+            error={fieldErrors.email}
           />
         </div>
 
@@ -176,16 +213,22 @@ function SignupPage() {
           <label htmlFor="password" className={labelCls}>
             Password
           </label>
-          <input
+          <Input
             id="password"
             type="password"
-            required
             autoComplete="new-password"
-            minLength={8}
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={inputCls}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: undefined }));
+            }}
+            onBlur={() => setPasswordTouched(true)}
             placeholder="Minimum 8 characters"
+            error={
+              passwordTouched && password && password.length < 8
+                ? "Password must be at least 8 characters."
+                : fieldErrors.password
+            }
           />
         </div>
 
@@ -195,13 +238,9 @@ function SignupPage() {
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-ember text-white font-display font-700 uppercase tracking-wider py-3.5 rounded-xl text-sm active:bg-ember-600 disabled:opacity-40 transition-colors mt-2"
-        >
+        <Button loading={loading} type="submit" className="mt-2">
           {loading ? "Creating account…" : "Create Account"}
-        </button>
+        </Button>
       </form>
 
       <p className="mt-8 text-center text-sm text-pitch-400">
