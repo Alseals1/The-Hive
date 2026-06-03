@@ -10,6 +10,8 @@ import type { SubEvent } from "../types";
 interface CreateSubEventSheetProps {
   teamId: string;
   parentEventId: string;
+  parentStartsAt: string;
+  parentEndsAt: string | null;
   onClose: () => void;
   existing?: SubEvent;
 }
@@ -32,13 +34,17 @@ function toLocalDatetimeValue(iso: string | null | undefined): string {
 export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
   teamId,
   parentEventId,
+  parentStartsAt,
+  parentEndsAt,
   onClose,
   existing,
 }) => {
   const isEditing = !!existing;
 
   const [title, setTitle] = useState(existing?.title ?? "");
-  const [startsAt, setStartsAt] = useState(toLocalDatetimeValue(existing?.starts_at));
+  const [startsAt, setStartsAt] = useState(
+    toLocalDatetimeValue(existing?.starts_at ?? parentStartsAt),
+  );
   const [endsAt, setEndsAt] = useState(toLocalDatetimeValue(existing?.ends_at));
   const [fieldErrors, setFieldErrors] = useState<CreateSubEventErrors>({});
 
@@ -49,6 +55,11 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
 
   const isPending = isCreating || isUpdating;
   const error = createError ?? updateError;
+
+  const isOutsideWindow = startsAt
+    ? new Date(startsAt).getTime() < new Date(parentStartsAt).getTime() ||
+      (parentEndsAt !== null && new Date(startsAt).getTime() > new Date(parentEndsAt).getTime())
+    : false;
 
   function validate(): CreateSubEventErrors {
     const result = createSubEventSchema.safeParse({ title, startsAt });
@@ -139,6 +150,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
               }}
               placeholder="Game 1 vs Eagles"
               error={fieldErrors.title}
+              maxLength={100}
               autoFocus
             />
           </div>
@@ -176,6 +188,13 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
               />
             </div>
           </div>
+
+          {/* Soft warning when time falls outside parent event window */}
+          {isOutsideWindow && (
+            <p className="text-xs font-body text-amber-400 bg-amber-400/10 border border-amber-400/20 rounded-xl px-4 py-2.5">
+              This time is outside the tournament window — double-check before saving.
+            </p>
+          )}
 
           {error && (
             <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
