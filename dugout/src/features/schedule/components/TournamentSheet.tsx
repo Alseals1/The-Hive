@@ -127,7 +127,7 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
                 <p className="text-sm text-pitch-400 font-body">No itinerary yet.</p>
                 {canManage && (
                   <button
-                    onClick={() => setShowAddSub(true)}
+                    onClick={() => { setEditingSubEvent(undefined); setShowAddSub(true); }}
                     className="mt-3 text-xs font-display font-600 uppercase tracking-wider text-ember"
                   >
                     + Add first item
@@ -191,8 +191,8 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
             )}
           </div>
 
-          {/* Bottom CTA */}
-          {canManage && (
+          {/* Bottom CTA — only when itinerary already has items, to avoid duplicate empty-state CTAs */}
+          {canManage && !isLoading && subEvents && subEvents.length > 0 && (
             <div className="px-4 pb-8 pt-2 flex-shrink-0 border-t border-pitch-700">
               <button
                 onClick={() => { setEditingSubEvent(undefined); setShowAddSub(true); }}
@@ -209,6 +209,8 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
         <CreateSubEventSheet
           teamId={teamId}
           parentEventId={tournament.id}
+          parentStartsAt={tournament.starts_at}
+          parentEndsAt={tournament.ends_at}
           onClose={handleCloseSubSheet}
           existing={editingSubEvent}
         />

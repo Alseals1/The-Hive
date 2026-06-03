@@ -89,6 +89,7 @@ export const TeamSettingsPage: FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Riverside Rockets"
+                maxLength={60}
                 className={inputCls}
               />
             </div>
@@ -102,6 +103,7 @@ export const TeamSettingsPage: FC = () => {
                 value={sport}
                 onChange={(e) => setSport(e.target.value)}
                 placeholder="Baseball"
+                maxLength={50}
                 className={inputCls}
               />
             </div>
@@ -118,6 +120,7 @@ export const TeamSettingsPage: FC = () => {
                 value={season}
                 onChange={(e) => setSeason(e.target.value)}
                 placeholder="Spring 2026"
+                maxLength={50}
                 className={inputCls}
               />
             </div>

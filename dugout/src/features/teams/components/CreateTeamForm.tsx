@@ -71,6 +71,7 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
             }}
             placeholder="Riverside Rockets"
             error={fieldErrors.name}
+            maxLength={60}
           />
         </div>
 
@@ -87,6 +88,7 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
             value={season}
             onChange={(e) => setSeason(e.target.value)}
             placeholder="Spring 2026"
+            maxLength={50}
             className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
           />
         </div>
