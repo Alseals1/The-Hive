@@ -114,6 +114,7 @@ export const CreatePaymentSheet: FC<CreatePaymentSheetProps> = ({
               }}
               placeholder="Season Dues, Tournament Fee…"
               error={fieldErrors.description}
+              maxLength={100}
             />
           </div>
 

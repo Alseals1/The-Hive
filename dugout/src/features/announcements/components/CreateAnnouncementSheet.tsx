@@ -122,6 +122,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
               }}
               placeholder="Practice rescheduled"
               error={fieldErrors.title}
+              maxLength={100}
             />
           </div>
 
@@ -139,9 +140,21 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
                 if (fieldErrors.body) setFieldErrors(prev => ({ ...prev, body: undefined }));
               }}
               rows={5}
+              maxLength={1000}
               placeholder="Write your announcement here…"
               className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors resize-none"
             />
+            <p
+              className={`text-right text-xs font-body mt-1 ${
+                body.length >= 1000
+                  ? "text-ember"
+                  : body.length >= 800
+                    ? "text-amber-400"
+                    : "text-pitch-400"
+              }`}
+            >
+              {body.length}/1000
+            </p>
             <FormError message={fieldErrors.body} />
           </div>
 

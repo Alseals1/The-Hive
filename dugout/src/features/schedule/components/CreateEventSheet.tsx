@@ -160,6 +160,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
               }}
               placeholder="vs. Eagles"
               error={fieldErrors.title}
+              maxLength={100}
             />
           </div>
 
@@ -210,6 +211,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Riverside Park Field 3"
+              maxLength={100}
               className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
             />
           </div>
@@ -225,9 +227,21 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
+              maxLength={300}
               placeholder="Bring batting helmets…"
               className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors resize-none"
             />
+            <p
+              className={`text-right text-xs font-body mt-1 ${
+                description.length >= 300
+                  ? "text-ember"
+                  : description.length >= 240
+                    ? "text-amber-400"
+                    : "text-pitch-500"
+              }`}
+            >
+              {description.length}/300
+            </p>
           </div>
 
           {error && (
