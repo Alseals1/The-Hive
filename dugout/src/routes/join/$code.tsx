@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { XCircle, LogIn, UserPlus } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import {
   useTeamByJoinCode,
   useJoinTeamByCode,
@@ -35,6 +36,8 @@ function JoinTeamPage() {
   }
 
   return (
+    <>
+    <Helmet><title>Join Team | Dugout</title></Helmet>
     <PageShell header={<PageHeader title="Join Team" />}>
       <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
         {isLoading && <LoadingSpinner size="lg" />}
@@ -119,5 +122,6 @@ function JoinTeamPage() {
         )}
       </div>
     </PageShell>
+    </>
   );
 }

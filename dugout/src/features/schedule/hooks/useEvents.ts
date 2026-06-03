@@ -8,6 +8,7 @@ import {
   createSubEvent,
 } from "../services/events";
 import type { EventInsert, EventPatch, SubEventInsert } from "../types";
+import { toast } from "sonner";
 
 export function useTeamEvents(teamId: string) {
   return useQuery({
@@ -25,6 +26,10 @@ export function useCreateEvent(teamId: string) {
     mutationFn: (input: EventInsert) => createEvent(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events", teamId] });
+      toast.success("Event created");
+    },
+    onError: () => {
+      toast.error("Failed to create event");
     },
   });
 }
@@ -44,6 +49,10 @@ export function useCreateSubEvent(teamId: string, parentEventId: string) {
     mutationFn: (input: SubEventInsert) => createSubEvent(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subevents", parentEventId] });
+      toast.success("Event created");
+    },
+    onError: () => {
+      toast.error("Failed to create event");
     },
   });
 }
@@ -55,6 +64,10 @@ export function useDeleteSubEvent(teamId: string, parentEventId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["subevents", parentEventId] });
       queryClient.invalidateQueries({ queryKey: ["events", teamId] });
+      toast.success("Event deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete event");
     },
   });
 }
@@ -67,6 +80,10 @@ export function useUpdateEvent(teamId: string) {
       updateEvent(eventId, patch),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events", teamId] });
+      toast.success("Event updated");
+    },
+    onError: () => {
+      toast.error("Failed to update event");
     },
   });
 }
@@ -78,6 +95,10 @@ export function useDeleteEvent(teamId: string) {
     mutationFn: (eventId: string) => deleteEvent(eventId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["events", teamId] });
+      toast.success("Event deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete event");
     },
   });
 }

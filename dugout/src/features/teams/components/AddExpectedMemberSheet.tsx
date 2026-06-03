@@ -67,6 +67,7 @@ export const AddExpectedMemberSheet: FC<AddExpectedMemberSheetProps> = ({
             <Input
               id="name"
               type="text"
+              aria-required="true"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Parent or player name"

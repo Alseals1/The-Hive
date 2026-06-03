@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { XCircle, LogIn, UserPlus } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import { useInviteByToken, useAcceptInvite } from "@/features/teams/hooks/useInvites";
 import { useUser } from "@/hooks/useAuth";
 import { PageShell, PageHeader } from "@/components/shared/PageShell";
@@ -9,11 +10,6 @@ export const Route = createFileRoute("/invite/$token")({
   component: InviteAcceptPage,
 });
 
-function roleToAccountType(role: string): "organizer" | "member" {
-  return role === "coach" || role === "admin" || role === "manager"
-    ? "organizer"
-    : "member";
-}
 
 function InviteAcceptPage() {
   const { token } = Route.useParams();
@@ -47,6 +43,8 @@ function InviteAcceptPage() {
   }
 
   return (
+    <>
+    <Helmet><title>Join Team | Dugout</title></Helmet>
     <PageShell header={<PageHeader title="Join Team" />}>
       <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
         {isLoading && <LoadingSpinner size="lg" />}
@@ -137,5 +135,6 @@ function InviteAcceptPage() {
         )}
       </div>
     </PageShell>
+    </>
   );
 }

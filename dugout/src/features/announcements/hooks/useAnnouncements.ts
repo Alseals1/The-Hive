@@ -7,6 +7,7 @@ import {
   deleteAnnouncement,
   toggleReaction,
 } from "../services/announcements";
+import { toast } from "sonner";
 
 export function useTeamAnnouncements(teamId: string) {
   return useQuery({
@@ -23,6 +24,10 @@ export function useCreateAnnouncement(teamId: string) {
     mutationFn: (input: AnnouncementInsert) => createAnnouncement(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["announcements", teamId] });
+      toast.success("Announcement posted");
+    },
+    onError: () => {
+      toast.error("Failed to post announcement");
     },
   });
 }
@@ -34,6 +39,10 @@ export function useUpdateAnnouncement(teamId: string) {
       updateAnnouncement(id, patch),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["announcements", teamId] });
+      toast.success("Announcement updated");
+    },
+    onError: () => {
+      toast.error("Failed to update announcement");
     },
   });
 }
@@ -44,6 +53,10 @@ export function useDeleteAnnouncement(teamId: string) {
     mutationFn: (id: string) => deleteAnnouncement(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["announcements", teamId] });
+      toast.success("Announcement deleted");
+    },
+    onError: () => {
+      toast.error("Failed to delete announcement");
     },
   });
 }

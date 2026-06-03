@@ -152,6 +152,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
             <Input
               id="event-title"
               type="text"
+              aria-required="true"
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
@@ -171,6 +172,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
               <input
                 id="event-starts"
                 type="datetime-local"
+                aria-required="true"
                 value={startsAt}
                 onChange={(e) => {
                   setStartsAt(e.target.value);

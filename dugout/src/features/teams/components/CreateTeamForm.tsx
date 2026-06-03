@@ -63,6 +63,7 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
           <Input
             id="team-name"
             type="text"
+            aria-required="true"
             value={name}
             onChange={(e) => {
               setName(e.target.value);

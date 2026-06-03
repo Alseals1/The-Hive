@@ -131,6 +131,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
             <Input
               id="sub-title"
               type="text"
+              aria-required="true"
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
@@ -150,6 +151,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
               <input
                 id="sub-starts"
                 type="datetime-local"
+                aria-required="true"
                 value={startsAt}
                 onChange={(e) => {
                   setStartsAt(e.target.value);

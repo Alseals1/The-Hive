@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FC } from "react";
 import { PenLine, Megaphone } from "lucide-react";
 import { useParams, useRouteContext } from "@tanstack/react-router";
+import { Helmet } from "react-helmet-async";
 import { PageShell, PageHeader } from "@/components/shared/PageShell";
 import { TeamBottomNav } from "@/components/shared/BottomNav";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
@@ -39,6 +40,8 @@ export const AnnouncementsPage: FC = () => {
   }
 
   return (
+    <>
+    <Helmet><title>Announcements | Dugout</title></Helmet>
     <PageShell
       header={
         <PageHeader
@@ -134,5 +137,6 @@ export const AnnouncementsPage: FC = () => {
         isPending={isDeleting}
       />
     </PageShell>
+    </>
   );
 };

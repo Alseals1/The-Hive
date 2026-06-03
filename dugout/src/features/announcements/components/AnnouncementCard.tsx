@@ -87,6 +87,13 @@ export const AnnouncementCard: FC<AnnouncementCardProps> = memo(
                 type="button"
                 disabled={isPending}
                 onClick={() => handleReaction(opt.emoji)}
+                aria-label={
+                  reacted
+                    ? `Remove ${opt.label} reaction`
+                    : count > 0
+                      ? `React with ${opt.label} — ${count} ${count === 1 ? "reaction" : "reactions"}`
+                      : `React with ${opt.label}`
+                }
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-display font-600 transition-colors disabled:opacity-40 ${
                   reacted
                     ? "border-ember bg-ember-muted text-pitch-50"

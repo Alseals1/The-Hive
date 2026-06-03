@@ -24,7 +24,7 @@ export const PageShell: FC<PageShellProps> = ({
           {header}
         </header>
       )}
-      <main className={`flex-1 ${withNav ? "pb-20" : ""} ${className}`}>
+      <main id="main-content" className={`flex-1 ${withNav ? "pb-20" : ""} ${className}`}>
         {children}
       </main>
       {footer}

@@ -2,6 +2,7 @@ import type { FC } from 'react';
 import { useState } from 'react';
 import { useParams, useRouteContext } from '@tanstack/react-router';
 import { UserPlus, Users } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 import { PageShell, PageHeader } from '@/components/shared/PageShell';
 import { TeamBottomNav } from '@/components/shared/BottomNav';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -24,6 +25,8 @@ export const RosterPage: FC = () => {
   const canInvite = userRole === 'admin' || userRole === 'coach';
 
   return (
+    <>
+    <Helmet><title>Roster | Dugout</title></Helmet>
     <PageShell
       header={
         <PageHeader
@@ -88,5 +91,6 @@ export const RosterPage: FC = () => {
         />
       )}
     </PageShell>
+    </>
   );
 };

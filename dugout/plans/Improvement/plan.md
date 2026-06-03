@@ -1,7 +1,7 @@
 The Hive — Full Fix Plan & Task List
 Issues are grouped into logical development workstreams so a developer can tackle them feature-area by feature-area rather than jumping around. Each phase is ordered by impact and risk.
 
-Phase 1 — Critical UX Blockers
+Phase 1 — Critical UX Blockers ✓ COMPLETE
 These must ship before any public or beta release. They represent broken core interactions.
 
 🔴 PHASE 1A — Form Validation
@@ -19,7 +19,7 @@ Plan:
 Build a single reusable <ConfirmDialog> modal component ("Are you sure?")
 Wrap every Delete action across the app in this dialog
 
-Phase 2 — High Priority Fixes
+Phase 2 — High Priority Fixes ✓ COMPLETE
 Broken UX, accessibility failures, and missing feedback.
 
 🟠 PHASE 2A — Toast / Feedback System
