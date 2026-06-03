@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FC } from "react";
 import { CalendarPlus, Calendar } from "lucide-react";
 import { useParams, useRouteContext } from "@tanstack/react-router";
+import { Helmet } from "react-helmet-async";
 import { PageShell, PageHeader } from "@/components/shared/PageShell";
 import { TeamBottomNav } from "@/components/shared/BottomNav";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
@@ -46,6 +47,8 @@ export const SchedulePage: FC = () => {
   const past = (events ?? []).filter((e) => new Date(e.starts_at) < now);
 
   return (
+    <>
+    <Helmet><title>Schedule | Dugout</title></Helmet>
     <PageShell
       header={
         <PageHeader
@@ -195,5 +198,6 @@ export const SchedulePage: FC = () => {
         isPending={isDeleting}
       />
     </PageShell>
+    </>
   );
 };

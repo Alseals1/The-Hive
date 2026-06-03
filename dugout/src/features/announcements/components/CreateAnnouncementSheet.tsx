@@ -114,6 +114,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
             <Input
               id="ann-title"
               type="text"
+              aria-required="true"
               value={title}
               onChange={(e) => {
                 setTitle(e.target.value);
@@ -131,6 +132,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
             </label>
             <textarea
               id="ann-body"
+              aria-required="true"
               value={body}
               onChange={(e) => {
                 setBody(e.target.value);

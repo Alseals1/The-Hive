@@ -7,6 +7,7 @@ import {
   unclaimSupplyItem,
 } from "../services/supplyItems";
 import type { SupplyItemInsert } from "../types/supplyItems";
+import { toast } from "sonner";
 
 export function useSupplyItems(eventId: string) {
   return useQuery({
@@ -23,6 +24,10 @@ export function useAddSupplyItem(eventId: string) {
     mutationFn: (input: SupplyItemInsert) => addSupplyItem(input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["supply-items", eventId] });
+      toast.success("Supply item added");
+    },
+    onError: () => {
+      toast.error("Failed to add supply item");
     },
   });
 }
@@ -33,6 +38,10 @@ export function useDeleteSupplyItem(eventId: string) {
     mutationFn: (itemId: string) => deleteSupplyItem(itemId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["supply-items", eventId] });
+      toast.success("Supply item removed");
+    },
+    onError: () => {
+      toast.error("Failed to remove supply item");
     },
   });
 }
@@ -43,6 +52,10 @@ export function useClaimSupplyItem(eventId: string) {
     mutationFn: (itemId: string) => claimSupplyItem(itemId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["supply-items", eventId] });
+      toast.success("Supply claimed");
+    },
+    onError: () => {
+      toast.error("Failed to claim supply");
     },
   });
 }
@@ -53,6 +66,10 @@ export function useUnclaimSupplyItem(eventId: string) {
     mutationFn: (itemId: string) => unclaimSupplyItem(itemId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["supply-items", eventId] });
+      toast.success("Removed from supply list");
+    },
+    onError: () => {
+      toast.error("Failed to update supply list");
     },
   });
 }

@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { supabase } from "@/lib/supabase";
 import { loginSchema } from "@/lib/validationSchemas";
 import { Button } from "@/components/ui/button";
@@ -75,7 +76,9 @@ function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-pitch-900 flex flex-col justify-center px-6">
+    <>
+      <Helmet><title>Sign In | Dugout</title></Helmet>
+      <div className="min-h-screen bg-pitch-900 flex flex-col justify-center px-6">
       <div className="mb-10">
         <p className="font-display text-xs font-600 uppercase tracking-[0.2em] text-ember mb-2">
           The Hive
@@ -97,6 +100,7 @@ function LoginPage() {
             id="email"
             type="email"
             autoComplete="email"
+            aria-required="true"
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
@@ -115,6 +119,7 @@ function LoginPage() {
             id="password"
             type="password"
             autoComplete="current-password"
+            aria-required="true"
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
@@ -146,5 +151,6 @@ function LoginPage() {
         </a>
       </p>
     </div>
+    </>
   );
 }

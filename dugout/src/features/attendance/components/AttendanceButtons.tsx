@@ -25,6 +25,7 @@ export const AttendanceButtons: FC<AttendanceButtonsProps> = ({
             key={option.status}
             type="button"
             disabled={isPending}
+            aria-pressed={isActive}
             onClick={() => mutate({ eventId, status: option.status })}
             className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border text-xs font-display font-600 uppercase tracking-wider transition-colors disabled:opacity-40 ${
               isActive ? option.activeColor : option.color

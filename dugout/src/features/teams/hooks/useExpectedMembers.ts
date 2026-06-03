@@ -4,6 +4,7 @@ import {
   addExpectedMember,
   deleteExpectedMember,
 } from "../services/expectedMembers";
+import { toast } from "sonner";
 
 export function useExpectedMembers(teamId: string) {
   return useQuery({
@@ -22,6 +23,10 @@ export function useAddExpectedMember(teamId: string) {
       queryClient.invalidateQueries({
         queryKey: ["expected-members", teamId],
       });
+      toast.success("Member added");
+    },
+    onError: () => {
+      toast.error("Failed to add member");
     },
   });
 }
@@ -35,6 +40,10 @@ export function useDeleteExpectedMember(teamId: string) {
       queryClient.invalidateQueries({
         queryKey: ["expected-members", teamId],
       });
+      toast.success("Member removed");
+    },
+    onError: () => {
+      toast.error("Failed to remove member");
     },
   });
 }

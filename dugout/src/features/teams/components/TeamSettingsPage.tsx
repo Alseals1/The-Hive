@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { FC } from "react";
 import { useParams, useRouteContext } from "@tanstack/react-router";
+import { Helmet } from "react-helmet-async";
 import { PageShell, PageHeader } from "@/components/shared/PageShell";
 import { TeamBottomNav } from "@/components/shared/BottomNav";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
@@ -47,6 +48,8 @@ export const TeamSettingsPage: FC = () => {
   }
 
   return (
+    <>
+    <Helmet><title>{team ? `${team.name} Settings | Dugout` : "Settings | Dugout"}</title></Helmet>
     <PageShell
       header={<PageHeader title="Settings" backTo="/teams" />}
       footer={<TeamBottomNav teamId={teamId} />}
@@ -81,6 +84,7 @@ export const TeamSettingsPage: FC = () => {
                 id="settings-name"
                 type="text"
                 required
+                aria-required="true"
                 disabled={!canEdit}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -178,5 +182,6 @@ export const TeamSettingsPage: FC = () => {
         isPending={isDangerous}
       />
     </PageShell>
+    </>
   );
 };

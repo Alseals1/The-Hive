@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Plus } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useMyTeams, useCanCreateTeam } from "@/features/teams/hooks/useTeams";
@@ -35,6 +36,8 @@ function TeamsPage() {
   }
 
   return (
+    <>
+    <Helmet><title>My Teams | Dugout</title></Helmet>
     <PageShell
       header={
         <PageHeader
@@ -113,5 +116,6 @@ function TeamsPage() {
         </div>
       )}
     </PageShell>
+    </>
   );
 }
