@@ -35,7 +35,7 @@ export const TeamCard: FC<TeamCardProps> = ({ name, sport, season, role, onClick
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <h3 className="font-display text-xl font-700 uppercase tracking-wide text-pitch-50 truncate leading-tight">
+          <h3 className="font-display text-xl font-700 uppercase tracking-wide text-pitch-50 overflow-hidden line-clamp-2 leading-tight">
             {name}
           </h3>
           <p className="text-xs text-pitch-300 mt-0.5 font-body">

@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import type { FC } from "react";
 import { useParams, useRouteContext } from "@tanstack/react-router";
 import { Helmet } from "react-helmet-async";
+import { toast } from "sonner";
+import { z } from "zod";
 import { PageShell, PageHeader } from "@/components/shared/PageShell";
 import { TeamBottomNav } from "@/components/shared/BottomNav";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
+import { FormError } from "@/components/shared/FormError";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useTeam, useUpdateTeam, useDeleteTeam, useLeaveTeam } from "../hooks/useSettings";
+
+const teamNameSchema = z.string().trim().min(1, "Team name is required");
 
 const inputCls = "w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors disabled:opacity-40 disabled:cursor-not-allowed";
 const labelCls = "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
@@ -16,13 +21,14 @@ export const TeamSettingsPage: FC = () => {
   const { teamId } = useParams({ from: "/teams/$teamId/settings" });
   const { userRole } = useRouteContext({ from: "/teams/$teamId" });
   const { data: team, isLoading, error } = useTeam(teamId);
-  const { mutate: update, isPending, error: updateError, isSuccess } = useUpdateTeam(teamId);
+  const { mutate: update, isPending } = useUpdateTeam(teamId);
   const { mutate: doDeleteTeam, isPending: isDeleting } = useDeleteTeam(teamId);
   const { mutate: doLeaveTeam, isPending: isLeaving } = useLeaveTeam(teamId);
 
   const [name, setName] = useState("");
   const [season, setSeason] = useState("");
   const [sport, setSport] = useState("baseball");
+  const [nameError, setNameError] = useState<string | undefined>(undefined);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,11 +46,26 @@ export const TeamSettingsPage: FC = () => {
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!canEdit) return;
-    update({
-      name: name.trim(),
-      season: season.trim() || null,
-      sport: sport.trim() || "baseball",
-    });
+
+    const result = teamNameSchema.safeParse(name);
+    if (!result.success) {
+      setNameError(result.error.errors[0]?.message);
+      return;
+    }
+    setNameError(undefined);
+
+    update(
+      {
+        name: result.data,
+        season: season.trim() || null,
+        sport: sport.trim() || "baseball",
+      },
+      {
+        onSuccess: () => toast.success("Settings saved"),
+        onError: (err) =>
+          toast.error(err instanceof Error ? err.message : "Failed to save settings"),
+      }
+    );
   }
 
   return (
@@ -83,15 +104,19 @@ export const TeamSettingsPage: FC = () => {
               <input
                 id="settings-name"
                 type="text"
-                required
                 aria-required="true"
+                aria-describedby={nameError ? "settings-name-error" : undefined}
                 disabled={!canEdit}
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (nameError) setNameError(undefined);
+                }}
                 placeholder="Riverside Rockets"
                 maxLength={60}
                 className={inputCls}
               />
+              <FormError id="settings-name-error" message={nameError} />
             </div>
 
             <div>
@@ -124,18 +149,6 @@ export const TeamSettingsPage: FC = () => {
                 className={inputCls}
               />
             </div>
-
-            {updateError && (
-              <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
-                {updateError instanceof Error ? updateError.message : "Failed to save."}
-              </p>
-            )}
-
-            {isSuccess && (
-              <p className="text-sm text-field font-display font-600 uppercase tracking-wider">
-                Saved
-              </p>
-            )}
 
             {canEdit && (
               <button

@@ -1,8 +1,17 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { FC } from "react";
 import { X } from "lucide-react";
+import { z } from "zod";
 import { useAddExpectedMember } from "@/features/teams/hooks/useExpectedMembers";
 import { Input } from "@/components/ui/input";
+
+const addExpectedMemberSchema = z.object({
+  fullName: z.string().min(1, "Full name is required"),
+});
+
+type AddExpectedMemberErrors = {
+  fullName?: string;
+};
 
 interface AddExpectedMemberSheetProps {
   teamId: string;
@@ -15,11 +24,31 @@ export const AddExpectedMemberSheet: FC<AddExpectedMemberSheetProps> = ({
 }) => {
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<AddExpectedMemberErrors>({});
+  const nameRef = useRef<HTMLInputElement>(null);
   const { mutate: add, isPending, error } = useAddExpectedMember(teamId);
+
+  function validate(): AddExpectedMemberErrors {
+    const result = addExpectedMemberSchema.safeParse({ fullName: name });
+    if (!result.success) {
+      const errs: AddExpectedMemberErrors = {};
+      result.error.issues.forEach((issue) => {
+        if (issue.path[0] === "fullName") errs.fullName = issue.message;
+      });
+      return errs;
+    }
+    return {};
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim()) return;
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      nameRef.current?.focus();
+      return;
+    }
+    setFieldErrors({});
     add(
       { name: name.trim(), note: note.trim() || undefined },
       {
@@ -59,31 +88,37 @@ export const AddExpectedMemberSheet: FC<AddExpectedMemberSheetProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
-              htmlFor="name"
+              htmlFor="expected-member-name"
               className="block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5"
             >
-              Full Name
+              Full Name <span className="text-ember">*</span>
             </label>
             <Input
-              id="name"
+              ref={nameRef}
+              id="expected-member-name"
               type="text"
               aria-required="true"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (fieldErrors.fullName) setFieldErrors(prev => ({ ...prev, fullName: undefined }));
+              }}
               placeholder="Parent or player name"
+              error={fieldErrors.fullName}
+              errorId="expected-member-name-error"
               autoFocus
             />
           </div>
 
           <div>
             <label
-              htmlFor="note"
+              htmlFor="expected-member-note"
               className="block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5"
             >
               Note (optional)
             </label>
             <Input
-              id="note"
+              id="expected-member-note"
               type="text"
               value={note}
               onChange={(e) => setNote(e.target.value)}
@@ -99,7 +134,7 @@ export const AddExpectedMemberSheet: FC<AddExpectedMemberSheetProps> = ({
 
           <button
             type="submit"
-            disabled={isPending || !name.trim()}
+            disabled={isPending}
             className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm disabled:opacity-40"
           >
             {isPending ? "Adding…" : "Add Member"}

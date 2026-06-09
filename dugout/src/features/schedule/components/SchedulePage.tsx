@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import type { FC } from "react";
 import { CalendarPlus, Calendar } from "lucide-react";
 import { useParams, useRouteContext } from "@tanstack/react-router";
@@ -12,9 +12,10 @@ import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { useTeamEvents, useDeleteEvent } from "../hooks/useEvents";
 import { EventCard } from "./EventCard";
 import { CreateEventSheet } from "./CreateEventSheet";
-import { TournamentSheet } from "./TournamentSheet";
-import { SupplyListSheet } from "./SupplyListSheet";
 import type { EventWithAttendance } from "../types";
+
+const TournamentSheet = lazy(() => import("./TournamentSheet").then((m) => ({ default: m.TournamentSheet })));
+const SupplyListSheet = lazy(() => import("./SupplyListSheet").then((m) => ({ default: m.SupplyListSheet })));
 
 export const SchedulePage: FC = () => {
   const { teamId } = useParams({ from: "/teams/$teamId/schedule" });
@@ -79,21 +80,25 @@ export const SchedulePage: FC = () => {
       )}
 
       {tournament && (
-        <TournamentSheet
-          tournament={tournament}
-          teamId={teamId}
-          canManage={canManage}
-          onClose={() => setTournament(undefined)}
-        />
+        <Suspense fallback={null}>
+          <TournamentSheet
+            tournament={tournament}
+            teamId={teamId}
+            canManage={canManage}
+            onClose={() => setTournament(undefined)}
+          />
+        </Suspense>
       )}
 
       {suppliesEvent && (
-        <SupplyListSheet
-          event={suppliesEvent}
-          teamId={teamId}
-          userRole={userRole}
-          onClose={() => setSuppliesEvent(undefined)}
-        />
+        <Suspense fallback={null}>
+          <SupplyListSheet
+            event={suppliesEvent}
+            teamId={teamId}
+            userRole={userRole}
+            onClose={() => setSuppliesEvent(undefined)}
+          />
+        </Suspense>
       )}
 
       <div className="px-4 py-6">
@@ -137,7 +142,7 @@ export const SchedulePage: FC = () => {
             {/* Upcoming */}
             {upcoming.length > 0 && (
               <section>
-                <h2 className="font-display text-xs font-600 uppercase tracking-widest text-pitch-400 mb-3">
+                <h2 className="font-display text-xs font-600 uppercase tracking-widest text-zinc-300 mb-3">
                   Upcoming · {upcoming.length}
                 </h2>
                 <div className="space-y-3">
@@ -160,7 +165,7 @@ export const SchedulePage: FC = () => {
             {/* Past */}
             {past.length > 0 && (
               <section>
-                <h2 className="font-display text-xs font-600 uppercase tracking-widest text-pitch-500 mb-3">
+                <h2 className="font-display text-xs font-600 uppercase tracking-widest text-zinc-300 mb-3">
                   Past · {past.length}
                 </h2>
                 <div className="space-y-3 opacity-50">

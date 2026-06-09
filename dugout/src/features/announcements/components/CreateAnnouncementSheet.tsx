@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { FC } from "react";
 import { X, Pin } from "lucide-react";
 import { createAnnouncementSchema } from "@/lib/validationSchemas";
@@ -35,6 +35,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
   const [body, setBody] = useState(existing?.body ?? "");
   const [pinned, setPinned] = useState(existing?.pinned ?? false);
   const [fieldErrors, setFieldErrors] = useState<CreateAnnouncementErrors>({});
+  const titleRef = useRef<HTMLInputElement>(null);
 
   const { mutate: create, isPending: isCreating, error: createError } =
     useCreateAnnouncement(teamId);
@@ -64,6 +65,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setFieldErrors(errs);
+      titleRef.current?.focus();
       return;
     }
     setFieldErrors({});
@@ -112,6 +114,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
               Title <span className="text-ember">*</span>
             </label>
             <Input
+              ref={titleRef}
               id="ann-title"
               type="text"
               aria-required="true"
@@ -122,6 +125,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
               }}
               placeholder="Practice rescheduled"
               error={fieldErrors.title}
+              errorId="ann-title-error"
               maxLength={100}
             />
           </div>
@@ -134,6 +138,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
             <textarea
               id="ann-body"
               aria-required="true"
+              aria-describedby="ann-body-error"
               value={body}
               onChange={(e) => {
                 setBody(e.target.value);
@@ -155,7 +160,7 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
             >
               {body.length}/1000
             </p>
-            <FormError message={fieldErrors.body} />
+            <FormError message={fieldErrors.body} id="ann-body-error" />
           </div>
 
           {/* Pin toggle */}

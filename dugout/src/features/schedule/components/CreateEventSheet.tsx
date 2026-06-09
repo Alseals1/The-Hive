@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { FC } from "react";
 import { X, Trophy, Zap, Award, CalendarDays } from "lucide-react";
 import { useCreateEvent, useUpdateEvent } from "../hooks/useEvents";
@@ -51,6 +51,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
   const [endsAt, setEndsAt] = useState(toLocalDatetimeValue(existing?.ends_at));
   const [description, setDescription] = useState(existing?.description ?? "");
   const [fieldErrors, setFieldErrors] = useState<CreateEventErrors>({});
+  const titleRef = useRef<HTMLInputElement>(null);
 
   const { mutate: create, isPending: isCreating, error: createError } = useCreateEvent(teamId);
   const { mutate: update, isPending: isUpdating, error: updateError } = useUpdateEvent(teamId);
@@ -78,6 +79,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setFieldErrors(errs);
+      titleRef.current?.focus();
       return;
     }
     setFieldErrors({});
@@ -150,6 +152,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
               Title <span className="text-ember">*</span>
             </label>
             <Input
+              ref={titleRef}
               id="event-title"
               type="text"
               aria-required="true"
@@ -160,6 +163,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
               }}
               placeholder="vs. Eagles"
               error={fieldErrors.title}
+              errorId="event-title-error"
               maxLength={100}
             />
           </div>
@@ -174,6 +178,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
                 id="event-starts"
                 type="datetime-local"
                 aria-required="true"
+                aria-describedby="event-starts-error"
                 value={startsAt}
                 onChange={(e) => {
                   setStartsAt(e.target.value);
@@ -181,7 +186,7 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
                 }}
                 className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
               />
-              <FormError message={fieldErrors.startsAt} />
+              <FormError message={fieldErrors.startsAt} id="event-starts-error" />
             </div>
             <div>
               <label htmlFor="event-ends" className={labelCls}>

@@ -1,4 +1,5 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import { supabase } from '@/lib/supabase'
 
 export const Route = createFileRoute('/teams/$teamId')({
@@ -17,7 +18,10 @@ export const Route = createFileRoute('/teams/$teamId')({
       .eq('user_id', user.id)
       .single()
 
-    if (!data) throw redirect({ to: '/teams' })
+    if (!data) {
+      toast.error('Team not found')
+      throw redirect({ to: '/teams' })
+    }
 
     return { userRole: data.role }
   },

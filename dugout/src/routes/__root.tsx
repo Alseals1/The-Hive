@@ -1,7 +1,9 @@
 import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
+import { NotFoundPage } from "@/components/shared/NotFoundPage";
 
 export const Route = createRootRoute({
+  notFoundComponent: () => <NotFoundPage />,
   beforeLoad: async ({ location }) => {
     const publicPaths = ["/auth/login", "/auth/signup"];
     const isPublic =

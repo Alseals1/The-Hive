@@ -4,6 +4,7 @@ import { X, Plus, Trash2, MapPin, Clock, Pencil } from "lucide-react";
 import type { EventWithAttendance, SubEvent } from "../types";
 import { useTournamentSubEvents, useDeleteSubEvent } from "../hooks/useEvents";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { CreateSubEventSheet } from "./CreateSubEventSheet";
 
 interface TournamentSheetProps {
@@ -25,6 +26,7 @@ function formatDate(iso: string): string {
     weekday: "short",
     month: "short",
     day: "numeric",
+    year: "numeric",
   });
 }
 
@@ -36,6 +38,7 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
 }) => {
   const [editingSubEvent, setEditingSubEvent] = useState<SubEvent | undefined>(undefined);
   const [showAddSub, setShowAddSub] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   const { data: subEvents, isLoading } = useTournamentSubEvents(tournament.id);
   const { mutate: deleteSub, isPending: isDeleting } = useDeleteSubEvent(
@@ -176,7 +179,7 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
                           <Pencil size={12} />
                         </button>
                         <button
-                          onClick={() => deleteSub(sub.id)}
+                          onClick={() => setConfirmDeleteId(sub.id)}
                           disabled={isDeleting}
                           className="text-pitch-500 active:text-red-400 disabled:opacity-30 p-1"
                           aria-label="Remove"
@@ -204,6 +207,19 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
           )}
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmDeleteId !== null}
+        onClose={() => setConfirmDeleteId(null)}
+        onConfirm={() => {
+          if (confirmDeleteId) deleteSub(confirmDeleteId);
+          setConfirmDeleteId(null);
+        }}
+        title="Remove Item?"
+        description="Remove this item? This cannot be undone."
+        confirmLabel="Remove"
+        isPending={isDeleting}
+      />
 
       {showAddSub && (
         <CreateSubEventSheet

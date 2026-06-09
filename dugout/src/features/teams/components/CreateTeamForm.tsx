@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { FC } from "react";
 import { createTeamSchema } from "@/lib/validationSchemas";
 import { Input } from "@/components/ui/input";
@@ -17,8 +17,10 @@ type CreateTeamErrors = {
 
 export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel }) => {
   const [name, setName] = useState("");
+  const [sport, setSport] = useState("");
   const [season, setSeason] = useState("");
   const [fieldErrors, setFieldErrors] = useState<CreateTeamErrors>({});
+  const nameRef = useRef<HTMLInputElement>(null);
   const { mutate, isPending, error } = useCreateTeam();
 
   function validate(): CreateTeamErrors {
@@ -40,11 +42,12 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setFieldErrors(errs);
+      nameRef.current?.focus();
       return;
     }
     setFieldErrors({});
     mutate(
-      { name: name.trim(), season: season.trim() || null },
+      { name: name.trim(), sport: sport.trim() || null, season: season.trim() || null },
       { onSuccess: (team) => onSuccess(team.id) },
     );
   }
@@ -61,6 +64,7 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
             Team Name <span className="text-ember">*</span>
           </label>
           <Input
+            ref={nameRef}
             id="team-name"
             type="text"
             aria-required="true"
@@ -71,7 +75,26 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
             }}
             placeholder="Riverside Rockets"
             error={fieldErrors.name}
+            errorId="team-name-error"
             maxLength={60}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="team-sport" className={labelCls}>
+            Sport{" "}
+            <span className="text-pitch-500 text-[10px] normal-case tracking-normal font-body font-400">
+              optional
+            </span>
+          </label>
+          <input
+            id="team-sport"
+            type="text"
+            value={sport}
+            onChange={(e) => setSport(e.target.value)}
+            placeholder="Baseball"
+            maxLength={50}
+            className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
           />
         </div>
 

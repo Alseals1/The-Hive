@@ -32,6 +32,7 @@ function formatEventDate(startsAt: string): { date: string; time: string } {
     weekday: "short",
     month: "short",
     day: "numeric",
+    year: "numeric",
   });
   const time = d.toLocaleTimeString("en-US", {
     hour: "numeric",
@@ -104,7 +105,7 @@ export const EventCard: FC<EventCardProps> = memo(
         {event.type === "tournament" && onViewTournament && (
           <button
             onClick={() => onViewTournament(event)}
-            className="w-full px-4 py-3 border-t border-pitch-700 flex items-center justify-between text-xs font-display font-600 uppercase tracking-wider text-pitch-300 active:bg-pitch-700 transition-colors"
+            className="w-full px-4 py-3 border-t border-pitch-700 flex items-center justify-between text-xs font-display font-600 uppercase tracking-wider text-zinc-200 active:bg-pitch-700 transition-colors"
           >
             <span>View Itinerary</span>
             <ChevronRight size={14} />
@@ -115,7 +116,7 @@ export const EventCard: FC<EventCardProps> = memo(
         {onViewSupplies && (
           <button
             onClick={() => onViewSupplies(event)}
-            className="w-full px-4 py-3 border-t border-pitch-700 flex items-center justify-between text-xs font-display font-600 uppercase tracking-wider text-pitch-300 active:bg-pitch-700 transition-colors"
+            className="w-full px-4 py-3 border-t border-pitch-700 flex items-center justify-between text-xs font-display font-600 uppercase tracking-wider text-zinc-200 active:bg-pitch-700 transition-colors"
           >
             <span>Supplies</span>
             <ChevronRight size={14} />
@@ -128,7 +129,7 @@ export const EventCard: FC<EventCardProps> = memo(
             {onEdit && (
               <button
                 onClick={() => onEdit(event)}
-                className="text-xs text-pitch-300 font-display font-600 uppercase tracking-wider active:text-pitch-100"
+                className="text-xs text-zinc-200 font-display font-600 uppercase tracking-wider active:text-pitch-100"
               >
                 Edit
               </button>

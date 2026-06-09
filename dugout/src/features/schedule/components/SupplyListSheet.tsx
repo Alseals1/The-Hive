@@ -17,6 +17,7 @@ function formatDate(iso: string): string {
     weekday: "short",
     month: "short",
     day: "numeric",
+    year: "numeric",
   });
 }
 

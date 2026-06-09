@@ -52,7 +52,7 @@ export async function getCanCreateTeam(): Promise<boolean> {
 }
 
 export async function createTeam(
-  input: Pick<TablesInsert<"teams">, "name" | "season">,
+  input: Pick<TablesInsert<"teams">, "name" | "sport" | "season">,
 ) {
   const {
     data: { user },

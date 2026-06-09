@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { FC } from "react";
 import { X } from "lucide-react";
 import { useCreateSubEvent, useUpdateEvent } from "../hooks/useEvents";
@@ -47,6 +47,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
   );
   const [endsAt, setEndsAt] = useState(toLocalDatetimeValue(existing?.ends_at));
   const [fieldErrors, setFieldErrors] = useState<CreateSubEventErrors>({});
+  const titleRef = useRef<HTMLInputElement>(null);
 
   const { mutate: create, isPending: isCreating, error: createError } =
     useCreateSubEvent(teamId, parentEventId);
@@ -81,6 +82,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setFieldErrors(errs);
+      titleRef.current?.focus();
       return;
     }
     setFieldErrors({});
@@ -140,6 +142,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
               Title <span className="text-ember">*</span>
             </label>
             <Input
+              ref={titleRef}
               id="sub-title"
               type="text"
               aria-required="true"
@@ -150,6 +153,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
               }}
               placeholder="Game 1 vs Eagles"
               error={fieldErrors.title}
+              errorId="sub-title-error"
               maxLength={100}
               autoFocus
             />
@@ -164,6 +168,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
                 id="sub-starts"
                 type="datetime-local"
                 aria-required="true"
+                aria-describedby="sub-starts-error"
                 value={startsAt}
                 onChange={(e) => {
                   setStartsAt(e.target.value);
@@ -171,7 +176,7 @@ export const CreateSubEventSheet: FC<CreateSubEventSheetProps> = ({
                 }}
                 className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
               />
-              <FormError message={fieldErrors.startsAt} />
+              <FormError message={fieldErrors.startsAt} id="sub-starts-error" />
             </div>
             <div>
               <label htmlFor="sub-ends" className={labelCls}>
