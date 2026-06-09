@@ -1,5 +1,13 @@
 import type { AttendanceStatus, Tables } from "@/types";
 
+export interface AttendanceRosterEntry {
+  id: string;
+  userId: string;
+  fullName: string;
+  avatarUrl: string | null;
+  status: AttendanceStatus;
+}
+
 export type AttendanceRecord = Tables<"attendance">;
 
 export const ATTENDANCE_OPTIONS: {

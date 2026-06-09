@@ -5,7 +5,7 @@ import { NotFoundPage } from "@/components/shared/NotFoundPage";
 export const Route = createRootRoute({
   notFoundComponent: () => <NotFoundPage />,
   beforeLoad: async ({ location }) => {
-    const publicPaths = ["/auth/login", "/auth/signup"];
+    const publicPaths = ["/auth/login", "/auth/signup", "/auth/forgot-password", "/auth/reset-password"];
     const isPublic =
       publicPaths.some((p) => location.pathname.startsWith(p)) ||
       location.pathname.startsWith("/invite/") ||

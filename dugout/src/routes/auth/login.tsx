@@ -141,7 +141,16 @@ function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-8 text-center text-sm text-pitch-400">
+      <p className="mt-6 text-center text-sm text-pitch-400">
+        <a
+          href="/auth/forgot-password"
+          className="text-ember font-display font-600 uppercase tracking-wider text-xs"
+        >
+          Forgot password?
+        </a>
+      </p>
+
+      <p className="mt-4 text-center text-sm text-pitch-400">
         No account?{" "}
         <a
           href="/auth/signup"

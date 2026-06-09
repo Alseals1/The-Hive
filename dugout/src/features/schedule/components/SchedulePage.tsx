@@ -1,4 +1,5 @@
 import { useState, lazy, Suspense } from "react";
+import { AttendanceDetailSheet } from "@/features/attendance/components/AttendanceDetailSheet";
 import type { FC } from "react";
 import { CalendarPlus, Calendar } from "lucide-react";
 import { useParams, useRouteContext } from "@tanstack/react-router";
@@ -26,6 +27,7 @@ export const SchedulePage: FC = () => {
   const [editing, setEditing] = useState<EventWithAttendance | undefined>(undefined);
   const [tournament, setTournament] = useState<EventWithAttendance | undefined>(undefined);
   const [suppliesEvent, setSuppliesEvent] = useState<EventWithAttendance | undefined>(undefined);
+  const [rosterEvent, setRosterEvent] = useState<EventWithAttendance | undefined>(undefined);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   function handleEdit(event: EventWithAttendance) {
@@ -101,6 +103,13 @@ export const SchedulePage: FC = () => {
         </Suspense>
       )}
 
+      {rosterEvent && (
+        <AttendanceDetailSheet
+          event={rosterEvent}
+          onClose={() => setRosterEvent(undefined)}
+        />
+      )}
+
       <div className="px-4 py-6">
         {isLoading && (
           <div className="flex items-center justify-center py-16">
@@ -156,6 +165,7 @@ export const SchedulePage: FC = () => {
                       onEdit={canManage ? handleEdit : undefined}
                       onViewTournament={setTournament}
                       onViewSupplies={setSuppliesEvent}
+                      onViewRoster={canManage ? setRosterEvent : undefined}
                     />
                   ))}
                 </div>
@@ -179,6 +189,7 @@ export const SchedulePage: FC = () => {
                       onEdit={canManage ? handleEdit : undefined}
                       onViewTournament={setTournament}
                       onViewSupplies={setSuppliesEvent}
+                      onViewRoster={canManage ? setRosterEvent : undefined}
                     />
                   ))}
                 </div>

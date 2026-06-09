@@ -14,6 +14,7 @@ interface EventCardProps {
   onEdit?: (event: EventWithAttendance) => void;
   onViewTournament?: (event: EventWithAttendance) => void;
   onViewSupplies?: (event: EventWithAttendance) => void;
+  onViewRoster?: (event: EventWithAttendance) => void;
 }
 
 function EventTypeIcon({ type }: { type: EventType }) {
@@ -42,7 +43,7 @@ function formatEventDate(startsAt: string): { date: string; time: string } {
 }
 
 export const EventCard: FC<EventCardProps> = memo(
-  ({ event, teamId, canDelete, onDelete, onEdit, onViewTournament, onViewSupplies }) => {
+  ({ event, teamId, canDelete, onDelete, onEdit, onViewTournament, onViewSupplies, onViewRoster }) => {
     const { date, time } = formatEventDate(event.starts_at);
     const typeLabel = EVENT_TYPE_LABELS[event.type];
 
@@ -119,6 +120,17 @@ export const EventCard: FC<EventCardProps> = memo(
             className="w-full px-4 py-3 border-t border-pitch-700 flex items-center justify-between text-xs font-display font-600 uppercase tracking-wider text-zinc-200 active:bg-pitch-700 transition-colors"
           >
             <span>Supplies</span>
+            <ChevronRight size={14} />
+          </button>
+        )}
+
+        {/* Who's Coming roster */}
+        {onViewRoster && (
+          <button
+            onClick={() => onViewRoster(event)}
+            className="w-full px-4 py-3 border-t border-pitch-700 flex items-center justify-between text-xs font-display font-600 uppercase tracking-wider text-zinc-200 active:bg-pitch-700 transition-colors"
+          >
+            <span>Who's Coming</span>
             <ChevronRight size={14} />
           </button>
         )}

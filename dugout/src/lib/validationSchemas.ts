@@ -56,3 +56,17 @@ export const teamSettingsSchema = z.object({
 export const supplyItemSchema = z.object({
   label: requiredString("Item"),
 });
+
+export const resetPasswordRequestSchema = z.object({
+  email: emailField,
+});
+
+export const resetPasswordConfirmSchema = z
+  .object({
+    password: passwordField,
+    confirmPassword: z.string().min(1, "Please confirm your password."),
+  })
+  .refine((d) => d.password === d.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
