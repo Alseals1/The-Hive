@@ -10,20 +10,32 @@ export const Route = createFileRoute('/teams/$teamId')({
 
     if (!user) throw redirect({ to: '/auth/login' })
 
-    // Verify user is a member of this team
-    const { data } = await supabase
-      .from('team_members')
-      .select('role')
-      .eq('team_id', params.teamId)
-      .eq('user_id', user.id)
-      .single()
+    // Check if the team exists
+    const { data: team } = await supabase
+      .from('teams')
+      .select('id')
+      .eq('id', params.teamId)
+      .maybeSingle()
 
-    if (!data) {
+    if (!team) {
       toast.error('Team not found')
       throw redirect({ to: '/teams' })
     }
 
-    return { userRole: data.role }
+    // Check if the current user is a member of this team
+    const { data: membership } = await supabase
+      .from('team_members')
+      .select('role')
+      .eq('team_id', params.teamId)
+      .eq('user_id', user.id)
+      .maybeSingle()
+
+    if (!membership) {
+      toast.error("You don't have access to this team")
+      throw redirect({ to: '/teams' })
+    }
+
+    return { userRole: membership.role }
   },
   component: () => <Outlet />,
 })
