@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Plus } from "lucide-react";
+import { Plus, User } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useMyTeams, useCanCreateTeam } from "@/features/teams/hooks/useTeams";
 import { TeamCard } from "@/features/teams/components/TeamCard";
@@ -43,12 +43,21 @@ function TeamsPage() {
         <PageHeader
           title="My Teams"
           action={
-            <button
-              onClick={handleSignOut}
-              className="text-xs font-display font-600 uppercase tracking-wider text-pitch-400 active:text-pitch-200 py-2 px-1"
-            >
-              Sign out
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => navigate({ to: "/profile" })}
+                className="p-2 text-pitch-400 active:text-pitch-200"
+                aria-label="Profile"
+              >
+                <User size={18} strokeWidth={2} />
+              </button>
+              <button
+                onClick={handleSignOut}
+                className="text-xs font-display font-600 uppercase tracking-wider text-pitch-400 active:text-pitch-200 py-2 px-1"
+              >
+                Sign out
+              </button>
+            </div>
           }
         />
       }

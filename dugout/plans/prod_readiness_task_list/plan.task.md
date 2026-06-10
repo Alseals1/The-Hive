@@ -48,9 +48,9 @@
 - [x] **[2.4b]** Show expiry warning on accept-invite screen if < 24h remaining
 
 ### Profile
-- [ ] **[2.6a]** Create `/profile` route with display name and avatar update form
-- [ ] **[2.6b]** Add password change flow on profile page
-- [ ] **[2.6c]** Add profile link/button in teams list page header
+- [x] **[2.6a]** Create `/profile` route with display name and avatar update form
+- [x] **[2.6b]** Add password change flow on profile page
+- [x] **[2.6c]** Add profile link/button in teams list page header
 
 ---
 
