@@ -20,11 +20,11 @@
 - [x] **[1.2d]** Show member name, avatar initial, and RSVP status in list
 
 ### Walk-up Songs Nav
-- [ ] **[1.3a]** Remove walk-up songs link from `TeamBottomNav` (or add Coming Soon empty state)
+- [x] **[1.3a]** Remove walk-up songs link from `TeamBottomNav` (or add Coming Soon empty state)
 
 ### Routing / 404
-- [ ] **[1.4a]** Handle invalid/inaccessible team ID in `$teamId` route loader
-- [ ] **[1.4b]** Redirect to `/teams` with toast if team not found or access denied
+- [x] **[1.4a]** Handle invalid/inaccessible team ID in `$teamId` route loader
+- [x] **[1.4b]** Redirect to `/teams` with toast if team not found or access denied
 
 ---
 
@@ -37,8 +37,8 @@
 - [ ] **[2.5b]** Gracefully redirect to `/auth/login` on session expiry (no blank screen)
 
 ### Error Handling
-- [ ] **[2.2a]** Add React error boundary to `__root.tsx`
-- [ ] **[2.2b]** Create `ErrorBoundary.tsx` shared component with retry button
+- [x] **[2.2a]** Add React error boundary to `__root.tsx`
+- [x] **[2.2b]** Create `ErrorBoundary.tsx` shared component with retry button
 
 ### Teams
 - [ ] **[2.3a]** Add "Change Role" action in roster member options (admin only)
