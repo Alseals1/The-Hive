@@ -41,11 +41,11 @@
 - [x] **[2.2b]** Create `ErrorBoundary.tsx` shared component with retry button
 
 ### Teams
-- [ ] **[2.3a]** Add "Change Role" action in roster member options (admin only)
-- [ ] **[2.3b]** Add "Remove Member" action in roster member options (admin only)
-- [ ] **[2.3c]** Wire role update + remove member to `teams.service.ts`
-- [ ] **[2.4a]** Show invite link expiry date/countdown in admin invite UI
-- [ ] **[2.4b]** Show expiry warning on accept-invite screen if < 24h remaining
+- [x] **[2.3a]** Add "Change Role" action in roster member options (admin only)
+- [x] **[2.3b]** Add "Remove Member" action in roster member options (admin only)
+- [x] **[2.3c]** Wire role update + remove member to `teams.service.ts`
+- [x] **[2.4a]** Show invite link expiry date/countdown in admin invite UI
+- [x] **[2.4b]** Show expiry warning on accept-invite screen if < 24h remaining
 
 ### Profile
 - [ ] **[2.6a]** Create `/profile` route with display name and avatar update form

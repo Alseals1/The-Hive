@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import type { TablesInsert } from "@/types";
+import type { TablesInsert, TeamRole } from "@/types";
 
 export async function getMyTeams() {
   const {
@@ -119,6 +119,123 @@ export async function leaveTeam(teamId: string) {
     .delete()
     .eq("team_id", teamId)
     .eq("user_id", user.id);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function updateMemberRole(
+  teamId: string,
+  memberId: string,
+  role: TeamRole,
+): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // Verify current user is admin
+  const { data: currentMember, error: checkError } = await supabase
+    .from("team_members")
+    .select("role")
+    .eq("team_id", teamId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (checkError || currentMember?.role !== "admin") {
+    throw new Error("Only admins can change member roles");
+  }
+
+  // Fetch target member
+  const { data: targetMember, error: targetError } = await supabase
+    .from("team_members")
+    .select("user_id, role")
+    .eq("id", memberId)
+    .eq("team_id", teamId)
+    .single();
+
+  if (targetError || !targetMember) throw new Error("Member not found");
+
+  // Prevent self-role-change
+  if (targetMember.user_id === user.id) {
+    throw new Error("Cannot change your own role");
+  }
+
+  // Prevent demoting last admin
+  if (targetMember.role === "admin" && role !== "admin") {
+    const { count } = await supabase
+      .from("team_members")
+      .select("id", { count: "exact", head: true })
+      .eq("team_id", teamId)
+      .eq("role", "admin");
+
+    if ((count ?? 0) <= 1) {
+      throw new Error("Cannot demote the last admin");
+    }
+  }
+
+  const { error } = await supabase
+    .from("team_members")
+    .update({ role })
+    .eq("id", memberId)
+    .eq("team_id", teamId);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function removeMember(
+  teamId: string,
+  memberId: string,
+): Promise<void> {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not authenticated");
+
+  // Verify current user is admin
+  const { data: currentMember, error: checkError } = await supabase
+    .from("team_members")
+    .select("role")
+    .eq("team_id", teamId)
+    .eq("user_id", user.id)
+    .single();
+
+  if (checkError || currentMember?.role !== "admin") {
+    throw new Error("Only admins can remove members");
+  }
+
+  // Fetch target member
+  const { data: targetMember, error: targetError } = await supabase
+    .from("team_members")
+    .select("user_id, role")
+    .eq("id", memberId)
+    .eq("team_id", teamId)
+    .single();
+
+  if (targetError || !targetMember) throw new Error("Member not found");
+
+  // Prevent self-removal (use Leave Team instead)
+  if (targetMember.user_id === user.id) {
+    throw new Error("Cannot remove yourself. Use Leave Team instead.");
+  }
+
+  // Prevent removing last admin
+  if (targetMember.role === "admin") {
+    const { count } = await supabase
+      .from("team_members")
+      .select("id", { count: "exact", head: true })
+      .eq("team_id", teamId)
+      .eq("role", "admin");
+
+    if ((count ?? 0) <= 1) {
+      throw new Error("Cannot remove the last admin");
+    }
+  }
+
+  const { error } = await supabase
+    .from("team_members")
+    .delete()
+    .eq("id", memberId)
+    .eq("team_id", teamId);
 
   if (error) throw new Error(error.message);
 }

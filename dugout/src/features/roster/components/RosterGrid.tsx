@@ -4,6 +4,8 @@ import { RosterMemberCard } from './RosterMemberCard';
 
 interface RosterGridProps {
   members: RosterMember[];
+  isAdmin?: boolean;
+  onMemberOptions?: (member: RosterMember) => void;
 }
 
 /**
@@ -12,11 +14,16 @@ interface RosterGridProps {
  * Tablet (md): 2 columns
  * Desktop (lg): 3 columns
  */
-export const RosterGrid: FC<RosterGridProps> = ({ members }) => {
+export const RosterGrid: FC<RosterGridProps> = ({ members, isAdmin, onMemberOptions }) => {
   return (
     <div className="px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
       {members.map((member) => (
-        <RosterMemberCard key={member.id} member={member} />
+        <RosterMemberCard
+          key={member.id}
+          member={member}
+          isAdmin={isAdmin}
+          onOptionsPress={onMemberOptions ? () => onMemberOptions(member) : undefined}
+        />
       ))}
     </div>
   );

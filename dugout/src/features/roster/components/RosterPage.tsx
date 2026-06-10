@@ -11,6 +11,7 @@ import { EmptyState } from '@/components/shared/EmptyState';
 import { InviteSheet } from '@/features/teams/components/InviteSheet';
 import { AddExpectedMemberSheet } from '@/features/teams/components/AddExpectedMemberSheet';
 import { useExpectedMembers } from '@/features/teams/hooks/useExpectedMembers';
+import { useUser } from '@/hooks/useAuth';
 import { useRoster } from '../hooks/useRoster';
 import { RosterList } from './RosterList';
 
@@ -23,6 +24,8 @@ export const RosterPage: FC = () => {
   const [showAddExpected, setShowAddExpected] = useState(false);
 
   const canInvite = userRole === 'admin' || userRole === 'coach';
+  const { user } = useUser();
+  const isAdmin = userRole === 'admin';
 
   return (
     <>
@@ -88,6 +91,8 @@ export const RosterPage: FC = () => {
           expectedMembers={expectedMembers}
           canInvite={canInvite}
           onAddExpected={() => setShowAddExpected(true)}
+          isAdmin={isAdmin}
+          currentUserId={user?.id}
         />
       )}
     </PageShell>

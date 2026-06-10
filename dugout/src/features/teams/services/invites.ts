@@ -9,7 +9,7 @@ import type { TeamRole } from "@/types";
 export async function createInvite(
   teamId: string,
   role: TeamRole = "parent",
-): Promise<string> {
+): Promise<{ token: string; expires_at: string | null }> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -26,11 +26,11 @@ export async function createInvite(
   const { data, error } = await supabase
     .from("team_invites")
     .insert(insert)
-    .select("token")
+    .select("token, expires_at")
     .single();
 
   if (error) throw new Error(error.message);
-  return data.token;
+  return { token: data.token, expires_at: data.expires_at as string | null };
 }
 
 /**

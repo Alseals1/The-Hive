@@ -1,10 +1,13 @@
 import type { FC } from 'react';
 import { memo } from 'react';
+import { MoreVertical } from 'lucide-react';
 import type { RosterMember } from '../types';
 import { ROLE_COLORS, ROLE_LABELS } from '../types';
 
 interface RosterMemberCardProps {
   member: RosterMember;
+  onOptionsPress?: () => void;
+  isAdmin?: boolean;
 }
 
 function getInitials(name: string | null): string {
@@ -15,7 +18,7 @@ function getInitials(name: string | null): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export const RosterMemberCard: FC<RosterMemberCardProps> = memo(({ member }) => {
+export const RosterMemberCard: FC<RosterMemberCardProps> = memo(({ member, onOptionsPress, isAdmin }) => {
   const colors = ROLE_COLORS[member.role];
   const roleLabel = ROLE_LABELS[member.role];
   const initials = getInitials(member.profile.full_name);
@@ -46,6 +49,16 @@ export const RosterMemberCard: FC<RosterMemberCardProps> = memo(({ member }) => 
           <span className={`shrink-0 text-[11px] font-display font-600 uppercase tracking-wider px-2 py-0.5 rounded-md ${colors.bg} ${colors.text}`}>
             {roleLabel}
           </span>
+          {isAdmin && onOptionsPress && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onOptionsPress(); }}
+              className="p-1.5 -mr-1 text-pitch-400 active:bg-pitch-700 rounded-lg flex-shrink-0"
+              aria-label="Member options"
+            >
+              <MoreVertical size={16} />
+            </button>
+          )}
         </div>
         {member.profile.email && (
           <p className="text-xs text-pitch-400 truncate mt-0.5">

@@ -1,7 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { UseQueryResult } from "@tanstack/react-query";
 import { fetchRosterWithProfiles } from "../services/roster";
 import type { RosterMember } from "../types";
+import { updateMemberRole, removeMember } from "../../teams/services/teams";
+import type { TeamRole } from "@/types";
 
 /**
  * Hook to fetch and cache roster members for a team.
@@ -29,5 +31,26 @@ export function useRoster(
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+  });
+}
+
+export function useUpdateMemberRole(teamId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ memberId, role }: { memberId: string; role: TeamRole }) =>
+      updateMemberRole(teamId, memberId, role),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["roster", teamId] });
+    },
+  });
+}
+
+export function useRemoveMember(teamId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (memberId: string) => removeMember(teamId, memberId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["roster", teamId] });
+    },
   });
 }

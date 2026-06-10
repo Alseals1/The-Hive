@@ -9,6 +9,17 @@ import {
 } from "@/features/teams/hooks/useJoinCode";
 import type { TeamRole } from "@/types";
 
+function formatExpiryDate(iso: string): string {
+  return new Date(iso).toLocaleString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+}
+
 interface InviteSheetProps {
   teamId: string;
   onClose: () => void;
@@ -27,6 +38,7 @@ export const InviteSheet: FC<InviteSheetProps> = ({ teamId, onClose }) => {
   const [tab, setTab] = useState<TabType>("join-code");
   const [role, setRole] = useState<TeamRole>("parent");
   const [inviteUrl, setInviteUrl] = useState<string | null>(null);
+  const [inviteExpiresAt, setInviteExpiresAt] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [resetConfirm, setResetConfirm] = useState(false);
 
@@ -50,9 +62,10 @@ export const InviteSheet: FC<InviteSheetProps> = ({ teamId, onClose }) => {
 
   function handleGenerateRoleInvite() {
     createInvite(role, {
-      onSuccess: (token) => {
+      onSuccess: ({ token, expires_at }) => {
         const url = `${window.location.origin}/invite/${token}`;
         setInviteUrl(url);
+        setInviteExpiresAt(expires_at);
       },
     });
   }
@@ -288,7 +301,9 @@ export const InviteSheet: FC<InviteSheetProps> = ({ teamId, onClose }) => {
                   </p>
                 </div>
                 <p className="text-xs text-pitch-500 mb-6 font-body">
-                  Expires in 7 days · Anyone with this link can join
+                  {inviteExpiresAt
+                    ? `Expires ${formatExpiryDate(inviteExpiresAt)} · Anyone with this link can join`
+                    : 'Anyone with this link can join'}
                 </p>
 
                 <button
@@ -300,7 +315,7 @@ export const InviteSheet: FC<InviteSheetProps> = ({ teamId, onClose }) => {
                 </button>
 
                 <button
-                  onClick={() => setInviteUrl(null)}
+                  onClick={() => { setInviteUrl(null); setInviteExpiresAt(null); }}
                   className="w-full py-3.5 mt-3 rounded-xl border border-pitch-600 text-pitch-300 font-display font-600 uppercase tracking-wider text-xs"
                 >
                   Create Another

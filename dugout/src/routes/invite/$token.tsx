@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { XCircle, LogIn, UserPlus } from "lucide-react";
+import { XCircle, LogIn, UserPlus, AlertTriangle } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { useInviteByToken, useAcceptInvite } from "@/features/teams/hooks/useInvites";
 import { useUser } from "@/hooks/useAuth";
@@ -25,6 +25,11 @@ function InviteAcceptPage() {
       ? invite.teams[0]
       : invite.teams
     : null;
+
+  const hoursUntilExpiry = invite?.expires_at
+    ? (new Date(invite.expires_at).getTime() - Date.now()) / (1000 * 60 * 60)
+    : null;
+  const isExpiringSoon = hoursUntilExpiry !== null && hoursUntilExpiry < 24;
 
   function storeAndGo(to: "/auth/signup" | "/auth/login") {
     sessionStorage.setItem("invite_token", token);
@@ -90,9 +95,22 @@ function InviteAcceptPage() {
               </span>
             </p>
             {teamData.season && (
-              <p className="text-xs text-pitch-500 mb-8">{teamData.season} season</p>
+              <p className={`text-xs text-pitch-500 ${isExpiringSoon ? 'mb-3' : 'mb-8'}`}>
+                {teamData.season} season
+              </p>
             )}
-            {!teamData.season && <div className="mb-8" />}
+            {!teamData.season && !isExpiringSoon && <div className="mb-8" />}
+
+            {isExpiringSoon && hoursUntilExpiry !== null && (
+              <div className="w-full max-w-xs mb-6 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-start gap-2">
+                <AlertTriangle size={14} className="text-amber-400 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-amber-300 font-body leading-relaxed text-left">
+                  {hoursUntilExpiry < 1
+                    ? 'This invite expires in less than 1 hour.'
+                    : `This invite expires in about ${Math.floor(hoursUntilExpiry)} hour${Math.floor(hoursUntilExpiry) === 1 ? '' : 's'}.`}
+                </p>
+              </div>
+            )}
 
             {/* Not authenticated — show signup / login options */}
             {!user && (

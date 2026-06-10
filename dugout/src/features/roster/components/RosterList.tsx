@@ -6,10 +6,13 @@ import { ROLE_PRIORITY, ROLE_LABELS } from '../types';
 import type { TeamRole } from '@/types';
 import type { ExpectedMember } from '@/features/teams/services/expectedMembers';
 import { useDeleteExpectedMember } from '@/features/teams/hooks/useExpectedMembers';
+import { useUpdateMemberRole, useRemoveMember } from '../hooks/useRoster';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { RosterSectionHeader } from './RosterSectionHeader';
 import { RosterGrid } from './RosterGrid';
 import { ExpectedMemberRow } from './ExpectedMemberRow';
+import { MemberActionSheet } from './MemberActionSheet';
+import { ChangeRoleSheet } from './ChangeRoleSheet';
 
 interface RosterListProps {
   members: RosterMember[];
@@ -17,6 +20,8 @@ interface RosterListProps {
   expectedMembers?: ExpectedMember[] | null;
   canInvite?: boolean;
   onAddExpected?: () => void;
+  isAdmin?: boolean;
+  currentUserId?: string;
 }
 
 /**
@@ -69,19 +74,35 @@ export const RosterList: FC<RosterListProps> = ({
   expectedMembers,
   canInvite,
   onAddExpected,
+  isAdmin,
+  currentUserId,
 }) => {
   const sections = groupAndSortMembers(members);
   const { mutate: deleteExpected, isPending: isDeleting } = useDeleteExpectedMember(
     teamId || members[0]?.team_id || ''
   );
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [actionMember, setActionMember] = useState<RosterMember | null>(null);
+  const [changeRoleMember, setChangeRoleMember] = useState<RosterMember | null>(null);
+  const [removeConfirmMember, setRemoveConfirmMember] = useState<RosterMember | null>(null);
+
+  const { mutate: updateRole, isPending: isUpdatingRole, error: updateRoleError } =
+    useUpdateMemberRole(teamId || members[0]?.team_id || '');
+  const { mutate: removeMember, isPending: isRemoving, error: removeError } =
+    useRemoveMember(teamId || members[0]?.team_id || '');
+
+  const adminCount = members.filter(m => m.role === 'admin').length;
 
   return (
     <div className="pb-4">
       {sections.map((section) => (
         <div key={section.role}>
           <RosterSectionHeader role={section.role} count={section.members.length} />
-          <RosterGrid members={section.members} />
+          <RosterGrid
+            members={section.members}
+            isAdmin={isAdmin}
+            onMemberOptions={isAdmin ? (member) => setActionMember(member) : undefined}
+          />
         </div>
       ))}
 
@@ -119,6 +140,12 @@ export const RosterList: FC<RosterListProps> = ({
         </button>
       )}
 
+      {(updateRoleError || removeError) && (
+        <p className="text-sm text-red-400 text-center mt-3 font-body px-4">
+          {(updateRoleError ?? removeError)?.message ?? 'Something went wrong'}
+        </p>
+      )}
+
       <ConfirmDialog
         open={deleteConfirmId !== null}
         onClose={() => setDeleteConfirmId(null)}
@@ -132,6 +159,53 @@ export const RosterList: FC<RosterListProps> = ({
         title="Remove Member?"
         description="This expected member will be removed from the roster."
         isPending={isDeleting}
+      />
+
+      {actionMember && currentUserId && (
+        <MemberActionSheet
+          member={actionMember}
+          currentUserId={currentUserId}
+          adminCount={adminCount}
+          onChangeRole={() => {
+            setChangeRoleMember(actionMember);
+            setActionMember(null);
+          }}
+          onRemove={() => {
+            setRemoveConfirmMember(actionMember);
+            setActionMember(null);
+          }}
+          onClose={() => setActionMember(null)}
+        />
+      )}
+
+      {changeRoleMember && (
+        <ChangeRoleSheet
+          member={changeRoleMember}
+          isPending={isUpdatingRole}
+          onConfirm={(newRole: TeamRole) => {
+            updateRole(
+              { memberId: changeRoleMember.id, role: newRole },
+              { onSuccess: () => setChangeRoleMember(null) },
+            );
+          }}
+          onClose={() => setChangeRoleMember(null)}
+        />
+      )}
+
+      <ConfirmDialog
+        open={removeConfirmMember !== null}
+        onClose={() => setRemoveConfirmMember(null)}
+        onConfirm={() => {
+          if (removeConfirmMember) {
+            removeMember(removeConfirmMember.id, {
+              onSuccess: () => setRemoveConfirmMember(null),
+            });
+          }
+        }}
+        title="Remove Member?"
+        description={`${removeConfirmMember?.profile.full_name ?? 'This member'} will be removed from the team.`}
+        confirmLabel="Remove"
+        isPending={isRemoving}
       />
     </div>
   );
