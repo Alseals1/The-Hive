@@ -107,6 +107,12 @@ export async function joinTeamByCode(code: string): Promise<string> {
   const teamPreview = await getTeamByJoinCode(code);
   if (!teamPreview) throw new Error("This join code is invalid.");
 
+  // Ensure profile exists — the trigger should handle this, but guard against edge cases
+  await supabase.from("profiles").upsert(
+    { id: user.id, full_name: user.user_metadata?.full_name ?? null },
+    { onConflict: "id", ignoreDuplicates: true }
+  );
+
   // Add user as parent member
   const { error: memberError } = await supabase
     .from("team_members")

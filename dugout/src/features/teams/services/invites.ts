@@ -84,6 +84,12 @@ export async function acceptInvite(token: string): Promise<string> {
   const teamData = Array.isArray(invite.teams) ? invite.teams[0] : invite.teams;
   if (!teamData) throw new Error("Team not found.");
 
+  // Ensure profile exists — the trigger should handle this, but guard against edge cases
+  await supabase.from("profiles").upsert(
+    { id: user.id, full_name: user.user_metadata?.full_name ?? null },
+    { onConflict: "id", ignoreDuplicates: true }
+  );
+
   // Add user as team member
   const { error: memberError } = await supabase.from("team_members").insert({
     team_id: teamData.id,
