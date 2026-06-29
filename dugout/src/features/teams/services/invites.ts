@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { checkRateLimit } from "@/lib/rateLimit";
 import type { TablesInsert } from "@/types";
 import type { TeamRole } from "@/types";
 
@@ -124,6 +125,8 @@ export async function getInviteByToken(token: string) {
  * Error codes raised by the function are mapped to user-facing messages here.
  */
 export async function acceptInvite(token: string): Promise<string> {
+  checkRateLimit(`invite:${token}`);
+
   const { data: teamId, error } = await supabase.rpc("accept_team_invite", {
     p_token: token,
   });

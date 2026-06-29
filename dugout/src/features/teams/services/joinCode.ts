@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { checkRateLimit } from "@/lib/rateLimit";
 import type { TeamRole } from "@/types";
 
 export class AlreadyMemberError extends Error {
@@ -135,6 +136,8 @@ export async function deleteJoinCode(teamId: string): Promise<void> {
  * in a single transaction.
  */
 export async function joinTeamByCode(code: string): Promise<string> {
+  checkRateLimit(`join:${code}`);
+
   const { data: teamId, error } = await supabase.rpc("join_team_by_code", {
     p_code: code,
   });
