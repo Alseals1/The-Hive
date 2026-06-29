@@ -4,7 +4,9 @@ import {
   getJoinCodeByTeamId,
   getTeamByJoinCode,
   joinTeamByCode,
+  deleteJoinCode,
 } from "../services/joinCode";
+import { toast } from "sonner";
 
 export function useJoinCode(teamId: string) {
   return useQuery({
@@ -32,6 +34,18 @@ export function useTeamByJoinCode(code: string) {
     enabled: !!code,
     staleTime: 30_000,
     retry: false,
+  });
+}
+
+export function useDeleteJoinCode(teamId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => deleteJoinCode(teamId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["join-code", teamId] });
+      toast.success("Join code removed");
+    },
+    onError: () => toast.error("Failed to remove join code"),
   });
 }
 

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
-import { joinTeamByCode } from "@/features/teams/services/joinCode";
+import { joinTeamByCode, getTeamByJoinCode, AlreadyMemberError } from "@/features/teams/services/joinCode";
 import { acceptInvite } from "@/features/teams/services/invites";
 
 /**
@@ -36,9 +36,15 @@ export function usePendingJoin() {
           .then((teamId) => {
             navigate({ to: "/teams/$teamId/schedule", params: { teamId } });
           })
-          .catch(() => {
-            // Service failed (invalid code, expired invite, etc.).
-            // The user is already authenticated and on /teams — no action needed.
+          .catch(async (err) => {
+            if (err instanceof AlreadyMemberError && joinCode) {
+              const team = await getTeamByJoinCode(joinCode);
+              if (team) {
+                navigate({ to: "/teams/$teamId/roster", params: { teamId: team.teamId } });
+              }
+              return;
+            }
+            // Other failures (invalid code, expired invite, etc.) — no action needed.
           });
       }
     );

@@ -7,6 +7,7 @@ import {
   useJoinCode,
   useGenerateJoinCode,
 } from "@/features/teams/hooks/useJoinCode";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import type { TeamRole } from "@/types";
 
 function formatExpiryDate(iso: string): string {
@@ -178,31 +179,26 @@ export const InviteSheet: FC<InviteSheetProps> = ({ teamId, onClose }) => {
                 </button>
 
                 {/* Reset Code Button */}
-                {!resetConfirm ? (
-                  <button
-                    onClick={() => setResetConfirm(true)}
-                    className="w-full py-3.5 rounded-xl border border-pitch-600 text-pitch-300 font-display font-600 uppercase tracking-wider text-xs flex items-center justify-center gap-2 active:bg-pitch-800"
-                  >
-                    <RefreshCw size={14} />
-                    Reset Code
-                  </button>
-                ) : (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleGenerateJoinCode}
-                      disabled={codeGenerating}
-                      className="flex-1 py-3.5 rounded-xl bg-red-500/20 text-red-300 font-display font-600 uppercase tracking-wider text-xs border border-red-500/30 disabled:opacity-40"
-                    >
-                      {codeGenerating ? "Resetting…" : "Confirm Reset"}
-                    </button>
-                    <button
-                      onClick={() => setResetConfirm(false)}
-                      className="flex-1 py-3.5 rounded-xl border border-pitch-600 text-pitch-300 font-display font-600 uppercase tracking-wider text-xs"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
+                <button
+                  onClick={() => setResetConfirm(true)}
+                  className="w-full py-3.5 rounded-xl border border-pitch-600 text-pitch-300 font-display font-600 uppercase tracking-wider text-xs flex items-center justify-center gap-2 active:bg-pitch-800"
+                >
+                  <RefreshCw size={14} />
+                  Reset Code
+                </button>
+
+                <ConfirmDialog
+                  open={resetConfirm}
+                  onClose={() => setResetConfirm(false)}
+                  onConfirm={() => {
+                    handleGenerateJoinCode();
+                    setResetConfirm(false);
+                  }}
+                  title="Reset Join Code?"
+                  description="This will invalidate all existing links. Anyone who has the current link will no longer be able to use it."
+                  confirmLabel="Reset Code"
+                  isPending={codeGenerating}
+                />
               </>
             ) : (
               <>

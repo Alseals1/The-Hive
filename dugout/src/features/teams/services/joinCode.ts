@@ -1,6 +1,13 @@
 import { supabase } from "@/lib/supabase";
 import type { TeamRole } from "@/types";
 
+export class AlreadyMemberError extends Error {
+  constructor() {
+    super("ALREADY_MEMBER");
+    this.name = "AlreadyMemberError";
+  }
+}
+
 export interface TeamPreview {
   teamId: string;
   name: string;
@@ -103,6 +110,19 @@ export async function getTeamByJoinCode(code: string): Promise<TeamPreview | nul
 }
 
 /**
+ * Delete the team's join code (revoke it).
+ * Only team admins can do this (enforced by RLS).
+ */
+export async function deleteJoinCode(teamId: string): Promise<void> {
+  const { error } = await supabase
+    .from("team_join_codes")
+    .delete()
+    .eq("team_id", teamId);
+
+  if (error) throw new Error(error.message);
+}
+
+/**
  * Join a team using its join code via an atomic server-side RPC.
  * The RPC handles profile upsert, member insert, and expected-member matching
  * in a single transaction.
@@ -114,6 +134,9 @@ export async function joinTeamByCode(code: string): Promise<string> {
 
   if (error) {
     const msg = error.message ?? "";
+    if (msg.includes("ALREADY_MEMBER")) {
+      throw new AlreadyMemberError();
+    }
     if (msg.includes("INVALID_CODE")) {
       throw new Error("This join code is invalid.");
     }
