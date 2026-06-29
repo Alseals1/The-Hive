@@ -28,6 +28,7 @@ export async function getTeamInvites(teamId: string): Promise<TeamInvite[]> {
     .from("team_invites")
     .select("id, token, role, created_at, expires_at, used_at")
     .eq("team_id", teamId)
+    .or("expires_at.is.null,expires_at.gt." + new Date().toISOString())
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);
@@ -35,13 +36,13 @@ export async function getTeamInvites(teamId: string): Promise<TeamInvite[]> {
 }
 
 /**
- * Revoke an invite by marking it used.
+ * Revoke an invite by deleting it.
  * Only team admins can do this (enforced by RLS).
  */
 export async function revokeInvite(id: string): Promise<void> {
   const { error } = await supabase
     .from("team_invites")
-    .update({ used_at: new Date().toISOString() })
+    .delete()
     .eq("id", id);
 
   if (error) throw new Error(error.message);
@@ -64,8 +65,7 @@ export async function createInvite(
     team_id: teamId,
     role,
     created_by: user.id,
-    // Expire in 7 days
-    expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
   };
 
   const { data, error } = await supabase
