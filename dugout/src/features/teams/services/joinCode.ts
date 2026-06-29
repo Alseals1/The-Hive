@@ -1,6 +1,13 @@
 import { supabase } from "@/lib/supabase";
 import type { TeamRole } from "@/types";
 
+export class AlreadyMemberError extends Error {
+  constructor() {
+    super("ALREADY_MEMBER");
+    this.name = "AlreadyMemberError";
+  }
+}
+
 export interface TeamPreview {
   teamId: string;
   name: string;
@@ -114,6 +121,9 @@ export async function joinTeamByCode(code: string): Promise<string> {
 
   if (error) {
     const msg = error.message ?? "";
+    if (msg.includes("ALREADY_MEMBER")) {
+      throw new AlreadyMemberError();
+    }
     if (msg.includes("INVALID_CODE")) {
       throw new Error("This join code is invalid.");
     }
