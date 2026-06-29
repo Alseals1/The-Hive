@@ -1,12 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { XCircle, LogIn, UserPlus, CheckCircle } from "lucide-react";
+import { XCircle, LogIn, UserPlus, CheckCircle, Trophy } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import {
   useTeamByJoinCode,
   useJoinTeamByCode,
 } from "@/features/teams/hooks/useJoinCode";
 import { AlreadyMemberError } from "@/features/teams/services/joinCode";
+import type { TeamRole } from "@/types";
 import { useUser } from "@/hooks/useAuth";
 import { PageShell, PageHeader } from "@/components/shared/PageShell";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
@@ -15,12 +16,20 @@ export const Route = createFileRoute("/join/$code")({
   component: JoinTeamPage,
 });
 
+const ROLE_LABELS: Record<TeamRole, string> = {
+  admin: "Admin",
+  coach: "Coach",
+  manager: "Manager",
+  player: "Player",
+  parent: "Parent",
+};
+
 function JoinTeamPage() {
   const { code } = Route.useParams();
   const navigate = useNavigate();
   const { user, isLoading: authLoading } = useUser();
   const { data: teamPreview, isLoading: teamLoading } = useTeamByJoinCode(code);
-  const { mutate: join, isPending, error } = useJoinTeamByCode();
+  const { mutate: join, isPending, isSuccess, data: joinedTeamId, error } = useJoinTeamByCode();
 
   const isLoading = authLoading || teamLoading;
   const isAlreadyMember = error instanceof AlreadyMemberError;
@@ -41,13 +50,50 @@ function JoinTeamPage() {
   }
 
   function handleJoin() {
-    join(code, {
-      onSuccess: (teamId) => {
-        navigate({ to: "/teams/$teamId/schedule", params: { teamId } });
-      },
-    });
+    join(code);
   }
 
+  // ── Success screen ───────────────────────────────────────────────────────────
+  if (isSuccess && joinedTeamId && teamPreview) {
+    return (
+      <>
+        <Helmet><title>Welcome to the Team | Dugout</title></Helmet>
+        <PageShell header={<PageHeader title="You're In!" />}>
+          <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
+            {/* Icon */}
+            <div className="w-20 h-20 rounded-2xl bg-green-500/15 border border-green-500/30 flex items-center justify-center mb-6">
+              <Trophy size={36} className="text-green-400" />
+            </div>
+
+            {/* Headline */}
+            <h2 className="font-display text-3xl font-800 uppercase tracking-wide text-pitch-50 mb-1">
+              Welcome to the Team
+            </h2>
+
+            {/* Team name */}
+            <p className="font-display text-xl font-700 uppercase tracking-wide text-ember mb-3">
+              {teamPreview.name}
+            </p>
+
+            {/* Role badge */}
+            <span className="inline-flex items-center px-3 py-1 rounded-full bg-pitch-700 border border-pitch-600 text-xs font-display font-600 uppercase tracking-wider text-pitch-200 mb-10">
+              {ROLE_LABELS[teamPreview.joinRole]}
+            </span>
+
+            {/* CTA */}
+            <button
+              onClick={() => navigate({ to: "/teams/$teamId/schedule", params: { teamId: joinedTeamId } })}
+              className="px-6 py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm w-full max-w-xs"
+            >
+              Go to Team
+            </button>
+          </div>
+        </PageShell>
+      </>
+    );
+  }
+
+  // ── Default / join flow ──────────────────────────────────────────────────────
   return (
     <>
     <Helmet><title>Join Team | Dugout</title></Helmet>
