@@ -62,8 +62,8 @@ export async function getInviteByToken(token: string) {
   if (error) return null;
   if (!data) return null;
 
-  // Client-side expiry check
-  if (data.expires_at && new Date(data.expires_at) < new Date()) return null;
+  // Expiry is enforced server-side by the team_invites_select_by_token RLS policy
+  // (expires_at IS NULL OR expires_at > now()). If the row came back, it is valid.
 
   return data;
 }

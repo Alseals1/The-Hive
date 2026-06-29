@@ -7,6 +7,8 @@ export interface ExpectedMember {
   name: string;
   note: string | null;
   created_at: string;
+  linked_user_id: string | null;
+  claimed_at: string | null;
 }
 
 /**
@@ -16,7 +18,7 @@ export interface ExpectedMember {
 export async function getExpectedMembers(teamId: string): Promise<ExpectedMember[]> {
   const { data, error } = await supabase
     .from("expected_members")
-    .select("id, team_id, name, note, created_at")
+    .select("id, team_id, name, note, created_at, linked_user_id, claimed_at")
     .eq("team_id", teamId)
     .order("created_at", { ascending: true });
 
@@ -64,6 +66,27 @@ export async function deleteExpectedMember(id: string): Promise<void> {
     .from("expected_members")
     .delete()
     .eq("id", id);
+
+  if (error) throw new Error(error.message);
+}
+
+/**
+ * Manually link an expected member placeholder to a real user.
+ * Used by admins to resolve unmatched placeholders after the fact.
+ * Only team admins can update expected_members (enforced by RLS).
+ */
+export async function linkExpectedMember(
+  expectedMemberId: string,
+  userId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from("expected_members")
+    .update({
+      linked_user_id: userId,
+      claimed_at: new Date().toISOString(),
+    })
+    .eq("id", expectedMemberId)
+    .is("linked_user_id", null);
 
   if (error) throw new Error(error.message);
 }

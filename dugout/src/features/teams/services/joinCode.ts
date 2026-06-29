@@ -1,10 +1,12 @@
 import { supabase } from "@/lib/supabase";
+import type { TeamRole } from "@/types";
 
 export interface TeamPreview {
   teamId: string;
   name: string;
   sport: string;
   season: string | null;
+  joinRole: TeamRole;
 }
 
 function generateCode(): string {
@@ -18,7 +20,10 @@ function generateCode(): string {
  * Generate or reset the team's permanent join code.
  * Only team admins can do this (enforced by RLS).
  */
-export async function generateJoinCode(teamId: string): Promise<string> {
+export async function generateJoinCode(
+  teamId: string,
+  role: TeamRole = "parent"
+): Promise<string> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -32,6 +37,7 @@ export async function generateJoinCode(teamId: string): Promise<string> {
       {
         team_id: teamId,
         code,
+        role,
         created_by: user.id,
       },
       { onConflict: "team_id" }
@@ -69,6 +75,7 @@ export async function getTeamByJoinCode(code: string): Promise<TeamPreview | nul
     .from("team_join_codes")
     .select(
       `
+      role,
       teams (
         id,
         name,
@@ -91,44 +98,32 @@ export async function getTeamByJoinCode(code: string): Promise<TeamPreview | nul
     name: teams.name,
     sport: teams.sport,
     season: teams.season,
+    joinRole: data.role,
   };
 }
 
 /**
- * Join a team using its join code.
- * Adds the current user as a parent member.
+ * Join a team using its join code via an atomic server-side RPC.
+ * The RPC handles profile upsert, member insert, and expected-member matching
+ * in a single transaction.
  */
 export async function joinTeamByCode(code: string): Promise<string> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
+  const { data: teamId, error } = await supabase.rpc("join_team_by_code", {
+    p_code: code,
+  });
 
-  const teamPreview = await getTeamByJoinCode(code);
-  if (!teamPreview) throw new Error("This join code is invalid.");
-
-  // Ensure profile exists — the trigger should handle this, but guard against edge cases
-  await supabase.from("profiles").upsert(
-    { id: user.id, full_name: user.user_metadata?.full_name ?? null },
-    { onConflict: "id", ignoreDuplicates: true }
-  );
-
-  // Add user as parent member
-  const { error: memberError } = await supabase
-    .from("team_members")
-    .insert({
-      team_id: teamPreview.teamId,
-      user_id: user.id,
-      role: "parent",
-    });
-
-  if (memberError) {
-    // Unique constraint: already a member
-    if (memberError.code === "23505") {
-      return teamPreview.teamId;
+  if (error) {
+    const msg = error.message ?? "";
+    if (msg.includes("INVALID_CODE")) {
+      throw new Error("This join code is invalid.");
     }
-    throw new Error(memberError.message);
+    if (msg.includes("NOT_AUTHENTICATED")) {
+      throw new Error("Not authenticated");
+    }
+    throw new Error(error.message);
   }
 
-  return teamPreview.teamId;
+  if (!teamId) throw new Error("This join code is invalid.");
+
+  return teamId;
 }
