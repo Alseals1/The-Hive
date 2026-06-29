@@ -80,7 +80,8 @@ export async function createInvite(
 
 /**
  * Fetch invite details by token — public (no auth required).
- * Returns null if token is invalid, expired, or already used.
+ * Returns null when the token is invalid, expired, or already used (PGRST116 —
+ * the RLS policy filters those rows out so they appear as "not found").
  */
 export async function getInviteByToken(token: string) {
   const { data, error } = await supabase
@@ -104,13 +105,12 @@ export async function getInviteByToken(token: string) {
     .is("used_at", null)
     .single();
 
-  if (error) return null;
-  if (!data) return null;
+  if (error) {
+    if (error.code === "PGRST116") return null;
+    throw new Error(error.message);
+  }
 
-  // Expiry is enforced server-side by the team_invites_select_by_token RLS policy
-  // (expires_at IS NULL OR expires_at > now()). If the row came back, it is valid.
-
-  return data;
+  return data ?? null;
 }
 
 /**

@@ -58,6 +58,7 @@ export async function generateJoinCode(
 
 /**
  * Fetch the current join code for a team.
+ * Returns null when no code has been generated yet (PGRST116).
  * Public (no auth required).
  */
 export async function getJoinCodeByTeamId(teamId: string): Promise<string | null> {
@@ -67,15 +68,17 @@ export async function getJoinCodeByTeamId(teamId: string): Promise<string | null
     .eq("team_id", teamId)
     .single();
 
-  if (error) return null;
-  if (!data) return null;
+  if (error) {
+    if (error.code === "PGRST116") return null;
+    throw new Error(error.message);
+  }
 
-  return data.code;
+  return data?.code ?? null;
 }
 
 /**
  * Fetch team details by join code — public (no auth required).
- * Returns null if code is invalid.
+ * Returns null when the code does not exist (PGRST116).
  */
 export async function getTeamByJoinCode(code: string): Promise<TeamPreview | null> {
   const { data, error } = await supabase
@@ -94,8 +97,12 @@ export async function getTeamByJoinCode(code: string): Promise<TeamPreview | nul
     .eq("code", code)
     .single();
 
-  if (error) return null;
-  if (!data || !data.teams) return null;
+  if (error) {
+    if (error.code === "PGRST116") return null;
+    throw new Error(error.message);
+  }
+
+  if (!data?.teams) return null;
 
   const teams = Array.isArray(data.teams) ? data.teams[0] : data.teams;
   if (!teams) return null;
