@@ -2,6 +2,24 @@ import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
 import { NotFoundPage } from "@/components/shared/NotFoundPage";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
+import { usePendingJoin } from "@/hooks/usePendingJoin";
+
+function RootComponent() {
+  usePendingJoin();
+  return (
+    <ErrorBoundary>
+      <>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white focus:text-black"
+        >
+          Skip to content
+        </a>
+        <Outlet />
+      </>
+    </ErrorBoundary>
+  );
+}
 
 export const Route = createRootRoute({
   notFoundComponent: () => <NotFoundPage />,
@@ -22,17 +40,5 @@ export const Route = createRootRoute({
       }
     }
   },
-  component: () => (
-    <ErrorBoundary>
-      <>
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white focus:text-black"
-        >
-          Skip to content
-        </a>
-        <Outlet />
-      </>
-    </ErrorBoundary>
-  ),
+  component: RootComponent,
 });

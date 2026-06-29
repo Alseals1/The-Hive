@@ -595,6 +595,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_team_invite: { Args: { p_token: string }; Returns: string }
       is_team_admin: { Args: { p_team_id: string }; Returns: boolean }
       is_team_member: { Args: { p_team_id: string }; Returns: boolean }
     }

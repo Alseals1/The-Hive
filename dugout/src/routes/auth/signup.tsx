@@ -107,16 +107,8 @@ function SignupPage() {
         .eq("id", data.user.id);
     }
 
-    if (pendingToken) {
-      sessionStorage.removeItem("invite_token");
-      sessionStorage.removeItem("invite_role");
-      await navigate({ to: "/invite/$token", params: { token: pendingToken } });
-    } else if (pendingJoinCode) {
-      sessionStorage.removeItem("join_code");
-      await navigate({ to: "/join/$code", params: { code: pendingJoinCode } });
-    } else {
-      await navigate({ to: "/teams" });
-    }
+    // usePendingJoin (root layout) handles any pending join_code / invite_token
+    await navigate({ to: "/teams" });
 
     setLoading(false);
   }

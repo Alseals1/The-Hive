@@ -69,47 +69,36 @@ export async function getInviteByToken(token: string) {
 }
 
 /**
- * Accept an invite — adds the current user to the team.
- * Marks the invite as used.
+ * Accept an invite atomically via a server-side RPC.
+ *
+ * The RPC (accept_team_invite) handles all steps in a single transaction:
+ *   - SELECT … FOR UPDATE on the invite row (prevents concurrent double-accept)
+ *   - server-side used_at and expiry checks
+ *   - profile upsert, team_members insert, and used_at update
+ *
+ * Error codes raised by the function are mapped to user-facing messages here.
  */
 export async function acceptInvite(token: string): Promise<string> {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) throw new Error("Not authenticated");
-
-  const invite = await getInviteByToken(token);
-  if (!invite) throw new Error("This invite is invalid or has expired.");
-
-  const teamData = Array.isArray(invite.teams) ? invite.teams[0] : invite.teams;
-  if (!teamData) throw new Error("Team not found.");
-
-  // Ensure profile exists — the trigger should handle this, but guard against edge cases
-  await supabase.from("profiles").upsert(
-    { id: user.id, full_name: user.user_metadata?.full_name ?? null },
-    { onConflict: "id", ignoreDuplicates: true }
-  );
-
-  // Add user as team member
-  const { error: memberError } = await supabase.from("team_members").insert({
-    team_id: teamData.id,
-    user_id: user.id,
-    role: invite.role,
+  const { data: teamId, error } = await supabase.rpc("accept_team_invite", {
+    p_token: token,
   });
 
-  if (memberError) {
-    // Unique constraint: already a member
-    if (memberError.code === "23505") {
-      return teamData.id;
+  if (error) {
+    const msg = error.message ?? "";
+    if (
+      msg.includes("INVITE_NOT_FOUND") ||
+      msg.includes("INVITE_ALREADY_USED") ||
+      msg.includes("INVITE_EXPIRED")
+    ) {
+      throw new Error("This invite is invalid or has expired.");
     }
-    throw new Error(memberError.message);
+    if (msg.includes("NOT_AUTHENTICATED")) {
+      throw new Error("Not authenticated");
+    }
+    throw new Error(error.message);
   }
 
-  // Mark invite as used
-  await supabase
-    .from("team_invites")
-    .update({ used_at: new Date().toISOString() })
-    .eq("id", invite.id);
+  if (!teamId) throw new Error("This invite is invalid or has expired.");
 
-  return teamData.id;
+  return teamId;
 }
