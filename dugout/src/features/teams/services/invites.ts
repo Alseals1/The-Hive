@@ -2,6 +2,51 @@ import { supabase } from "@/lib/supabase";
 import type { TablesInsert } from "@/types";
 import type { TeamRole } from "@/types";
 
+export interface TeamInvite {
+  id: string;
+  token: string;
+  role: TeamRole;
+  created_at: string;
+  expires_at: string | null;
+  used_at: string | null;
+}
+
+export type InviteStatus = "active" | "used" | "expired";
+
+export function getInviteStatus(invite: Pick<TeamInvite, "used_at" | "expires_at">): InviteStatus {
+  if (invite.used_at) return "used";
+  if (invite.expires_at && new Date(invite.expires_at) < new Date()) return "expired";
+  return "active";
+}
+
+/**
+ * Fetch all invites for a team (active, used, and expired).
+ * Only team admins can read this (enforced by RLS).
+ */
+export async function getTeamInvites(teamId: string): Promise<TeamInvite[]> {
+  const { data, error } = await supabase
+    .from("team_invites")
+    .select("id, token, role, created_at, expires_at, used_at")
+    .eq("team_id", teamId)
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
+  return data || [];
+}
+
+/**
+ * Revoke an invite by marking it used.
+ * Only team admins can do this (enforced by RLS).
+ */
+export async function revokeInvite(id: string): Promise<void> {
+  const { error } = await supabase
+    .from("team_invites")
+    .update({ used_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+}
+
 /**
  * Create a new invite link for a team.
  * Only admins/coaches can create invites (enforced by RLS).

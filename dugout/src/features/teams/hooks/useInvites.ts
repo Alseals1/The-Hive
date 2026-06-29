@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createInvite, getInviteByToken, acceptInvite } from "../services/invites";
+import { createInvite, getInviteByToken, acceptInvite, getTeamInvites, revokeInvite } from "../services/invites";
+import { toast } from "sonner";
 import type { TeamRole } from "@/types";
 
 export function useCreateInvite(teamId: string) {
@@ -15,6 +16,26 @@ export function useInviteByToken(token: string) {
     enabled: !!token,
     staleTime: 30_000,
     retry: false,
+  });
+}
+
+export function useTeamInvites(teamId: string) {
+  return useQuery({
+    queryKey: ["team-invites", teamId],
+    queryFn: () => getTeamInvites(teamId),
+    staleTime: 30_000,
+  });
+}
+
+export function useRevokeInvite(teamId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: revokeInvite,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["team-invites", teamId] });
+      toast.success("Invite revoked");
+    },
+    onError: () => toast.error("Failed to revoke invite"),
   });
 }
 

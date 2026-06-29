@@ -110,6 +110,19 @@ export async function getTeamByJoinCode(code: string): Promise<TeamPreview | nul
 }
 
 /**
+ * Delete the team's join code (revoke it).
+ * Only team admins can do this (enforced by RLS).
+ */
+export async function deleteJoinCode(teamId: string): Promise<void> {
+  const { error } = await supabase
+    .from("team_join_codes")
+    .delete()
+    .eq("team_id", teamId);
+
+  if (error) throw new Error(error.message);
+}
+
+/**
  * Join a team using its join code via an atomic server-side RPC.
  * The RPC handles profile upsert, member insert, and expected-member matching
  * in a single transaction.

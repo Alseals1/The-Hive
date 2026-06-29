@@ -3,6 +3,8 @@ import {
   getExpectedMembers,
   addExpectedMember,
   deleteExpectedMember,
+  updateExpectedMember,
+  type ExpectedMemberUpdates,
 } from "../services/expectedMembers";
 import { toast } from "sonner";
 
@@ -27,6 +29,22 @@ export function useAddExpectedMember(teamId: string) {
     },
     onError: () => {
       toast.error("Failed to add member");
+    },
+  });
+}
+
+export function useUpdateExpectedMember(teamId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, updates }: { id: string; updates: ExpectedMemberUpdates }) =>
+      updateExpectedMember(id, updates),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["expected-members", teamId] });
+      toast.success("Member updated");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Failed to update member");
     },
   });
 }

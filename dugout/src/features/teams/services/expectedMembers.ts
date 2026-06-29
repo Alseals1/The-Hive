@@ -70,6 +70,33 @@ export async function deleteExpectedMember(id: string): Promise<void> {
   if (error) throw new Error(error.message);
 }
 
+export interface ExpectedMemberUpdates {
+  name?: string;
+  note?: string | null;
+}
+
+/**
+ * Update an expected member's name and/or note.
+ * Only team admins can do this (enforced by RLS).
+ */
+export async function updateExpectedMember(
+  id: string,
+  updates: ExpectedMemberUpdates
+): Promise<void> {
+  if (updates.name !== undefined) {
+    const trimmed = updates.name.trim();
+    if (!trimmed) throw new Error("Name cannot be empty.");
+    updates = { ...updates, name: trimmed };
+  }
+
+  const { error } = await supabase
+    .from("expected_members")
+    .update(updates)
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+}
+
 /**
  * Manually link an expected member placeholder to a real user.
  * Used by admins to resolve unmatched placeholders after the fact.

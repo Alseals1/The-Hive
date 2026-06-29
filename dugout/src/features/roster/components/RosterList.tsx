@@ -5,7 +5,7 @@ import type { RosterMember, RosterSection } from '../types';
 import { ROLE_PRIORITY, ROLE_LABELS } from '../types';
 import type { TeamRole } from '@/types';
 import type { ExpectedMember } from '@/features/teams/services/expectedMembers';
-import { useDeleteExpectedMember } from '@/features/teams/hooks/useExpectedMembers';
+import { useDeleteExpectedMember, useUpdateExpectedMember } from '@/features/teams/hooks/useExpectedMembers';
 import { useUpdateMemberRole, useRemoveMember } from '../hooks/useRoster';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { RosterSectionHeader } from './RosterSectionHeader';
@@ -78,18 +78,18 @@ export const RosterList: FC<RosterListProps> = ({
   currentUserId,
 }) => {
   const sections = groupAndSortMembers(members);
-  const { mutate: deleteExpected, isPending: isDeleting } = useDeleteExpectedMember(
-    teamId || members[0]?.team_id || ''
-  );
+  const resolvedTeamId = teamId || members[0]?.team_id || '';
+  const { mutate: deleteExpected, isPending: isDeleting } = useDeleteExpectedMember(resolvedTeamId);
+  const { mutate: updateExpected } = useUpdateExpectedMember(resolvedTeamId);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [actionMember, setActionMember] = useState<RosterMember | null>(null);
   const [changeRoleMember, setChangeRoleMember] = useState<RosterMember | null>(null);
   const [removeConfirmMember, setRemoveConfirmMember] = useState<RosterMember | null>(null);
 
   const { mutate: updateRole, isPending: isUpdatingRole, error: updateRoleError } =
-    useUpdateMemberRole(teamId || members[0]?.team_id || '');
+    useUpdateMemberRole(resolvedTeamId);
   const { mutate: removeMember, isPending: isRemoving, error: removeError } =
-    useRemoveMember(teamId || members[0]?.team_id || '');
+    useRemoveMember(resolvedTeamId);
 
   const adminCount = members.filter(m => m.role === 'admin').length;
 
@@ -120,7 +120,9 @@ export const RosterList: FC<RosterListProps> = ({
                 key={member.id}
                 member={member}
                 onDelete={() => setDeleteConfirmId(member.id)}
+                onEdit={(id, name, note) => updateExpected({ id, updates: { name, note } })}
                 canDelete={canInvite}
+                isAdmin={isAdmin}
               />
             ))}
           </div>

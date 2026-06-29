@@ -14,6 +14,7 @@ import { useExpectedMembers } from '@/features/teams/hooks/useExpectedMembers';
 import { useUser } from '@/hooks/useAuth';
 import { useRoster } from '../hooks/useRoster';
 import { RosterList } from './RosterList';
+import { InviteManagementPanel } from './InviteManagementPanel';
 
 export const RosterPage: FC = () => {
   const { teamId } = useParams({ from: '/teams/$teamId/roster' });
@@ -94,6 +95,10 @@ export const RosterPage: FC = () => {
           isAdmin={isAdmin}
           currentUserId={user?.id}
         />
+      )}
+
+      {!isLoading && isAdmin && (
+        <InviteManagementPanel teamId={teamId} />
       )}
     </PageShell>
     </>
