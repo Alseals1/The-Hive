@@ -81,37 +81,28 @@ export async function createInvite(
 
 /**
  * Fetch invite details by token — public (no auth required).
- * Returns null when the token is invalid, expired, or already used (PGRST116 —
- * the RLS policy filters those rows out so they appear as "not found").
+ * Uses a SECURITY DEFINER RPC keyed on the token so clients can never list
+ * invites; returns null when the token is invalid, expired, or already used.
  */
 export async function getInviteByToken(token: string) {
   const { data, error } = await supabase
-    .from("team_invites")
-    .select(
-      `
-      id,
-      token,
-      role,
-      expires_at,
-      used_at,
-      teams (
-        id,
-        name,
-        sport,
-        season
-      )
-    `,
-    )
-    .eq("token", token)
-    .is("used_at", null)
-    .single();
+    .rpc("get_invite_by_token", { p_token: token })
+    .maybeSingle();
 
-  if (error) {
-    if (error.code === "PGRST116") return null;
-    throw new Error(error.message);
-  }
+  if (error) throw new Error(error.message);
+  if (!data) return null;
 
-  return data ?? null;
+  return {
+    token,
+    role: data.role,
+    expires_at: data.expires_at,
+    used_at: null,
+    teams: {
+      name: data.team_name,
+      sport: data.team_sport,
+      season: data.team_season,
+    },
+  };
 }
 
 /**

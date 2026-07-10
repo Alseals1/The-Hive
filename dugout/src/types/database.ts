@@ -693,6 +693,16 @@ export type Database = {
     }
     Functions: {
       accept_team_invite: { Args: { p_token: string }; Returns: string }
+      get_invite_by_token: {
+        Args: { p_token: string }
+        Returns: {
+          role: Database["public"]["Enums"]["team_role"]
+          expires_at: string | null
+          team_name: string
+          team_sport: string
+          team_season: string | null
+        }[]
+      }
       claim_expected_member: {
         Args: { p_team_id: string; p_user_id: string; p_full_name: string }
         Returns: string | null
