@@ -4,3 +4,7 @@ supabase/.temp/
 # Agent skills
 .agents/
 skills-lock.json
+
+# Local notes
+critical_bugs_6_30
+notes_for_payments_ tabs
