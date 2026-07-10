@@ -1,0 +1,47 @@
+- generic [ref=e2]:
+  - link "Skip to content" [ref=e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e539]:
+    - banner [ref=e540]:
+      - generic [ref=e541]:
+        - link "My Teams" [ref=e542] [cursor=pointer]:
+          - /url: /teams
+          - img [ref=e543]
+          - text: My Teams
+        - generic [ref=e545]:
+          - heading "Payments" [level=1] [ref=e547]
+          - button "New payment" [ref=e549] [cursor=pointer]:
+            - img [ref=e550]
+    - main [ref=e551]:
+      - generic [ref=e553]:
+        - img [ref=e555]
+        - heading "No payments yet" [level=3] [ref=e557]
+        - paragraph [ref=e558]: Create a payment request to collect dues or fees from your team
+        - button "Create Payment" [ref=e559] [cursor=pointer]
+    - navigation [ref=e560]:
+      - generic [ref=e561]:
+        - link "Schedule" [ref=e562] [cursor=pointer]:
+          - /url: /teams/65d93d9f-7b4f-4b39-b47d-3de515777a9b/schedule
+          - img [ref=e563]
+          - generic [ref=e565]: Schedule
+        - link "News" [ref=e566] [cursor=pointer]:
+          - /url: /teams/65d93d9f-7b4f-4b39-b47d-3de515777a9b/announcements
+          - img [ref=e567]
+          - generic [ref=e570]: News
+        - link "Roster" [ref=e571] [cursor=pointer]:
+          - /url: /teams/65d93d9f-7b4f-4b39-b47d-3de515777a9b/roster
+          - img [ref=e572]
+          - generic [ref=e577]: Roster
+        - link "Payments" [ref=e578] [cursor=pointer]:
+          - /url: /teams/65d93d9f-7b4f-4b39-b47d-3de515777a9b/payments
+          - img [ref=e579]
+          - generic [ref=e581]: Payments
+        - link "Settings" [ref=e583] [cursor=pointer]:
+          - /url: /teams/65d93d9f-7b4f-4b39-b47d-3de515777a9b/settings
+          - img [ref=e584]
+          - generic [ref=e587]: Settings
+  - region "Notifications alt+T"
+  - generic [ref=e34]:
+    - img [ref=e36]
+    - button "Open Tanstack query devtools" [ref=e84] [cursor=pointer]:
+      - img [ref=e85]

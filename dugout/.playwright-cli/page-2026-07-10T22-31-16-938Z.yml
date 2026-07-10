@@ -1,0 +1,35 @@
+- generic [ref=e2]:
+  - link "Skip to content" [ref=e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e133]:
+    - banner [ref=e134]:
+      - generic [ref=e136]:
+        - heading "My Teams" [level=1] [ref=e138]
+        - generic [ref=e140]:
+          - button "Profile" [ref=e141] [cursor=pointer]:
+            - img [ref=e142]
+          - button "Sign out" [ref=e145] [cursor=pointer]
+    - main [ref=e146]:
+      - generic [ref=e156]:
+        - heading "Create a Team" [level=2] [ref=e157]
+        - generic [ref=e158]:
+          - generic [ref=e159]:
+            - generic [ref=e160]: Team Name *
+            - textbox "Team Name *" [ref=e162]:
+              - /placeholder: Riverside Rockets
+          - generic [ref=e163]:
+            - generic [ref=e164]: Sport optional
+            - textbox "Sport optional" [ref=e165]:
+              - /placeholder: Baseball
+          - generic [ref=e166]:
+            - generic [ref=e167]: Season optional
+            - textbox "Season optional" [ref=e168]:
+              - /placeholder: Spring 2026
+          - generic [ref=e169]:
+            - button "Cancel" [ref=e170] [cursor=pointer]
+            - button "Create Team" [ref=e171] [cursor=pointer]
+  - region "Notifications alt+T"
+  - generic [ref=e34]:
+    - img [ref=e36]
+    - button "Open Tanstack query devtools" [ref=e84] [cursor=pointer]:
+      - img [ref=e85]

@@ -1,0 +1,60 @@
+- generic [ref=e2]:
+  - link "Skip to content" [ref=e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e224]:
+    - banner [ref=e225]:
+      - generic [ref=e226]:
+        - link "My Teams" [ref=e227] [cursor=pointer]:
+          - /url: /teams
+          - img [ref=e228]
+          - text: My Teams
+        - generic [ref=e230]:
+          - heading "Roster" [level=1] [ref=e232]
+          - button "Invite member" [ref=e234] [cursor=pointer]:
+            - img [ref=e235]
+    - main [ref=e238]:
+      - generic [ref=e239]:
+        - generic [ref=e240]:
+          - generic [ref=e241]:
+            - heading "Coaches" [level=2] [ref=e242]
+            - generic [ref=e243]: "1"
+          - generic [ref=e245]:
+            - generic [ref=e247]: TU
+            - generic [ref=e249]:
+              - heading "Test User" [level=3] [ref=e250]
+              - generic [ref=e251]: Coaches
+              - button "Member options" [ref=e252] [cursor=pointer]:
+                - img [ref=e253]
+        - button "Add Expected Member" [ref=e257] [cursor=pointer]:
+          - img [ref=e258]
+          - generic [ref=e259]: Add Expected Member
+      - button "Invites" [ref=e261] [cursor=pointer]:
+        - generic [ref=e263]: Invites
+        - img [ref=e264]
+    - navigation [ref=e266]:
+      - generic [ref=e267]:
+        - link "Schedule" [ref=e268] [cursor=pointer]:
+          - /url: /teams/65d93d9f-7b4f-4b39-b47d-3de515777a9b/schedule
+          - img [ref=e269]
+          - generic [ref=e271]: Schedule
+        - link "News" [ref=e272] [cursor=pointer]:
+          - /url: /teams/65d93d9f-7b4f-4b39-b47d-3de515777a9b/announcements
+          - img [ref=e273]
+          - generic [ref=e276]: News
+        - link "Roster" [ref=e277] [cursor=pointer]:
+          - /url: /teams/65d93d9f-7b4f-4b39-b47d-3de515777a9b/roster
+          - img [ref=e278]
+          - generic [ref=e283]: Roster
+        - link "Payments" [ref=e285] [cursor=pointer]:
+          - /url: /teams/65d93d9f-7b4f-4b39-b47d-3de515777a9b/payments
+          - img [ref=e286]
+          - generic [ref=e288]: Payments
+        - link "Settings" [ref=e289] [cursor=pointer]:
+          - /url: /teams/65d93d9f-7b4f-4b39-b47d-3de515777a9b/settings
+          - img [ref=e290]
+          - generic [ref=e293]: Settings
+  - region "Notifications alt+T"
+  - generic [ref=e34]:
+    - img [ref=e36]
+    - button "Open Tanstack query devtools" [ref=e84] [cursor=pointer]:
+      - img [ref=e85]

@@ -1,0 +1,27 @@
+- generic [ref=e2]:
+  - link "Skip to content" [ref=e3] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e403]:
+    - banner [ref=e404]:
+      - generic [ref=e406]:
+        - heading "My Teams" [level=1] [ref=e408]
+        - generic [ref=e410]:
+          - button "Profile" [ref=e411] [cursor=pointer]:
+            - img [ref=e412]
+          - button "Sign out" [ref=e415] [cursor=pointer]
+    - main [ref=e416]:
+      - generic [ref=e417]:
+        - button "Test Team Baseball · 2026 Admin" [ref=e418] [cursor=pointer]:
+          - generic [ref=e419]:
+            - generic [ref=e420]:
+              - heading "Test Team" [level=3] [ref=e421]
+              - paragraph [ref=e422]: Baseball · 2026
+            - generic [ref=e423]:
+              - generic [ref=e424]: Admin
+              - img [ref=e425]
+        - button "+ Create another team" [ref=e427] [cursor=pointer]
+  - region "Notifications alt+T"
+  - generic [ref=e34]:
+    - img [ref=e36]
+    - button "Open Tanstack query devtools" [ref=e84] [cursor=pointer]:
+      - img [ref=e85]
