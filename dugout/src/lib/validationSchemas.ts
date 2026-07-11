@@ -24,11 +24,17 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required."),
 });
 
-export const signupSchema = z.object({
-  name: requiredString("Full name"),
-  email: emailField,
-  password: passwordField,
-});
+export const signupSchema = z
+  .object({
+    name: requiredString("Full name"),
+    email: emailField,
+    password: passwordField,
+    confirmPassword: z.string().min(1, "Please confirm your password."),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match.",
+    path: ["confirmPassword"],
+  });
 
 export const createTeamSchema = z.object({
   name: requiredStringMin("Team name", 2),

@@ -41,6 +41,7 @@ type SignupErrors = {
   name?: string;
   email?: string;
   password?: string;
+  confirmPassword?: string;
 };
 
 function SignupPage() {
@@ -53,6 +54,7 @@ function SignupPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [accountType, setAccountType] = useState<AccountType>(
     roleToAccountType(pendingRole),
   );
@@ -60,14 +62,15 @@ function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<SignupErrors>({});
   const [passwordTouched, setPasswordTouched] = useState(false);
+  const [confirmPasswordTouched, setConfirmPasswordTouched] = useState(false);
 
   function validate(): SignupErrors {
-    const result = signupSchema.safeParse({ name, email, password });
+    const result = signupSchema.safeParse({ name, email, password, confirmPassword });
     if (!result.success) {
       const fieldErrors: SignupErrors = {};
       result.error.issues.forEach((issue) => {
         const field = issue.path[0];
-        if (field === "name" || field === "email" || field === "password") {
+        if (field === "name" || field === "email" || field === "password" || field === "confirmPassword") {
           fieldErrors[field] = issue.message;
         }
       });
@@ -221,6 +224,7 @@ function SignupPage() {
             onChange={(e) => {
               setPassword(e.target.value);
               if (fieldErrors.password) setFieldErrors(prev => ({ ...prev, password: undefined }));
+              if (fieldErrors.confirmPassword) setFieldErrors(prev => ({ ...prev, confirmPassword: undefined }));
             }}
             onBlur={() => setPasswordTouched(true)}
             placeholder="Minimum 8 characters"
@@ -228,6 +232,30 @@ function SignupPage() {
               passwordTouched && password && password.length < 8
                 ? "Password must be at least 8 characters."
                 : fieldErrors.password
+            }
+          />
+        </div>
+
+        <div>
+          <label htmlFor="confirm-password" className={labelCls}>
+            Confirm Password
+          </label>
+          <Input
+            id="confirm-password"
+            type="password"
+            autoComplete="new-password"
+            aria-required="true"
+            value={confirmPassword}
+            onChange={(e) => {
+              setConfirmPassword(e.target.value);
+              if (fieldErrors.confirmPassword) setFieldErrors(prev => ({ ...prev, confirmPassword: undefined }));
+            }}
+            onBlur={() => setConfirmPasswordTouched(true)}
+            placeholder="Re-enter your password"
+            error={
+              confirmPasswordTouched && confirmPassword && confirmPassword !== password
+                ? "Passwords don't match."
+                : fieldErrors.confirmPassword
             }
           />
         </div>
