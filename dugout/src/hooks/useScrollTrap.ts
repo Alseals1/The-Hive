@@ -59,10 +59,20 @@ function preventDefaultTouchMove(e: TouchEvent) {
   // Allow scroll on elements with data-scroll-trap-allowed attribute
   // This lets modal content scroll normally
   const target = e.target as HTMLElement;
-  if (target?.closest('[data-scroll-trap-allowed]')) {
+  const scrollContainer = target?.closest('[data-scroll-trap-allowed]');
+
+  if (!scrollContainer) {
+    e.preventDefault();
     return;
   }
-  e.preventDefault();
+
+  // Check if the scrollable element can actually scroll
+  const scrollableEl = scrollContainer as HTMLElement;
+  const canScroll = scrollableEl.scrollHeight > scrollableEl.clientHeight;
+
+  if (!canScroll) {
+    e.preventDefault();
+  }
 }
 
 // Export counter for testing purposes
