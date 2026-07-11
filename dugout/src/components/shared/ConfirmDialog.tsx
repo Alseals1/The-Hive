@@ -1,4 +1,5 @@
 import { Loader2, X } from "lucide-react";
+import { useScrollTrap } from "@/hooks/useScrollTrap";
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -19,6 +20,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   confirmLabel = "Delete",
   isPending = false,
 }) => {
+  useScrollTrap(open);
   if (!open) return null;
 
   return (

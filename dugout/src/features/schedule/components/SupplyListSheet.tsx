@@ -4,6 +4,7 @@ import type { EventWithAttendance } from "../types";
 import { EVENT_TYPE_LABELS } from "../types";
 import type { TeamRole } from "@/types";
 import { SupplySignupSection } from "./SupplySignupSection";
+import { useScrollTrap } from "@/hooks/useScrollTrap";
 
 interface SupplyListSheetProps {
   event: EventWithAttendance;
@@ -34,6 +35,7 @@ export const SupplyListSheet: FC<SupplyListSheetProps> = ({
   userRole,
   onClose,
 }) => {
+  useScrollTrap();
   const canManage = userRole === "admin" || userRole === "coach";
   const typeLabel = EVENT_TYPE_LABELS[event.type];
 
@@ -83,7 +85,7 @@ export const SupplyListSheet: FC<SupplyListSheetProps> = ({
         </div>
 
         {/* Supply list */}
-        <div className="flex-1 overflow-y-auto px-4 pb-8">
+        <div className="flex-1 overflow-y-auto px-4 pb-8" data-scroll-trap-allowed>
           <SupplySignupSection
             eventId={event.id}
             teamId={teamId}

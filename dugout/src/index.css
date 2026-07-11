@@ -39,4 +39,11 @@
   .bg-ember {
     background-color: #FF5C1A;
   }
+
+  /* Scroll trap utilities for modal scroll lock */
+  [data-scroll-trap-allowed] {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+  }
 }

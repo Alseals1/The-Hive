@@ -3,6 +3,7 @@ import { X, Users } from "lucide-react";
 import { useAttendanceRoster } from "../hooks/useAttendanceRoster";
 import type { AttendanceRosterEntry } from "../types";
 import type { AttendanceStatus } from "@/types";
+import { useScrollTrap } from "@/hooks/useScrollTrap";
 
 interface AttendanceDetailSheetProps {
   event: { id: string; title: string };
@@ -39,6 +40,7 @@ export const AttendanceDetailSheet: FC<AttendanceDetailSheetProps> = ({
   event,
   onClose,
 }) => {
+  useScrollTrap();
   const { data: roster, isLoading } = useAttendanceRoster(event.id);
 
   const going = (roster ?? []).filter((r) => r.status === "yes");
@@ -89,7 +91,7 @@ export const AttendanceDetailSheet: FC<AttendanceDetailSheetProps> = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-4 pb-8">
+        <div className="flex-1 overflow-y-auto px-4 pb-8" data-scroll-trap-allowed>
           {isLoading && <SkeletonRows />}
 
           {!isLoading && !hasAnyRsvps && (
