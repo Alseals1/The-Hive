@@ -6,6 +6,7 @@ import { useTournamentSubEvents, useDeleteSubEvent } from "../hooks/useEvents";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import { CreateSubEventSheet } from "./CreateSubEventSheet";
+import { useScrollTrap } from "@/hooks/useScrollTrap";
 
 interface TournamentSheetProps {
   tournament: EventWithAttendance;
@@ -36,6 +37,7 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
   canManage,
   onClose,
 }) => {
+  useScrollTrap();
   const [editingSubEvent, setEditingSubEvent] = useState<SubEvent | undefined>(undefined);
   const [showAddSub, setShowAddSub] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -103,7 +105,7 @@ export const TournamentSheet: FC<TournamentSheetProps> = ({
           </div>
 
           {/* Itinerary */}
-          <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="flex-1 overflow-y-auto px-4 pb-4" data-scroll-trap-allowed>
             <div className="flex items-center justify-between mb-3">
               <p className="text-xs font-display font-600 uppercase tracking-widest text-pitch-400">
                 Itinerary

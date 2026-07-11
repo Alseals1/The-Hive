@@ -5,6 +5,7 @@ import { useCreateEvent, useUpdateEvent } from "../hooks/useEvents";
 import { createEventSchema } from "@/lib/validationSchemas";
 import { FormError } from "@/components/shared/FormError";
 import { Input } from "@/components/ui/input";
+import { useScrollTrap } from "@/hooks/useScrollTrap";
 import type { EventType } from "@/types";
 import type { EventWithAttendance } from "../types";
 import { EVENT_TYPE_LABELS } from "../types";
@@ -42,6 +43,7 @@ function EventTypeButtonIcon({ type }: { type: EventType }) {
 }
 
 export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, existing }) => {
+  useScrollTrap();
   const isEditing = !!existing;
 
   const [title, setTitle] = useState(existing?.title ?? "");
