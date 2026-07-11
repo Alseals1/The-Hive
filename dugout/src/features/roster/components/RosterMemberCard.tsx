@@ -7,6 +7,7 @@ import { ROLE_COLORS, ROLE_LABELS } from '../types';
 interface RosterMemberCardProps {
   member: RosterMember;
   onOptionsPress?: () => void;
+  onView?: () => void;
   isAdmin?: boolean;
 }
 
@@ -18,14 +19,29 @@ function getInitials(name: string | null): string {
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
 
-export const RosterMemberCard: FC<RosterMemberCardProps> = memo(({ member, onOptionsPress, isAdmin }) => {
+export const RosterMemberCard: FC<RosterMemberCardProps> = memo(({ member, onOptionsPress, onView, isAdmin }) => {
   const colors = ROLE_COLORS[member.role];
   const roleLabel = ROLE_LABELS[member.role];
   const initials = getInitials(member.profile.full_name);
   const hasAvatar = member.profile.avatar_url;
 
   return (
-    <div className="bg-pitch-800 rounded-card border border-pitch-700 p-4 flex items-center gap-3">
+    <div
+      className="bg-pitch-800 rounded-card border border-pitch-700 p-4 flex items-center gap-3 active:bg-pitch-700/40 transition-colors cursor-pointer"
+      onClick={onView}
+      role={onView ? 'button' : undefined}
+      tabIndex={onView ? 0 : undefined}
+      onKeyDown={
+        onView
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onView();
+              }
+            }
+          : undefined
+      }
+    >
       {/* Avatar */}
       <div
         className="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 font-display font-700 text-sm bg-pitch-700"

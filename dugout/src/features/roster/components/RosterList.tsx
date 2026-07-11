@@ -13,6 +13,7 @@ import { RosterGrid } from './RosterGrid';
 import { ExpectedMemberRow } from './ExpectedMemberRow';
 import { MemberActionSheet } from './MemberActionSheet';
 import { ChangeRoleSheet } from './ChangeRoleSheet';
+import { MemberDetailSheet } from './MemberDetailSheet';
 
 interface RosterListProps {
   members: RosterMember[];
@@ -85,6 +86,7 @@ export const RosterList: FC<RosterListProps> = ({
   const [actionMember, setActionMember] = useState<RosterMember | null>(null);
   const [changeRoleMember, setChangeRoleMember] = useState<RosterMember | null>(null);
   const [removeConfirmMember, setRemoveConfirmMember] = useState<RosterMember | null>(null);
+  const [viewMember, setViewMember] = useState<RosterMember | null>(null);
 
   const { mutate: updateRole, isPending: isUpdatingRole, error: updateRoleError } =
     useUpdateMemberRole(resolvedTeamId);
@@ -102,6 +104,7 @@ export const RosterList: FC<RosterListProps> = ({
             members={section.members}
             isAdmin={isAdmin}
             onMemberOptions={isAdmin ? (member) => setActionMember(member) : undefined}
+            onMemberView={(member) => setViewMember(member)}
           />
         </div>
       ))}
@@ -209,6 +212,13 @@ export const RosterList: FC<RosterListProps> = ({
         confirmLabel="Remove"
         isPending={isRemoving}
       />
+
+      {viewMember && (
+        <MemberDetailSheet
+          member={viewMember}
+          onClose={() => setViewMember(null)}
+        />
+      )}
     </div>
   );
 };
