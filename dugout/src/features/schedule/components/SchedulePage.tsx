@@ -14,6 +14,7 @@ import { useTeamEvents, useDeleteEvent } from "../hooks/useEvents";
 import { EventCard } from "./EventCard";
 import { CreateEventSheet } from "./CreateEventSheet";
 import type { EventWithAttendance } from "../types";
+import { isEventPast } from "../utils/eventTiming";
 
 const TournamentSheet = lazy(() => import("./TournamentSheet").then((m) => ({ default: m.TournamentSheet })));
 const SupplyListSheet = lazy(() => import("./SupplyListSheet").then((m) => ({ default: m.SupplyListSheet })));
@@ -44,10 +45,8 @@ export const SchedulePage: FC = () => {
 
   // Separate upcoming vs past
   const now = new Date();
-  const upcoming = (events ?? []).filter(
-    (e) => new Date(e.starts_at) >= now,
-  );
-  const past = (events ?? []).filter((e) => new Date(e.starts_at) < now);
+  const upcoming = (events ?? []).filter((e) => !isEventPast(e.starts_at, now));
+  const past = (events ?? []).filter((e) => isEventPast(e.starts_at, now));
 
   return (
     <>
@@ -160,6 +159,7 @@ export const SchedulePage: FC = () => {
                       key={event.id}
                       event={event}
                       teamId={teamId}
+                      isPast={false}
                       canDelete={canManage}
                       onDelete={canManage ? setDeleteConfirmId : undefined}
                       onEdit={canManage ? handleEdit : undefined}
@@ -184,6 +184,7 @@ export const SchedulePage: FC = () => {
                       key={event.id}
                       event={event}
                       teamId={teamId}
+                      isPast={true}
                       canDelete={canManage}
                       onDelete={canManage ? setDeleteConfirmId : undefined}
                       onEdit={canManage ? handleEdit : undefined}

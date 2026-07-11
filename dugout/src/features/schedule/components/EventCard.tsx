@@ -9,6 +9,7 @@ import { AttendanceButtons } from "@/features/attendance/components/AttendanceBu
 interface EventCardProps {
   event: EventWithAttendance;
   teamId: string;
+  isPast?: boolean;
   canDelete?: boolean;
   onDelete?: (eventId: string) => void;
   onEdit?: (event: EventWithAttendance) => void;
@@ -43,7 +44,7 @@ function formatEventDate(startsAt: string): { date: string; time: string } {
 }
 
 export const EventCard: FC<EventCardProps> = memo(
-  ({ event, teamId, canDelete, onDelete, onEdit, onViewTournament, onViewSupplies, onViewRoster }) => {
+  ({ event, teamId, isPast, canDelete, onDelete, onEdit, onViewTournament, onViewSupplies, onViewRoster }) => {
     const { date, time } = formatEventDate(event.starts_at);
     const typeLabel = EVENT_TYPE_LABELS[event.type];
 
@@ -99,6 +100,7 @@ export const EventCard: FC<EventCardProps> = memo(
             teamId={teamId}
             eventId={event.id}
             currentStatus={event.myStatus}
+            locked={isPast}
           />
         </div>
 
