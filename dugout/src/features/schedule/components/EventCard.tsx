@@ -111,7 +111,7 @@ export const EventCard: FC<EventCardProps> = memo(
             className="w-full px-4 py-3 border-t border-pitch-700 flex items-center justify-between text-xs font-display font-600 uppercase tracking-wider text-zinc-200 active:bg-pitch-700 transition-colors"
           >
             <span>View Itinerary</span>
-            <ChevronRight size={14} />
+            <ChevronRight size={14} className="text-ember" />
           </button>
         )}
 
@@ -122,7 +122,7 @@ export const EventCard: FC<EventCardProps> = memo(
             className="w-full px-4 py-3 border-t border-pitch-700 flex items-center justify-between text-xs font-display font-600 uppercase tracking-wider text-zinc-200 active:bg-pitch-700 transition-colors"
           >
             <span>Supplies</span>
-            <ChevronRight size={14} />
+            <ChevronRight size={14} className="text-ember" />
           </button>
         )}
 
@@ -133,7 +133,7 @@ export const EventCard: FC<EventCardProps> = memo(
             className="w-full px-4 py-3 border-t border-pitch-700 flex items-center justify-between text-xs font-display font-600 uppercase tracking-wider text-zinc-200 active:bg-pitch-700 transition-colors"
           >
             <span>Who's Coming</span>
-            <ChevronRight size={14} />
+            <ChevronRight size={14} className="text-ember" />
           </button>
         )}
 
