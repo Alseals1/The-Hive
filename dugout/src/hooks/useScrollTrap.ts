@@ -3,9 +3,19 @@ import { useEffect } from 'react';
 // Global counter to track how many modals are currently open
 let scrollTrapCount = 0;
 
-export function useScrollTrap() {
+/**
+ * Locks background page scroll while a modal is open.
+ *
+ * @param active - Whether the scroll trap should be applied. Pass the modal's
+ *   `open` state for components that stay mounted while closed (e.g. dialogs
+ *   that return null when closed). Defaults to true for components that only
+ *   mount while visible.
+ */
+export function useScrollTrap(active: boolean = true) {
   useEffect(() => {
-    // Increment the counter on mount
+    if (!active) return;
+
+    // Increment the counter when the trap becomes active
     scrollTrapCount++;
 
     // Only apply scroll lock on the first modal
@@ -20,7 +30,7 @@ export function useScrollTrap() {
         removeScrollTrap();
       }
     };
-  }, []);
+  }, [active]);
 }
 
 function applyScrollTrap() {

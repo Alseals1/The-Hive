@@ -20,7 +20,7 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({
   confirmLabel = "Delete",
   isPending = false,
 }) => {
-  useScrollTrap();
+  useScrollTrap(open);
   if (!open) return null;
 
   return (
