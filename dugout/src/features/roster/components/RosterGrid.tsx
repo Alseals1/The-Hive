@@ -6,6 +6,7 @@ interface RosterGridProps {
   members: RosterMember[];
   isAdmin?: boolean;
   onMemberOptions?: (member: RosterMember) => void;
+  onMemberView?: (member: RosterMember) => void;
 }
 
 /**
@@ -14,7 +15,7 @@ interface RosterGridProps {
  * Tablet (md): 2 columns
  * Desktop (lg): 3 columns
  */
-export const RosterGrid: FC<RosterGridProps> = ({ members, isAdmin, onMemberOptions }) => {
+export const RosterGrid: FC<RosterGridProps> = ({ members, isAdmin, onMemberOptions, onMemberView }) => {
   return (
     <div className="px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
       {members.map((member) => (
@@ -23,6 +24,7 @@ export const RosterGrid: FC<RosterGridProps> = ({ members, isAdmin, onMemberOpti
           member={member}
           isAdmin={isAdmin}
           onOptionsPress={onMemberOptions ? () => onMemberOptions(member) : undefined}
+          onView={onMemberView ? () => onMemberView(member) : undefined}
         />
       ))}
     </div>

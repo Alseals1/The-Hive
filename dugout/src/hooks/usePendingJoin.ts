@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/lib/supabase";
 import { joinTeamByCode, getTeamByJoinCode, AlreadyMemberError } from "@/features/teams/services/joinCode";
 import { acceptInvite } from "@/features/teams/services/invites";
+import type { TeamRole } from "@/types";
 
 /**
  * Runs once at the root layout level.
@@ -19,18 +20,20 @@ export function usePendingJoin() {
         if (event !== "SIGNED_IN") return;
 
         const joinCode = sessionStorage.getItem("join_code");
+        const joinRole = sessionStorage.getItem("join_role") as TeamRole | null;
         const inviteToken = sessionStorage.getItem("invite_token");
 
         if (!joinCode && !inviteToken) return;
 
         // Clear before the async call so a token refresh can't re-trigger this
         sessionStorage.removeItem("join_code");
+        sessionStorage.removeItem("join_role");
         sessionStorage.removeItem("invite_token");
         sessionStorage.removeItem("invite_role");
 
         const pending = inviteToken
           ? acceptInvite(inviteToken)
-          : joinTeamByCode(joinCode!);
+          : joinTeamByCode(joinCode!, joinRole ?? undefined);
 
         pending
           .then((teamId) => {

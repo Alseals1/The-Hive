@@ -135,11 +135,12 @@ export async function deleteJoinCode(teamId: string): Promise<void> {
  * The RPC handles profile upsert, member insert, and expected-member matching
  * in a single transaction.
  */
-export async function joinTeamByCode(code: string): Promise<string> {
+export async function joinTeamByCode(code: string, role?: TeamRole): Promise<string> {
   checkRateLimit(`join:${code}`);
 
   const { data: teamId, error } = await supabase.rpc("join_team_by_code", {
     p_code: code,
+    p_role: role ?? null,
   });
 
   if (error) {

@@ -7,6 +7,7 @@ import {
   deleteJoinCode,
 } from "../services/joinCode";
 import { toast } from "sonner";
+import type { TeamRole } from "@/types";
 
 export function useJoinCode(teamId: string) {
   return useQuery({
@@ -53,7 +54,8 @@ export function useJoinTeamByCode() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: joinTeamByCode,
+    mutationFn: ({ code, role }: { code: string; role?: TeamRole }) =>
+      joinTeamByCode(code, role),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["teams", "mine"] });
     },

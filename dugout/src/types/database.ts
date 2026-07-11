@@ -709,7 +709,13 @@ export type Database = {
       }
       is_team_admin: { Args: { p_team_id: string }; Returns: boolean }
       is_team_member: { Args: { p_team_id: string }; Returns: boolean }
-      join_team_by_code: { Args: { p_code: string }; Returns: string }
+      join_team_by_code: {
+        Args: {
+          p_code: string
+          p_role?: "admin" | "coach" | "manager" | "player" | "parent" | null
+        }
+        Returns: string
+      }
     }
     Enums: {
       attendance_status: "yes" | "no" | "maybe"
