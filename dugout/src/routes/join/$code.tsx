@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { XCircle, LogIn, UserPlus, CheckCircle, Trophy } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import {
@@ -24,10 +24,20 @@ const ROLE_LABELS: Record<TeamRole, string> = {
   parent: "Parent",
 };
 
+// Self-serve roles a joiner can pick for themselves via a shared join code.
+// Admin/coach are deliberately excluded — those require a role-invite link
+// or an existing admin's Change Role action.
+const JOINABLE_ROLES: { value: TeamRole; label: string; description: string }[] = [
+  { value: "player", label: "Player", description: "A player on the team" },
+  { value: "parent", label: "Parent / Guardian", description: "Parent or guardian of a player" },
+  { value: "manager", label: "Manager", description: "Team manager" },
+];
+
 function JoinTeamPage() {
   const { code } = Route.useParams();
   const navigate = useNavigate();
   const { user, isLoading: authLoading } = useUser();
+  const [selectedRole, setSelectedRole] = useState<TeamRole>("parent");
   const { data: teamPreview, isLoading: teamLoading } = useTeamByJoinCode(code);
   const { mutate: join, isPending, isSuccess, data: joinedTeamId, error } = useJoinTeamByCode();
 
@@ -46,11 +56,12 @@ function JoinTeamPage() {
 
   function storeAndGo(to: "/auth/signup" | "/auth/login") {
     sessionStorage.setItem("join_code", code);
+    sessionStorage.setItem("join_role", selectedRole);
     navigate({ to });
   }
 
   function handleJoin() {
-    join(code);
+    join({ code, role: selectedRole });
   }
 
   // ── Success screen ───────────────────────────────────────────────────────────
@@ -77,7 +88,7 @@ function JoinTeamPage() {
 
             {/* Role badge */}
             <span className="inline-flex items-center px-3 py-1 rounded-full bg-pitch-700 border border-pitch-600 text-xs font-display font-600 uppercase tracking-wider text-pitch-200 mb-10">
-              {ROLE_LABELS[teamPreview.joinRole]}
+              {ROLE_LABELS[selectedRole]}
             </span>
 
             {/* CTA */}
@@ -139,6 +150,47 @@ function JoinTeamPage() {
               {teamPreview.season ? ` • ${teamPreview.season} season` : ""}
             </p>
             <div className="mb-8" />
+
+            {/* Role picker */}
+            {!isAlreadyMember && (
+            <div className="w-full max-w-xs mb-6 text-left">
+              <p className="text-xs font-display font-600 uppercase tracking-widest text-pitch-400 mb-3 text-center">
+                Joining as
+              </p>
+              <div className="space-y-2">
+                {JOINABLE_ROLES.map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setSelectedRole(option.value)}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-colors ${
+                      selectedRole === option.value
+                        ? "border-ember bg-ember-muted"
+                        : "border-pitch-700 bg-pitch-700/40"
+                    }`}
+                  >
+                    <div
+                      className={`w-4 h-4 rounded-full border-2 flex-shrink-0 transition-colors ${
+                        selectedRole === option.value
+                          ? "border-ember bg-ember"
+                          : "border-pitch-500"
+                      }`}
+                    />
+                    <div>
+                      <p
+                        className={`text-sm font-display font-600 uppercase tracking-wide ${
+                          selectedRole === option.value ? "text-ember" : "text-pitch-100"
+                        }`}
+                      >
+                        {option.label}
+                      </p>
+                      <p className="text-xs text-pitch-400">{option.description}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+            )}
 
             {/* Not authenticated — show signup / login options */}
             {!user && (
