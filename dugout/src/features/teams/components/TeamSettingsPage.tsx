@@ -4,6 +4,7 @@ import { useParams, useRouteContext } from "@tanstack/react-router";
 import { Helmet } from "react-helmet-async";
 import { toast } from "sonner";
 import { z } from "zod";
+import { AlertTriangle } from "lucide-react";
 import { PageShell, PageHeader } from "@/components/shared/PageShell";
 import { TeamBottomNav } from "@/components/shared/BottomNav";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
@@ -162,9 +163,17 @@ export const TeamSettingsPage: FC = () => {
 
             {/* Danger Zone */}
             <div className="mt-8 pt-8 border-t border-pitch-700">
-              <h3 className="font-display text-sm font-600 uppercase tracking-wider text-red-400 mb-4">
-                Danger Zone
-              </h3>
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle size={16} className="text-red-400 flex-shrink-0" />
+                <h3 className="font-display text-sm font-600 uppercase tracking-wider text-red-400">
+                  Danger Zone
+                </h3>
+              </div>
+              <p className="text-xs text-pitch-400 font-body mb-4 leading-relaxed">
+                {isAdmin
+                  ? "Deleting this team is permanent and removes all members, events, and history. This cannot be undone."
+                  : "Leaving this team removes your access immediately. You'll need a new invite to rejoin."}
+              </p>
               <button
                 type="button"
                 onClick={() => setDeleteConfirmId(isAdmin ? "delete-team" : "leave-team")}
