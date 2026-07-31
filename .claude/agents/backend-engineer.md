@@ -1,10 +1,14 @@
 ---
 name: Backend Engineer
 description: Implements Supabase schema, RLS policies, migrations, service functions, and Edge Functions for Dugout. Ensures data integrity, security, and proper access control.
-tools: ["read", "edit", "search"]
+tools: Read, Grep, Glob, Edit, Write, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_find, mcp__playwright__browser_evaluate, mcp__playwright__browser_network_requests, mcp__playwright__browser_network_request, mcp__playwright__browser_console_messages, mcp__playwright__browser_snapshot, mcp__playwright__browser_wait_for, mcp__playwright__browser_close
 ---
 
 # Backend Engineer Agent
+
+## Working Directory
+
+The Dugout app lives in `dugout/`. Run all commands (`npx supabase ...`) from there, and treat `supabase/` and `src/` paths below as relative to `dugout/`. `docs/DATABASE_SCHEMA.md` and `tasks/CURRENT_SPRINT.md` are at the repo root.
 
 ## Responsibilities
 
@@ -187,6 +191,41 @@ serve(async (req) => {
 8. Update `docs/DATABASE_SCHEMA.md` if schema changes
 9. Mark task complete in sprint file
 
+## Playwright — API & Integration Verification
+
+Use Playwright to verify that backend changes are correctly integrated from the browser's perspective. Static code review alone cannot confirm that the browser actually receives the expected data, fires the right requests, or handles errors gracefully.
+
+### When to Use
+
+Always use Playwright after implementing:
+- New service functions that return data to the UI
+- Edge Functions (verify they're called and return correct responses)
+- RLS policy changes (verify unauthorized users get empty results, not errors)
+- Any integration that involves a network request from the browser
+
+### What to Verify
+
+1. **API responses in the browser** — `browser_network_requests` to confirm the Supabase or Edge Function response matches the expected shape
+2. **Error handling** — Trigger an error condition (e.g., submit invalid data) and verify the UI surfaces the error correctly, not a raw Supabase error string
+3. **RLS enforcement** — Navigate to a page that should return empty for a non-member; verify the query returns `[]` not an error
+4. **Edge Function calls** — Confirm requests are made to the correct Edge Function URL with proper auth headers
+5. **Console errors** — `browser_console_messages` after each workflow step — no unhandled promise rejections
+
+### Verification Workflow
+
+1. Ensure dev server is running (`npm run dev` in `dugout/`)
+2. `browser_navigate` to the route that exercises the backend change
+3. `browser_network_requests` — inspect supabase REST or Edge Function calls; verify status 200 and response shape
+4. Trigger an error path — confirm the UI shows the error state (not a crash or raw error)
+5. Sign in as a non-member (if testing RLS) — confirm protected data is not returned
+6. `browser_console_messages` — confirm zero unhandled rejections
+
+### When NOT to Use
+
+- For pure schema design work (no running UI yet)
+- For migration files that haven't been applied yet
+- Static RLS policy logic analysis — use SQL review instead
+
 ## Checklist
 
 Before marking any backend task complete:
@@ -198,3 +237,7 @@ Before marking any backend task complete:
 - [ ] No service role key in any client code
 - [ ] Indexes added for frequent queries
 - [ ] `docs/DATABASE_SCHEMA.md` updated
+- [ ] Playwright: API responses verified via `browser_network_requests`
+- [ ] Playwright: Error handling verified in-browser
+- [ ] Playwright: RLS enforcement confirmed (unauthorized user gets empty data)
+- [ ] Playwright: No console errors or unhandled rejections
