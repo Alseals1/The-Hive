@@ -17,6 +17,16 @@ const JOIN_CODE = "T253QL";
 // ── 1. /join/:code loads successfully ─────────────────────────────────────────
 
 test("join page loads for code T253QL", async ({ page }) => {
+  const consoleErrors: string[] = [];
+  // Capture JS errors and unhandled rejections; ignore network resource failures
+  // (ERR_NAME_NOT_RESOLVED etc. are expected when Supabase isn't reachable locally)
+  page.on("console", (msg) => {
+    if (msg.type() === "error" && !msg.text().includes("net::ERR_")) {
+      consoleErrors.push(msg.text());
+    }
+  });
+  page.on("pageerror", (err) => consoleErrors.push(err.message));
+
   await page.goto(`/join/${JOIN_CODE}`);
   await page.waitForLoadState("networkidle");
 
@@ -34,11 +44,23 @@ test("join page loads for code T253QL", async ({ page }) => {
 
   const heading = page.getByRole("heading");
   await expect(heading.first()).toBeVisible();
+
+  expect(consoleErrors, `Console errors: ${consoleErrors.join(", ")}`).toHaveLength(0);
 });
 
 // ── 2. /invite/:token loads even with an invalid token ────────────────────────
 
 test("invite page loads with an invalid token", async ({ page }) => {
+  const consoleErrors: string[] = [];
+  // Capture JS errors and unhandled rejections; ignore network resource failures
+  // (ERR_NAME_NOT_RESOLVED etc. are expected when Supabase isn't reachable locally)
+  page.on("console", (msg) => {
+    if (msg.type() === "error" && !msg.text().includes("net::ERR_")) {
+      consoleErrors.push(msg.text());
+    }
+  });
+  page.on("pageerror", (err) => consoleErrors.push(err.message));
+
   // A well-formed UUID that will not exist in the database
   const invalidToken = "00000000-0000-0000-0000-000000000000";
 
@@ -60,6 +82,8 @@ test("invite page loads with an invalid token", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: /go to login/i })
   ).toBeVisible();
+
+  expect(consoleErrors, `Console errors: ${consoleErrors.join(", ")}`).toHaveLength(0);
 });
 
 // ── 3. Roster page loads for an authenticated user ────────────────────────────
@@ -75,6 +99,16 @@ test("roster page loads for authenticated user", async ({ page }) => {
     );
     return;
   }
+
+  const consoleErrors: string[] = [];
+  // Capture JS errors and unhandled rejections; ignore network resource failures
+  // (ERR_NAME_NOT_RESOLVED etc. are expected when Supabase isn't reachable locally)
+  page.on("console", (msg) => {
+    if (msg.type() === "error" && !msg.text().includes("net::ERR_")) {
+      consoleErrors.push(msg.text());
+    }
+  });
+  page.on("pageerror", (err) => consoleErrors.push(err.message));
 
   // Log in via the UI so Supabase auth is properly initialised
   await page.goto("/auth/login");
@@ -106,4 +140,6 @@ test("roster page loads for authenticated user", async ({ page }) => {
 
   // At minimum the word "Roster" should appear somewhere on the page
   await expect(page.getByText(/roster/i).first()).toBeVisible();
+
+  expect(consoleErrors, `Console errors: ${consoleErrors.join(", ")}`).toHaveLength(0);
 });

@@ -28,3 +28,8 @@ dist-ssr
 *.sln
 *.sw?
 .playwright-cli/
+
+# Playwright auth state — contains real session tokens
+.playwright-auth-state.json
+playwright-report/
+test-results/

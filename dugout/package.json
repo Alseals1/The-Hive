@@ -8,7 +8,10 @@
     "build": "vite build && tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "playwright test",
+    "test:e2e": "playwright test --project=mobile",
+    "test:ci": "playwright test --project=chromium"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",

@@ -11,7 +11,7 @@
 
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'http://localhost:5174';
+const BASE_URL = '';
 
 test.describe('Scroll Trap Hook Verification', () => {
   test.beforeEach(async ({ page }) => {
@@ -89,7 +89,7 @@ test.describe('Scroll Trap Hook Verification', () => {
       let listenerAdded = false;
       let listenerRemoved = false;
 
-      const listener = (e: TouchEvent) => {
+      const listener = () => {
         // Would prevent scroll on non-scrollable area
       };
 
