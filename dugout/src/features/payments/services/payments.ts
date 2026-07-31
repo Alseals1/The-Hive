@@ -1,6 +1,16 @@
 import { supabase } from "@/lib/supabase";
 import type { Payment, PaymentStatus, PaymentWithProfile } from "../types";
 
+function deriveDisplayStatus(
+  status: PaymentStatus,
+  due_date: string | null,
+): PaymentStatus {
+  if (status === "pending" && due_date && new Date(due_date) < new Date()) {
+    return "overdue";
+  }
+  return status;
+}
+
 export async function getTeamPayments(
   teamId: string,
 ): Promise<PaymentWithProfile[]> {
@@ -22,7 +32,8 @@ export async function getTeamPayments(
       amount_cents: row.amount_cents,
       description: row.description,
       due_date: row.due_date,
-      status: row.status,
+      status: deriveDisplayStatus(row.status, row.due_date),
+      notes: row.notes,
       team_id: row.team_id,
       user_id: row.user_id,
       created_by: row.created_by,
@@ -44,7 +55,7 @@ export async function getMyPayments(teamId: string): Promise<Payment[]> {
   const { data, error } = await supabase
     .from("payments")
     .select(
-      "id, amount_cents, description, due_date, status, team_id, user_id, created_by, paid_at, created_at, updated_at",
+      "id, amount_cents, description, due_date, status, notes, team_id, user_id, created_by, paid_at, created_at, updated_at",
     )
     .eq("team_id", teamId)
     .eq("user_id", user.id)
@@ -52,7 +63,10 @@ export async function getMyPayments(teamId: string): Promise<Payment[]> {
 
   if (error) throw new Error(error.message);
 
-  return data ?? [];
+  return (data ?? []).map((row) => ({
+    ...row,
+    status: deriveDisplayStatus(row.status, row.due_date),
+  }));
 }
 
 export async function createPaymentsForTeam(
@@ -81,12 +95,40 @@ export async function createPaymentsForTeam(
 export async function updatePaymentStatus(
   id: string,
   status: PaymentStatus,
+  notes?: string,
 ): Promise<void> {
   const { error } = await supabase
     .from("payments")
     .update({
       status,
       paid_at: status === "paid" ? new Date().toISOString() : null,
+      ...(notes !== undefined ? { notes } : {}),
+    })
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function verifyPayment(id: string): Promise<void> {
+  const { error } = await supabase
+    .from("payments")
+    .update({
+      status: "paid",
+      paid_at: new Date().toISOString(),
+      notes: null,
+    })
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function declinePayment(id: string): Promise<void> {
+  const { error } = await supabase
+    .from("payments")
+    .update({
+      status: "pending",
+      paid_at: null,
+      notes: null,
     })
     .eq("id", id);
 

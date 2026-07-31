@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import { CheckCircle2, Clock, AlertTriangle, MinusCircle } from "lucide-react";
+import { CheckCircle2, Clock, AlertTriangle, MinusCircle, Hourglass } from "lucide-react";
 import type { PaymentStatus } from "../types";
 
 interface PaymentStatusBadgeProps {
@@ -30,6 +30,11 @@ const STATUS_CONFIG: Record<
     label: "WAIVED",
     Icon: MinusCircle,
     className: "bg-sky-500/15 text-sky-400 border border-sky-500/30",
+  },
+  pending_confirmation: {
+    label: "AWAITING",
+    Icon: Hourglass,
+    className: "bg-amber-500/15 text-amber-400 border border-amber-500/30",
   },
 };
 
