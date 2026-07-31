@@ -145,7 +145,7 @@ function JoinTeamPage() {
                 {teamPreview.name}
               </span>
             </p>
-            <p className="text-sm text-pitch-400 mb-1">
+            <p className="text-sm text-pitch-200 mb-1">
               {teamPreview.sport}
               {teamPreview.season ? ` • ${teamPreview.season} season` : ""}
             </p>
@@ -154,7 +154,7 @@ function JoinTeamPage() {
             {/* Role picker */}
             {!isAlreadyMember && (
             <div className="w-full max-w-xs mb-6 text-left">
-              <p className="text-xs font-display font-600 uppercase tracking-widest text-pitch-400 mb-3 text-center">
+              <p className="text-xs font-display font-600 uppercase tracking-widest text-pitch-200 mb-3 text-center">
                 Joining as
               </p>
               <div className="space-y-2">
@@ -184,7 +184,7 @@ function JoinTeamPage() {
                       >
                         {option.label}
                       </p>
-                      <p className="text-xs text-pitch-400">{option.description}</p>
+                      <p className="text-xs text-pitch-200">{option.description}</p>
                     </div>
                   </button>
                 ))}
@@ -197,7 +197,7 @@ function JoinTeamPage() {
               <div className="w-full max-w-xs space-y-3">
                 <button
                   onClick={() => storeAndGo("/auth/signup")}
-                  className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm flex items-center justify-center gap-2"
+                  className="w-full py-3.5 rounded-xl bg-ember text-pitch-950 font-display font-700 uppercase tracking-wider text-sm flex items-center justify-center gap-2"
                 >
                   <UserPlus size={16} />
                   Create Account & Join
