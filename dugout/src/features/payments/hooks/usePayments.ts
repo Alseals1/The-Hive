@@ -5,6 +5,8 @@ import {
   getMyPayments,
   createPaymentsForTeam,
   updatePaymentStatus,
+  verifyPayment,
+  declinePayment,
 } from "../services/payments";
 import { toast } from "sonner";
 
@@ -62,6 +64,52 @@ export function useUpdatePaymentStatus(teamId: string) {
     },
     onError: () => {
       toast.error("Failed to update payment");
+    },
+  });
+}
+
+export function useSelfReportPayment(teamId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, method }: { id: string; method: string }) =>
+      updatePaymentStatus(id, "pending_confirmation", method),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payments", "mine", teamId] });
+      queryClient.invalidateQueries({ queryKey: ["payments", "team", teamId] });
+      toast.success("Payment reported — awaiting confirmation");
+    },
+    onError: () => {
+      toast.error("Failed to report payment");
+    },
+  });
+}
+
+export function useVerifyPayment(teamId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id }: { id: string }) => verifyPayment(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payments", "team", teamId] });
+      queryClient.invalidateQueries({ queryKey: ["payments", "mine", teamId] });
+      toast.success("Payment verified");
+    },
+    onError: () => {
+      toast.error("Failed to verify payment");
+    },
+  });
+}
+
+export function useDeclinePayment(teamId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id }: { id: string }) => declinePayment(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payments", "team", teamId] });
+      queryClient.invalidateQueries({ queryKey: ["payments", "mine", teamId] });
+      toast.success("Payment declined — returned to pending");
+    },
+    onError: () => {
+      toast.error("Failed to decline payment");
     },
   });
 }

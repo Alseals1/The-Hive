@@ -331,6 +331,7 @@ export type Database = {
           description: string
           due_date: string | null
           id: string
+          notes: string | null
           paid_at: string | null
           status: Database["public"]["Enums"]["payment_status"]
           stripe_session_id: string | null
@@ -345,6 +346,7 @@ export type Database = {
           description: string
           due_date?: string | null
           id?: string
+          notes?: string | null
           paid_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           stripe_session_id?: string | null
@@ -359,6 +361,7 @@ export type Database = {
           description?: string
           due_date?: string | null
           id?: string
+          notes?: string | null
           paid_at?: string | null
           status?: Database["public"]["Enums"]["payment_status"]
           stripe_session_id?: string | null
@@ -720,7 +723,7 @@ export type Database = {
     Enums: {
       attendance_status: "yes" | "no" | "maybe"
       event_type: "game" | "practice" | "tournament" | "other"
-      payment_status: "pending" | "paid" | "waived" | "overdue"
+      payment_status: "pending" | "paid" | "waived" | "overdue" | "pending_confirmation"
       team_role: "admin" | "coach" | "manager" | "player" | "parent"
     }
     CompositeTypes: {
@@ -854,7 +857,7 @@ export const Constants = {
     Enums: {
       attendance_status: ["yes", "no", "maybe"],
       event_type: ["game", "practice", "tournament", "other"],
-      payment_status: ["pending", "paid", "waived", "overdue"],
+      payment_status: ["pending", "paid", "waived", "overdue", "pending_confirmation"],
       team_role: ["admin", "coach", "manager", "player", "parent"],
     },
   },
