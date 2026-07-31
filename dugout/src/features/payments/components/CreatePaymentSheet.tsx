@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { FC } from "react";
 import { X, DollarSign, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,14 @@ export const CreatePaymentSheet: FC<CreatePaymentSheetProps> = ({
   const [amount, setAmount] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FormErrors>({});
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   const { data: roster } = useRoster(teamId);
   const { mutate: createPayments, isPending, error } =

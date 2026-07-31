@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FC } from "react";
 import { Plus } from "lucide-react";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
+import { FormError } from "@/components/shared/FormError";
 import {
   useSupplyItems,
   useAddSupplyItem,
@@ -29,6 +30,7 @@ export const SupplySignupSection: FC<SupplySignupSectionProps> = ({
 }) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newLabel, setNewLabel] = useState("");
+  const [labelError, setLabelError] = useState<string | undefined>();
   const [claimError, setClaimError] = useState<string | null>(null);
 
   const { data: items, isLoading } = useSupplyItems(eventId);
@@ -41,7 +43,11 @@ export const SupplySignupSection: FC<SupplySignupSectionProps> = ({
 
   function handleAdd(e: React.FormEvent) {
     e.preventDefault();
-    if (!newLabel.trim()) return;
+    if (!newLabel.trim()) {
+      setLabelError("Item name is required.");
+      return;
+    }
+    setLabelError(undefined);
     addItem(
       { event_id: eventId, team_id: teamId, label: newLabel.trim() },
       {
@@ -100,11 +106,15 @@ export const SupplySignupSection: FC<SupplySignupSectionProps> = ({
               type="text"
               autoFocus
               value={newLabel}
-              onChange={(e) => setNewLabel(e.target.value)}
+              onChange={(e) => {
+                setNewLabel(e.target.value);
+                if (labelError) setLabelError(undefined);
+              }}
               placeholder="e.g. Oranges, Water bottles…"
               maxLength={120}
               className={inputCls}
             />
+            <FormError message={labelError} />
           </div>
 
           {addError && (
@@ -116,14 +126,14 @@ export const SupplySignupSection: FC<SupplySignupSectionProps> = ({
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={() => { setShowAddForm(false); setNewLabel(""); }}
+              onClick={() => { setShowAddForm(false); setNewLabel(""); setLabelError(undefined); }}
               className="flex-1 py-3 rounded-xl border border-pitch-700 text-pitch-400 text-xs font-display font-600 uppercase tracking-wider active:bg-pitch-700"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={isAdding || !newLabel.trim()}
+              disabled={isAdding}
               className="flex-1 py-3 rounded-xl bg-ember text-white text-xs font-display font-700 uppercase tracking-wider disabled:opacity-40"
             >
               {isAdding ? "Adding…" : "Add Item"}

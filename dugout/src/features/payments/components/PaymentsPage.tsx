@@ -17,6 +17,7 @@ import { TeamBottomNav } from "@/components/shared/BottomNav";
 import { LoadingSpinner } from "@/components/shared/LoadingSpinner";
 import { ErrorMessage } from "@/components/shared/ErrorMessage";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { ConfirmDialog } from "@/components/shared/ConfirmDialog";
 import {
   useTeamPayments,
   useMyPayments,
@@ -41,7 +42,7 @@ const STATUS_CYCLE: Record<
 };
 
 function formatCents(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
 }
 
 function formatShortDate(iso: string): string {
@@ -76,6 +77,7 @@ function CoachPaymentsView({ teamId, onCreateNew }: CoachPaymentsViewProps) {
   const { mutate: updateStatus } = useUpdatePaymentStatus(teamId);
   const { mutate: verifyPayment, isPending: isVerifying } = useVerifyPayment(teamId);
   const { mutate: declinePayment, isPending: isDeclining } = useDeclinePayment(teamId);
+  const [pendingChange, setPendingChange] = useState<{ id: string; newStatus: Exclude<PaymentStatus, "pending_confirmation"> } | null>(null);
 
   if (isLoading) {
     return (
@@ -119,7 +121,7 @@ function CoachPaymentsView({ teamId, onCreateNew }: CoachPaymentsViewProps) {
   ).length;
 
   return (
-    <div className="px-4 py-4 space-y-6">
+    <div className="px-4 py-4 space-y-6 overflow-x-hidden">
       {/* Global summary strip */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex-1 min-w-0 bg-pitch-700/40 border border-pitch-600/40 rounded-xl px-4 py-3 flex items-center gap-3">
@@ -185,7 +187,7 @@ function CoachPaymentsView({ teamId, onCreateNew }: CoachPaymentsViewProps) {
             >
               <div className="flex items-start gap-4 mb-3">
                 <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-display uppercase tracking-widest text-pitch-400 mb-0.5">
+                  <p className="text-[10px] font-display uppercase tracking-widest text-pitch-400 mb-0.5 truncate">
                     {description}
                   </p>
                   <div className="flex items-baseline gap-2">
@@ -276,10 +278,7 @@ function CoachPaymentsView({ teamId, onCreateNew }: CoachPaymentsViewProps) {
                   <button
                     key={payment.id}
                     onClick={() =>
-                      updateStatus({
-                        id: payment.id,
-                        status: STATUS_CYCLE[payment.status as keyof typeof STATUS_CYCLE],
-                      })
+                      setPendingChange({ id: payment.id, newStatus: STATUS_CYCLE[payment.status as keyof typeof STATUS_CYCLE] })
                     }
                     className="w-full flex items-center justify-between px-4 py-3 bg-pitch-800/70 border border-pitch-700/50 rounded-xl active:bg-pitch-700/60 transition-colors text-left gap-3"
                   >
@@ -314,6 +313,20 @@ function CoachPaymentsView({ teamId, onCreateNew }: CoachPaymentsViewProps) {
       >
         <Plus size={24} className="text-white" />
       </button>
+
+      <ConfirmDialog
+        open={pendingChange !== null}
+        onClose={() => setPendingChange(null)}
+        onConfirm={() => {
+          if (pendingChange) {
+            updateStatus({ id: pendingChange.id, status: pendingChange.newStatus });
+          }
+          setPendingChange(null);
+        }}
+        title="Change Payment Status?"
+        description="This will update the member's payment status. Are you sure?"
+        confirmLabel="Update Status"
+      />
     </div>
   );
 }
@@ -380,17 +393,6 @@ export const PaymentsPage: FC = () => {
           <PageHeader
             title="Payments"
             backTo="/teams"
-            action={
-              isCoach ? (
-                <button
-                  onClick={() => setShowCreate(true)}
-                  className="p-2 rounded-lg text-pitch-300 active:bg-pitch-700"
-                  aria-label="New payment"
-                >
-                  <Plus size={22} />
-                </button>
-              ) : undefined
-            }
           />
         }
         footer={<TeamBottomNav teamId={teamId} />}

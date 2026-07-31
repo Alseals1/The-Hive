@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import type { FC } from "react";
 import { X, Trophy, Zap, Award, CalendarDays } from "lucide-react";
 import { useCreateEvent, useUpdateEvent } from "../hooks/useEvents";
@@ -23,6 +23,7 @@ const labelCls = "block text-xs font-display font-600 uppercase tracking-wider t
 type CreateEventErrors = {
   title?: string;
   startsAt?: string;
+  endsAt?: string;
 };
 
 function toLocalDatetimeValue(iso: string | null | undefined): string {
@@ -45,6 +46,14 @@ function EventTypeButtonIcon({ type }: { type: EventType }) {
 export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, existing }) => {
   useScrollTrap();
   const isEditing = !!existing;
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [onClose]);
 
   const [title, setTitle] = useState(existing?.title ?? "");
   const [type, setType] = useState<EventType>(existing?.type ?? "practice");
@@ -73,7 +82,11 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
       });
       return errs;
     }
-    return {};
+    const errs: CreateEventErrors = {};
+    if (endsAt && startsAt && new Date(endsAt) < new Date(startsAt)) {
+      errs.endsAt = "End time must be after start time.";
+    }
+    return errs;
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -163,7 +176,12 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
                 setTitle(e.target.value);
                 if (fieldErrors.title) setFieldErrors(prev => ({ ...prev, title: undefined }));
               }}
-              placeholder="vs. Eagles"
+              placeholder={
+                type === "game" ? "vs. Eagles" :
+                type === "practice" ? "Morning practice" :
+                type === "tournament" ? "Summer Slam Invitational" :
+                "Event name"
+              }
               error={fieldErrors.title}
               errorId="event-title-error"
               maxLength={100}
@@ -200,9 +218,13 @@ export const CreateEventSheet: FC<CreateEventSheetProps> = ({ teamId, onClose, e
                 type="datetime-local"
                 value={endsAt}
                 min={startsAt}
-                onChange={(e) => setEndsAt(e.target.value)}
+                onChange={(e) => {
+                  setEndsAt(e.target.value);
+                  if (fieldErrors.endsAt) setFieldErrors(prev => ({ ...prev, endsAt: undefined }));
+                }}
                 className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-700/40 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
               />
+              <FormError message={fieldErrors.endsAt} />
             </div>
           </div>
 

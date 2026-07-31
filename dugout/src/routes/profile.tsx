@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
+import { toast } from "sonner";
 import { User } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { resetPasswordConfirmSchema } from "@/lib/validationSchemas";
@@ -30,14 +31,12 @@ function ProfilePage() {
   // Display name state
   const [displayName, setDisplayName] = useState("");
   const [displayNameError, setDisplayNameError] = useState<string | undefined>();
-  const [displayNameSaved, setDisplayNameSaved] = useState(false);
 
   // Password state
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordFieldErrors, setPasswordFieldErrors] = useState<PasswordErrors>({});
   const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [passwordSaved, setPasswordSaved] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
 
   useEffect(() => {
@@ -58,8 +57,7 @@ function ProfilePage() {
       { full_name: trimmed },
       {
         onSuccess: () => {
-          setDisplayNameSaved(true);
-          setTimeout(() => setDisplayNameSaved(false), 3000);
+          toast.success("Display name saved.");
         },
       },
     );
@@ -96,10 +94,9 @@ function ProfilePage() {
     if (error) {
       setPasswordError(error.message);
     } else {
-      setPasswordSaved(true);
+      toast.success("Password updated successfully.");
       setPassword("");
       setConfirmPassword("");
-      setTimeout(() => setPasswordSaved(false), 4000);
     }
     setPasswordLoading(false);
   }
@@ -145,18 +142,12 @@ function ProfilePage() {
                     onChange={(e) => {
                       setDisplayName(e.target.value);
                       if (displayNameError) setDisplayNameError(undefined);
-                      if (displayNameSaved) setDisplayNameSaved(false);
                     }}
                     placeholder="Your name"
                     error={displayNameError}
                   />
                 </div>
 
-                {displayNameSaved && (
-                  <p className="bg-field-muted border border-field/20 rounded-xl px-4 py-3 text-sm text-field font-body">
-                    Display name saved.
-                  </p>
-                )}
                 {updateProfileMutation.error && (
                   <p className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-400 font-body">
                     {updateProfileMutation.error instanceof Error
@@ -210,16 +201,11 @@ function ProfilePage() {
                           confirmPassword: undefined,
                         }));
                     }}
-                    placeholder="••••••••"
+                    placeholder="Confirm new password"
                     error={passwordFieldErrors.confirmPassword}
                   />
                 </div>
 
-                {passwordSaved && (
-                  <p className="bg-field-muted border border-field/20 rounded-xl px-4 py-3 text-sm text-field font-body">
-                    Password updated successfully.
-                  </p>
-                )}
                 {passwordError && (
                   <p className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-400 font-body">
                     {passwordError}
