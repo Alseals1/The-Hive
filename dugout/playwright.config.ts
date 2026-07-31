@@ -7,10 +7,17 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: "http://localhost:5173",
-    viewport: { width: 390, height: 844 },
     actionTimeout: 10_000,
   },
   projects: [
+    {
+      name: "mobile",
+      use: { ...devices["iPhone 14"] },
+    },
+    {
+      name: "mobile-se",
+      use: { ...devices["iPhone SE"] },
+    },
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
