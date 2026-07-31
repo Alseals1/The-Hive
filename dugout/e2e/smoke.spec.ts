@@ -11,6 +11,7 @@
  */
 
 import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 
 const JOIN_CODE = "T253QL";
 
@@ -48,14 +49,36 @@ test("join page loads for code T253QL", async ({ page }) => {
   expect(consoleErrors, `Console errors: ${consoleErrors.join(", ")}`).toHaveLength(0);
 });
 
+// ── 1b. /join/:code has no critical accessibility violations ──────────────────
+
+test("join page has no critical accessibility violations", async ({ page }) => {
+  await page.goto(`/join/${JOIN_CODE}`);
+  await page.waitForLoadState("networkidle");
+  const results = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa"])
+    .analyze();
+  const critical = results.violations.filter(
+    (v) => v.impact === "critical" || v.impact === "serious"
+  );
+  expect(
+    critical,
+    `Critical a11y violations:\n${critical.map((v) => `[${v.impact}] ${v.id}: ${v.description}`).join("\n")}`
+  ).toHaveLength(0);
+});
+
 // ── 2. /invite/:token loads even with an invalid token ────────────────────────
 
 test("invite page loads with an invalid token", async ({ page }) => {
   const consoleErrors: string[] = [];
-  // Capture JS errors and unhandled rejections; ignore network resource failures
-  // (ERR_NAME_NOT_RESOLVED etc. are expected when Supabase isn't reachable locally)
+  // Capture JS errors and unhandled rejections; ignore network resource failures.
+  // "net::ERR_" covers DNS / connection failures; "Failed to load resource" covers
+  // HTTP 404/5xx responses from external resources (e.g. Supabase unreachable).
   page.on("console", (msg) => {
-    if (msg.type() === "error" && !msg.text().includes("net::ERR_")) {
+    if (
+      msg.type() === "error" &&
+      !msg.text().includes("net::ERR_") &&
+      !msg.text().includes("Failed to load resource")
+    ) {
       consoleErrors.push(msg.text());
     }
   });
