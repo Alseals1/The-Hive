@@ -87,15 +87,21 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
               optional
             </span>
           </label>
-          <input
+          <select
             id="team-sport"
-            type="text"
             value={sport}
             onChange={(e) => setSport(e.target.value)}
-            placeholder="Baseball"
-            maxLength={50}
-            className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base placeholder:text-pitch-500 focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
-          />
+            className="w-full px-4 py-3.5 rounded-xl border border-pitch-700 bg-pitch-800 text-pitch-50 text-base focus:outline-none focus:border-ember focus:ring-1 focus:ring-ember transition-colors"
+          >
+            <option value="">Select a sport…</option>
+            <option value="baseball">Baseball</option>
+            <option value="softball">Softball</option>
+            <option value="basketball">Basketball</option>
+            <option value="soccer">Soccer</option>
+            <option value="football">Football</option>
+            <option value="volleyball">Volleyball</option>
+            <option value="other">Other</option>
+          </select>
         </div>
 
         <div>

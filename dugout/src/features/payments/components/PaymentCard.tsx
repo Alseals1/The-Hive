@@ -13,7 +13,7 @@ const PAYMENT_METHODS = ["Venmo", "Cash", "Zelle"] as const;
 type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
 function formatCents(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(cents / 100);
 }
 
 function formatDate(iso: string): string {

@@ -121,16 +121,21 @@ export const TeamSettingsPage: FC = () => {
 
             <div>
               <label htmlFor="settings-sport" className={labelCls}>Sport</label>
-              <input
+              <select
                 id="settings-sport"
-                type="text"
                 disabled={!canEdit}
                 value={sport}
                 onChange={(e) => setSport(e.target.value)}
-                placeholder="Baseball"
-                maxLength={50}
                 className={inputCls}
-              />
+              >
+                <option value="baseball">Baseball</option>
+                <option value="softball">Softball</option>
+                <option value="basketball">Basketball</option>
+                <option value="soccer">Soccer</option>
+                <option value="football">Football</option>
+                <option value="volleyball">Volleyball</option>
+                <option value="other">Other</option>
+              </select>
             </div>
 
             <div>
@@ -153,7 +158,7 @@ export const TeamSettingsPage: FC = () => {
             {canEdit && (
               <button
                 type="submit"
-                disabled={isPending || !name.trim()}
+                disabled={isPending}
                 className="w-full py-3.5 rounded-xl bg-ember text-white font-display font-700 uppercase tracking-wider text-sm disabled:opacity-40"
               >
                 {isPending ? "Saving…" : "Save Changes"}
