@@ -13,6 +13,12 @@ export const Route = createFileRoute("/auth/login")({
 const labelCls =
   "block text-xs font-display font-600 uppercase tracking-wider text-pitch-300 mb-1.5";
 
+function friendlyAuthError(msg: string): string {
+  if (msg === "Failed to fetch" || msg.toLowerCase().includes("networkerror") || msg.toLowerCase().includes("failed to fetch"))
+    return "Unable to connect. Please check your internet connection and try again.";
+  return msg;
+}
+
 type LoginErrors = {
   email?: string;
   password?: string;
@@ -56,7 +62,7 @@ function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      setError(error.message);
+      setError(friendlyAuthError(error.message));
     } else {
       // usePendingJoin (root layout) handles any pending join_code / invite_token
       await navigate({ to: "/teams" });
