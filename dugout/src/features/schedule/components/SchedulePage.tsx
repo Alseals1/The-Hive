@@ -15,6 +15,10 @@ import { EventCard } from "./EventCard";
 import { CreateEventSheet } from "./CreateEventSheet";
 import type { EventWithAttendance } from "../types";
 import { isEventPast } from "../utils/eventTiming";
+import { WelcomeFlow } from "@/features/onboarding/components/WelcomeFlow";
+import { useWelcomeFlow } from "@/features/onboarding/hooks/useWelcomeFlow";
+import { useUser } from "@/hooks/useAuth";
+import { useProfile } from "@/features/profile/hooks/useProfile";
 
 const TournamentSheet = lazy(() => import("./TournamentSheet").then((m) => ({ default: m.TournamentSheet })));
 const SupplyListSheet = lazy(() => import("./SupplyListSheet").then((m) => ({ default: m.SupplyListSheet })));
@@ -24,6 +28,10 @@ export const SchedulePage: FC = () => {
   const { userRole } = useRouteContext({ from: "/teams/$teamId" });
   const { data: events, isLoading, error, refetch } = useTeamEvents(teamId);
   const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent(teamId);
+  const { visible: showWelcome, dismiss: dismissWelcome } = useWelcomeFlow();
+  const { user } = useUser();
+  const { data: profile } = useProfile(user?.id ?? "");
+  const firstName = profile?.full_name?.split(" ")[0] ?? "";
   const [showCreate, setShowCreate] = useState(false);
   const [editing, setEditing] = useState<EventWithAttendance | undefined>(undefined);
   const [tournament, setTournament] = useState<EventWithAttendance | undefined>(undefined);
@@ -51,6 +59,7 @@ export const SchedulePage: FC = () => {
   return (
     <>
     <Helmet><title>Schedule | Dugout</title></Helmet>
+    {showWelcome && <WelcomeFlow firstName={firstName} onDismiss={dismissWelcome} />}
     <PageShell
       header={
         <PageHeader
