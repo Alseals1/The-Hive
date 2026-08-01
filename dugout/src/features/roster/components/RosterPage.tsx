@@ -80,8 +80,8 @@ export const RosterPage: FC = () => {
       {!isLoading && !error && (!members || members.length === 0) && (
         <EmptyState
           icon={<Users size={24} />}
-          title="No members yet"
-          description="Team members will appear here once they join"
+          title="Your dugout is empty"
+          description="Share the invite code and build your crew."
         />
       )}
 
