@@ -110,7 +110,7 @@ function JoinTeamPage() {
     <Helmet><title>Join Team | Dugout</title></Helmet>
     <PageShell header={<PageHeader title="Join Team" />}>
       <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-        {isLoading && <LoadingSpinner size="lg" />}
+        {isLoading && <LoadingSpinner size="lg" label="Looking up your team..." />}
 
         {!isLoading && !teamPreview && (
           <>
@@ -155,7 +155,7 @@ function JoinTeamPage() {
             {!isAlreadyMember && (
             <div className="w-full max-w-xs mb-6 text-left">
               <p className="text-xs font-display font-600 uppercase tracking-widest text-pitch-200 mb-3 text-center">
-                Joining as
+                Who's joining?
               </p>
               <div className="space-y-2">
                 {JOINABLE_ROLES.map((option) => (

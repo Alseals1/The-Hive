@@ -121,7 +121,7 @@ export const SchedulePage: FC = () => {
       <div className="px-4 py-6">
         {isLoading && (
           <div className="flex items-center justify-center py-16">
-            <LoadingSpinner size="lg" />
+            <LoadingSpinner size="lg" label="Checking the schedule..." />
           </div>
         )}
 

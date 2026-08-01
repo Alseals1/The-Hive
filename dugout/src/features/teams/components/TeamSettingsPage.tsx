@@ -79,7 +79,7 @@ export const TeamSettingsPage: FC = () => {
       <div className="px-4 py-6">
         {isLoading && (
           <div className="flex items-center justify-center py-12">
-            <LoadingSpinner size="lg" />
+            <LoadingSpinner size="lg" label="Loading settings..." />
           </div>
         )}
 

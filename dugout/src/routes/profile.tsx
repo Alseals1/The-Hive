@@ -115,7 +115,7 @@ function ProfilePage() {
       >
         {isLoading ? (
           <div className="flex items-center justify-center py-16">
-            <LoadingSpinner size="lg" />
+            <LoadingSpinner size="lg" label="Loading your profile..." />
           </div>
         ) : (
           <div className="px-4 py-6 space-y-6">
