@@ -63,6 +63,15 @@ export default {
       backgroundImage: {
         'ember-gradient': 'linear-gradient(135deg, #FF5C1A 0%, #E04A0F 100%)',
       },
+      keyframes: {
+        fadeSlideUp: {
+          '0%': { opacity: '0', transform: 'translateY(16px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      animation: {
+        'fade-slide-up': 'fadeSlideUp 0.35s ease-out both',
+      },
     },
   },
   plugins: [],
