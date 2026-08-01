@@ -83,7 +83,7 @@ export const AnnouncementsPage: FC = () => {
             message={
               error instanceof Error
                 ? error.message
-                : "Failed to load announcements"
+                : "Couldn't load announcements."
             }
             onRetry={() => refetch()}
           />

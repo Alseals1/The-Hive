@@ -43,7 +43,7 @@ export class ErrorBoundary extends Component<Props, State> {
           Something went wrong
         </h1>
         <p className="text-base font-body text-pitch-400 mb-8 text-center max-w-xs">
-          An unexpected error occurred. You can try again or return to your teams.
+          Something broke unexpectedly. Give it another shot or head back to your teams.
         </p>
         <div className="flex flex-col xs:flex-row gap-3">
           <button

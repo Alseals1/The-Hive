@@ -7,7 +7,7 @@ interface ErrorMessageProps {
 }
 
 export const ErrorMessage: FC<ErrorMessageProps> = ({
-  message = "Something went wrong. Please try again.",
+  message = "Something didn't work. Give it another shot.",
   onRetry,
 }) => {
   return (

@@ -15,7 +15,7 @@ const labelCls =
 
 function friendlyAuthError(msg: string): string {
   if (msg === "Failed to fetch" || msg.toLowerCase().includes("networkerror") || msg.toLowerCase().includes("failed to fetch"))
-    return "Unable to connect. Please check your internet connection and try again.";
+    return "Can't reach the dugout right now. Check your connection.";
   return msg;
 }
 

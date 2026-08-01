@@ -60,7 +60,7 @@ function InviteAcceptPage() {
               <XCircle size={28} className="text-red-400" />
             </div>
             <h2 className="font-display text-2xl font-700 uppercase tracking-wide text-pitch-50 mb-2">
-              Invite Invalid
+              Link Expired
             </h2>
             <p className="text-sm text-pitch-300 mb-8 max-w-xs leading-relaxed">
               This invite link has expired, already been used, or doesn't exist.

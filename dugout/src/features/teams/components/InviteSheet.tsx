@@ -267,7 +267,7 @@ export const InviteSheet: FC<InviteSheetProps> = ({ teamId, onClose }) => {
                   <p className="text-sm text-red-400 mb-4">
                     {error instanceof Error
                       ? error.message
-                      : "Failed to create invite."}
+                      : "Couldn't generate that link. Try again."}
                   </p>
                 )}
 
