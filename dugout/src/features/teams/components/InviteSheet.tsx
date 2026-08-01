@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { FC } from "react";
+import { toast } from "sonner";
 import { X, Copy, Check, Link, RefreshCw } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useCreateInvite } from "@/features/teams/hooks/useInvites";
@@ -76,6 +77,7 @@ export const InviteSheet: FC<InviteSheetProps> = ({ teamId, onClose }) => {
     if (!urlToCopy) return;
     await navigator.clipboard.writeText(urlToCopy);
     setCopied(true);
+    toast.success("Link copied — send it to your crew.");
     setTimeout(() => setCopied(false), 2000);
   }
 

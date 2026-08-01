@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import type { FC } from "react";
+import { toast } from "sonner";
 import { X, DollarSign, Users } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { FormError } from "@/components/shared/FormError";
@@ -69,7 +70,7 @@ export const CreatePaymentSheet: FC<CreatePaymentSheetProps> = ({
         amount_cents: Math.round(parseFloat(amount) * 100),
         due_date: dueDate || null,
       },
-      { onSuccess: onClose },
+      { onSuccess: () => { toast.success("Payment request sent."); onClose(); } },
     );
   }
 

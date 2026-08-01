@@ -61,7 +61,7 @@ export const TeamSettingsPage: FC = () => {
         sport: sport.trim() || "baseball",
       },
       {
-        onSuccess: () => toast.success("Settings saved"),
+        onSuccess: () => toast.success("Saved."),
         onError: (err) =>
           toast.error(err instanceof Error ? err.message : "Couldn't save that. Give it another shot."),
       }

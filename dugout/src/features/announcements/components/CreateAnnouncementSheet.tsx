@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import type { FC } from "react";
+import { toast } from "sonner";
 import { X, Pin } from "lucide-react";
 import { createAnnouncementSchema } from "@/lib/validationSchemas";
 import { FormError } from "@/components/shared/FormError";
@@ -73,12 +74,12 @@ export const CreateAnnouncementSheet: FC<CreateAnnouncementSheetProps> = ({
     if (isEditing && existing) {
       update(
         { id: existing.id, patch: { title: title.trim(), body: body.trim(), pinned } },
-        { onSuccess: onClose },
+        { onSuccess: () => { toast.success("Post updated."); onClose(); } },
       );
     } else {
       create(
         { team_id: teamId, title: title.trim(), body: body.trim(), pinned },
-        { onSuccess: onClose },
+        { onSuccess: () => { toast.success("Your team just got the news."); onClose(); } },
       );
     }
   }
