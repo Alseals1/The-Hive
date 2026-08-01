@@ -141,7 +141,7 @@ export const InviteSheet: FC<InviteSheetProps> = ({ teamId, onClose }) => {
             ) : joinCode ? (
               <>
                 <p className="text-xs font-display font-600 uppercase tracking-widest text-pitch-400 mb-3">
-                  Share this code or QR
+                  Share with your crew
                 </p>
 
                 {/* QR Code */}
@@ -226,7 +226,7 @@ export const InviteSheet: FC<InviteSheetProps> = ({ teamId, onClose }) => {
             {!inviteUrl ? (
               <>
                 <p className="text-xs font-display font-600 uppercase tracking-widest text-pitch-400 mb-3">
-                  Joining as
+                  Who's joining?
                 </p>
                 <div className="space-y-2 mb-6">
                   {ROLE_OPTIONS.map((option) => (
