@@ -106,8 +106,8 @@ function CoachPaymentsView({ teamId, onCreateNew }: CoachPaymentsViewProps) {
       <div className="px-4 py-6">
         <EmptyState
           icon={<DollarSign size={24} />}
-          title="No payments yet"
-          description="Create a payment request to collect dues or fees from your team"
+          title="No dues tracked yet"
+          description="Create a payment request to collect dues or fees from your team."
           action={{ label: "Create Payment", onClick: onCreateNew }}
         />
       </div>
@@ -360,8 +360,8 @@ function PlayerPaymentsView({ teamId }: { teamId: string }) {
       <div className="px-4 py-6">
         <EmptyState
           icon={<DollarSign size={24} />}
-          title="No payments due"
-          description="When your coach creates a payment request, it will appear here"
+          title="You're all clear"
+          description="No payments due right now."
         />
       </div>
     );

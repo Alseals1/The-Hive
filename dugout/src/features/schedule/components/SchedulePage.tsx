@@ -137,11 +137,11 @@ export const SchedulePage: FC = () => {
         {!isLoading && !error && (events ?? []).length === 0 && (
           <EmptyState
             icon={<Calendar size={24} />}
-            title="No events yet"
+            title="No games on the board yet"
             description={
               canManage
-                ? "Tap the + button to add your first event"
-                : "Your coach hasn't added any events yet"
+                ? "Add your first event and let the season begin."
+                : "Nothing scheduled yet. Your coach is probably working on it — check back soon."
             }
             action={
               canManage

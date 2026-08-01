@@ -92,11 +92,11 @@ export const AnnouncementsPage: FC = () => {
         {!isLoading && !error && (announcements ?? []).length === 0 && (
           <EmptyState
             icon={<Megaphone size={24} />}
-            title="Nothing posted yet"
+            title={canPost ? "First announcement?" : "Nothing from Coach yet"}
             description={
               canPost
-                ? "Tap the pencil to write your first announcement"
-                : "Your coach hasn't posted any news yet"
+                ? "Your team is listening."
+                : "Stay tuned."
             }
             action={
               canPost
