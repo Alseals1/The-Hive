@@ -3,9 +3,15 @@ import { supabase } from "@/lib/supabase";
 import { NotFoundPage } from "@/components/shared/NotFoundPage";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { usePendingJoin } from "@/hooks/usePendingJoin";
+import { usePwa } from "@/hooks/usePwa";
+import { useInstallTrigger } from "@/features/onboarding/hooks/useInstallTrigger";
+import { InstallPromptSheet } from "@/features/onboarding/components/InstallPromptSheet";
 
 function RootComponent() {
   usePendingJoin();
+  const pwa = usePwa();
+  const showInstallPrompt = useInstallTrigger(pwa);
+
   return (
     <ErrorBoundary>
       <>
@@ -16,6 +22,7 @@ function RootComponent() {
           Skip to content
         </a>
         <Outlet />
+        {showInstallPrompt && <InstallPromptSheet pwa={pwa} />}
       </>
     </ErrorBoundary>
   );
