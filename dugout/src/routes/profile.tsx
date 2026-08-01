@@ -57,7 +57,7 @@ function ProfilePage() {
       { full_name: trimmed },
       {
         onSuccess: () => {
-          toast.success("Display name saved.");
+          toast.success("Name updated.");
         },
       },
     );
@@ -94,7 +94,7 @@ function ProfilePage() {
     if (error) {
       setPasswordError(error.message);
     } else {
-      toast.success("Password updated successfully.");
+      toast.success("You're all set.");
       setPassword("");
       setConfirmPassword("");
     }

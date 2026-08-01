@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Helmet } from "react-helmet-async";
 import { Plus, User } from "lucide-react";
 import { supabase } from "@/lib/supabase";
@@ -32,6 +33,7 @@ function TeamsPage() {
 
   function handleCreateSuccess(teamId: string) {
     setShowCreate(false);
+    toast.success("Your dugout is ready. Time to build your crew.");
     navigate({ to: "/teams/$teamId/schedule", params: { teamId } });
   }
 
