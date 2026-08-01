@@ -82,7 +82,7 @@ function CoachPaymentsView({ teamId, onCreateNew }: CoachPaymentsViewProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label="Loading payments..." />
       </div>
     );
   }
@@ -337,7 +337,7 @@ function PlayerPaymentsView({ teamId }: { teamId: string }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <LoadingSpinner size="lg" />
+        <LoadingSpinner size="lg" label="Loading payments..." />
       </div>
     );
   }

@@ -73,7 +73,7 @@ function TeamsPage() {
         <div className="px-4 py-4 space-y-3">
           {isLoading && (
             <div className="flex justify-center py-12">
-              <LoadingSpinner />
+              <LoadingSpinner label="Loading your team..." />
             </div>
           )}
 

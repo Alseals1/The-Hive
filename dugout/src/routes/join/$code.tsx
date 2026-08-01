@@ -110,7 +110,7 @@ function JoinTeamPage() {
     <Helmet><title>Join Team | Dugout</title></Helmet>
     <PageShell header={<PageHeader title="Join Team" />}>
       <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-        {isLoading && <LoadingSpinner size="lg" />}
+        {isLoading && <LoadingSpinner size="lg" label="Looking up your team..." />}
 
         {!isLoading && !teamPreview && (
           <>

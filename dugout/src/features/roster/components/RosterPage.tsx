@@ -66,7 +66,7 @@ export const RosterPage: FC = () => {
 
       {isLoading && (
         <div className="flex items-center justify-center py-12">
-          <LoadingSpinner size="lg" />
+          <LoadingSpinner size="lg" label="Fetching the roster..." />
         </div>
       )}
 
