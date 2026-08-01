@@ -1,4 +1,5 @@
 import { useEffect, useRef, type FC } from "react";
+import { toast } from "sonner";
 import type { UsePwaResult } from "@/hooks/usePwa";
 
 // ── Platform detection ──────────────────────────────────────────────────────
@@ -122,7 +123,14 @@ export const InstallPromptSheet: FC<InstallPromptSheetProps> = ({ pwa }) => {
 
   const handleInstall = async () => {
     const accepted = await pwa.promptInstall();
-    if (!accepted) pwa.snoozeInstall();
+    if (accepted) {
+      toast.success("You're in the dugout! ⚾", {
+        description: "Dugout is now on your home screen.",
+        duration: 4000,
+      });
+    } else {
+      pwa.snoozeInstall();
+    }
   };
 
   return (
