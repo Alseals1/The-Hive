@@ -147,7 +147,7 @@ export const RosterList: FC<RosterListProps> = ({
 
       {(updateRoleError || removeError) && (
         <p className="text-sm text-red-400 text-center mt-3 font-body px-4">
-          {(updateRoleError ?? removeError)?.message ?? 'Something went wrong'}
+          {(updateRoleError ?? removeError)?.message ?? "Something didn't work. Give it another shot."}
         </p>
       )}
 

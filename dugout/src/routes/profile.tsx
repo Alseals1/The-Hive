@@ -152,7 +152,7 @@ function ProfilePage() {
                   <p className="bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3 text-sm text-red-400 font-body">
                     {updateProfileMutation.error instanceof Error
                       ? updateProfileMutation.error.message
-                      : "Failed to save display name."}
+                      : "Couldn't save that. Give it another shot."}
                   </p>
                 )}
 

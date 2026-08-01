@@ -91,7 +91,7 @@ function CoachPaymentsView({ teamId, onCreateNew }: CoachPaymentsViewProps) {
     return (
       <ErrorMessage
         message={
-          error instanceof Error ? error.message : "Failed to load payments"
+          error instanceof Error ? error.message : "Couldn't load payments."
         }
         onRetry={() => refetch()}
       />
@@ -346,7 +346,7 @@ function PlayerPaymentsView({ teamId }: { teamId: string }) {
     return (
       <ErrorMessage
         message={
-          error instanceof Error ? error.message : "Failed to load payments"
+          error instanceof Error ? error.message : "Couldn't load payments."
         }
         onRetry={() => refetch()}
       />

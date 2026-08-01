@@ -63,7 +63,7 @@ export const TeamSettingsPage: FC = () => {
       {
         onSuccess: () => toast.success("Settings saved"),
         onError: (err) =>
-          toast.error(err instanceof Error ? err.message : "Failed to save settings"),
+          toast.error(err instanceof Error ? err.message : "Couldn't save that. Give it another shot."),
       }
     );
   }
@@ -84,7 +84,7 @@ export const TeamSettingsPage: FC = () => {
         )}
 
         {error && !isLoading && (
-          <ErrorMessage message={error instanceof Error ? error.message : "Failed to load team"} />
+          <ErrorMessage message={error instanceof Error ? error.message : "Couldn't load team settings."} />
         )}
 
         {!isLoading && !error && team && (

@@ -92,13 +92,13 @@ test("invite page loads with an invalid token", async ({ page }) => {
 
   await expect(page).toHaveTitle(/Join Team/i);
 
-  // The "Invite Invalid" error state should render
+  // The "Link Expired" error state should render
   await expect(
-    page.getByRole("heading", { name: /invite invalid/i })
+    page.getByRole("heading", { name: /link expired/i })
   ).toBeVisible();
 
   await expect(
-    page.getByText(/expired|already been used|doesn't exist/i)
+    page.getByText(/expired|already been used|doesn't exist/i).first()
   ).toBeVisible();
 
   // Fallback CTA must be present

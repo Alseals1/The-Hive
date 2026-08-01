@@ -72,7 +72,7 @@ export const RosterPage: FC = () => {
 
       {error && (
         <ErrorMessage
-          message={error instanceof Error ? error.message : 'Failed to load roster'}
+          message={error instanceof Error ? error.message : "Couldn't load the roster."}
           onRetry={() => refetch()}
         />
       )}

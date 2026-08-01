@@ -128,7 +128,7 @@ export const SchedulePage: FC = () => {
         {error && !isLoading && (
           <ErrorMessage
             message={
-              error instanceof Error ? error.message : "Failed to load schedule"
+              error instanceof Error ? error.message : "Couldn't load the schedule."
             }
             onRetry={() => refetch()}
           />
