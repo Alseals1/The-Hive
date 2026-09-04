@@ -24,10 +24,10 @@ The `join_codes_select_public` RLS policy used `using (true)` with no role restr
 
 ---
 
-## [ ] Vuln 3: Invite Revocation Silently Fails (MEDIUM)
+## [x] Vuln 3: Invite Revocation Silently Fails (MEDIUM)
 
 **Files:** `supabase/migrations/20260518000002_create_teams.sql`, `src/features/teams/services/invites.ts`
 
-No DELETE RLS policy exists on `team_invites`. Supabase silently ignores deletes when no matching policy exists and returns success with no error. `revokeInvite()` reports success but the invite row is never removed — revoked links stay valid for their full 24-hour window.
+No DELETE RLS policy existed on `team_invites`. Supabase silently ignored deletes when no matching policy exists and returns success with no error. `revokeInvite()` reported success but the invite row was never removed — revoked links stayed valid for their full 24-hour window.
 
-**Fix:** Add a DELETE RLS policy for team admins. Also add a row-count check in `revokeInvite()` to surface silent failures.
+**Fixed in:** `supabase/migrations/20260904000003_fix_invite_revocation.sql`
