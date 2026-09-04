@@ -79,23 +79,13 @@ export async function getJoinCodeByTeamId(teamId: string): Promise<string | null
 
 /**
  * Fetch team details by join code — public (no auth required).
- * Returns null when the code does not exist (PGRST116).
+ * Uses a security-definer RPC so the join_codes table is never directly
+ * queryable by unauthenticated clients.
+ * Returns null when the code does not exist.
  */
 export async function getTeamByJoinCode(code: string): Promise<TeamPreview | null> {
   const { data, error } = await supabase
-    .from("team_join_codes")
-    .select(
-      `
-      role,
-      teams (
-        id,
-        name,
-        sport,
-        season
-      )
-    `
-    )
-    .eq("code", code)
+    .rpc("get_team_preview_by_code", { p_code: code })
     .single();
 
   if (error) {
@@ -103,17 +93,14 @@ export async function getTeamByJoinCode(code: string): Promise<TeamPreview | nul
     throw new Error(error.message);
   }
 
-  if (!data?.teams) return null;
-
-  const teams = Array.isArray(data.teams) ? data.teams[0] : data.teams;
-  if (!teams) return null;
+  if (!data) return null;
 
   return {
-    teamId: teams.id,
-    name: teams.name,
-    sport: teams.sport,
-    season: teams.season,
-    joinRole: data.role,
+    teamId: data.team_id,
+    name: data.name,
+    sport: data.sport,
+    season: data.season,
+    joinRole: data.role as TeamRole,
   };
 }
 
