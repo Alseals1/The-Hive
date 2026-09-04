@@ -94,23 +94,16 @@ function SignupPage() {
     setError(null);
     setLoading(true);
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name } },
+      options: { data: { full_name: name, account_type: accountType } },
     });
 
     if (signUpError) {
       setError(friendlyAuthError(signUpError.message));
       setLoading(false);
       return;
-    }
-
-    if (data.user && accountType === "organizer") {
-      await supabase
-        .from("profiles")
-        .update({ can_create_team: true })
-        .eq("id", data.user.id);
     }
 
     // usePendingJoin (root layout) handles any pending join_code / invite_token
