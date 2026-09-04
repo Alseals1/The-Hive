@@ -1,7 +1,7 @@
 {
-  "buildCommand": "cd ../.. && pnpm --filter web build",
+  "buildCommand": "cd ../.. && npx pnpm@9.15.9 --filter web build",
   "outputDirectory": "dist",
-  "installCommand": "cd ../.. && npm install -g pnpm@9.15.9 && pnpm install",
+  "installCommand": "cd ../.. && npx pnpm@9.15.9 install",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
