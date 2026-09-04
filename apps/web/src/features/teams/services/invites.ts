@@ -41,12 +41,13 @@ export async function getTeamInvites(teamId: string): Promise<TeamInvite[]> {
  * Only team admins can do this (enforced by RLS).
  */
 export async function revokeInvite(id: string): Promise<void> {
-  const { error } = await supabase
+  const { count, error } = await supabase
     .from("team_invites")
-    .delete()
+    .delete({ count: "exact" })
     .eq("id", id);
 
   if (error) throw new Error(error.message);
+  if (count === 0) throw new Error("Invite could not be revoked — it may have already expired or been used.");
 }
 
 /**
