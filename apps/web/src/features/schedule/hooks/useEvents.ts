@@ -43,7 +43,7 @@ export function useTournamentSubEvents(parentEventId: string) {
   });
 }
 
-export function useCreateSubEvent(teamId: string, parentEventId: string) {
+export function useCreateSubEvent(_teamId: string, parentEventId: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: SubEventInsert) => createSubEvent(input),

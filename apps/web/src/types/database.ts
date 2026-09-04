@@ -696,6 +696,16 @@ export type Database = {
     }
     Functions: {
       accept_team_invite: { Args: { p_token: string }; Returns: string }
+      get_team_preview_by_code: {
+        Args: { p_code: string }
+        Returns: {
+          team_id: string
+          name: string
+          sport: string
+          season: string | null
+          role: string
+        }[]
+      }
       get_invite_by_token: {
         Args: { p_token: string }
         Returns: {
