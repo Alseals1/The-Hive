@@ -9,30 +9,60 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
+import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
+import { Route as AuthSignupRouteImport } from './routes/auth/signup'
+import { Route as InviteTokenRouteImport } from './routes/invite/$token'
+import { Route as JoinCodeRouteImport } from './routes/join/$code'
 import { Route as TeamsIndexRouteImport } from './routes/teams/index'
 import { Route as TeamsTeamIdRouteImport } from './routes/teams/$teamId'
-import { Route as JoinCodeRouteImport } from './routes/join/$code'
-import { Route as InviteTokenRouteImport } from './routes/invite/$token'
-import { Route as AuthSignupRouteImport } from './routes/auth/signup'
-import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
-import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as AuthForgotPasswordRouteImport } from './routes/auth/forgot-password'
-import { Route as TeamsTeamIdSettingsRouteImport } from './routes/teams/$teamId/settings'
-import { Route as TeamsTeamIdScheduleRouteImport } from './routes/teams/$teamId/schedule'
-import { Route as TeamsTeamIdRosterRouteImport } from './routes/teams/$teamId/roster'
-import { Route as TeamsTeamIdPaymentsRouteImport } from './routes/teams/$teamId/payments'
 import { Route as TeamsTeamIdAnnouncementsRouteImport } from './routes/teams/$teamId/announcements'
+import { Route as TeamsTeamIdPaymentsRouteImport } from './routes/teams/$teamId/payments'
+import { Route as TeamsTeamIdRosterRouteImport } from './routes/teams/$teamId/roster'
+import { Route as TeamsTeamIdScheduleRouteImport } from './routes/teams/$teamId/schedule'
+import { Route as TeamsTeamIdSettingsRouteImport } from './routes/teams/$teamId/settings'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
+  id: '/auth/forgot-password',
+  path: '/auth/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthSignupRoute = AuthSignupRouteImport.update({
+  id: '/auth/signup',
+  path: '/auth/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InviteTokenRoute = InviteTokenRouteImport.update({
+  id: '/invite/$token',
+  path: '/invite/$token',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JoinCodeRoute = JoinCodeRouteImport.update({
+  id: '/join/$code',
+  path: '/join/$code',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TeamsIndexRoute = TeamsIndexRouteImport.update({
@@ -45,44 +75,15 @@ const TeamsTeamIdRoute = TeamsTeamIdRouteImport.update({
   path: '/teams/$teamId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const JoinCodeRoute = JoinCodeRouteImport.update({
-  id: '/join/$code',
-  path: '/join/$code',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InviteTokenRoute = InviteTokenRouteImport.update({
-  id: '/invite/$token',
-  path: '/invite/$token',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthSignupRoute = AuthSignupRouteImport.update({
-  id: '/auth/signup',
-  path: '/auth/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
-  id: '/auth/reset-password',
-  path: '/auth/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthLoginRoute = AuthLoginRouteImport.update({
-  id: '/auth/login',
-  path: '/auth/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
-  id: '/auth/forgot-password',
-  path: '/auth/forgot-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TeamsTeamIdSettingsRoute = TeamsTeamIdSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => TeamsTeamIdRoute,
-} as any)
-const TeamsTeamIdScheduleRoute = TeamsTeamIdScheduleRouteImport.update({
-  id: '/schedule',
-  path: '/schedule',
+const TeamsTeamIdAnnouncementsRoute =
+  TeamsTeamIdAnnouncementsRouteImport.update({
+    id: '/announcements',
+    path: '/announcements',
+    getParentRoute: () => TeamsTeamIdRoute,
+  } as any)
+const TeamsTeamIdPaymentsRoute = TeamsTeamIdPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
   getParentRoute: () => TeamsTeamIdRoute,
 } as any)
 const TeamsTeamIdRosterRoute = TeamsTeamIdRosterRouteImport.update({
@@ -90,17 +91,16 @@ const TeamsTeamIdRosterRoute = TeamsTeamIdRosterRouteImport.update({
   path: '/roster',
   getParentRoute: () => TeamsTeamIdRoute,
 } as any)
-const TeamsTeamIdPaymentsRoute = TeamsTeamIdPaymentsRouteImport.update({
-  id: '/payments',
-  path: '/payments',
+const TeamsTeamIdScheduleRoute = TeamsTeamIdScheduleRouteImport.update({
+  id: '/schedule',
+  path: '/schedule',
   getParentRoute: () => TeamsTeamIdRoute,
 } as any)
-const TeamsTeamIdAnnouncementsRoute =
-  TeamsTeamIdAnnouncementsRouteImport.update({
-    id: '/announcements',
-    path: '/announcements',
-    getParentRoute: () => TeamsTeamIdRoute,
-  } as any)
+const TeamsTeamIdSettingsRoute = TeamsTeamIdSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => TeamsTeamIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -223,6 +223,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/profile': {
       id: '/profile'
       path: '/profile'
@@ -230,11 +237,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth/forgot-password': {
+      id: '/auth/forgot-password'
+      path: '/auth/forgot-password'
+      fullPath: '/auth/forgot-password'
+      preLoaderRoute: typeof AuthForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/signup': {
+      id: '/auth/signup'
+      path: '/auth/signup'
+      fullPath: '/auth/signup'
+      preLoaderRoute: typeof AuthSignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/invite/$token': {
+      id: '/invite/$token'
+      path: '/invite/$token'
+      fullPath: '/invite/$token'
+      preLoaderRoute: typeof InviteTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/join/$code': {
+      id: '/join/$code'
+      path: '/join/$code'
+      fullPath: '/join/$code'
+      preLoaderRoute: typeof JoinCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/teams/': {
@@ -251,67 +293,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamsTeamIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/join/$code': {
-      id: '/join/$code'
-      path: '/join/$code'
-      fullPath: '/join/$code'
-      preLoaderRoute: typeof JoinCodeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/invite/$token': {
-      id: '/invite/$token'
-      path: '/invite/$token'
-      fullPath: '/invite/$token'
-      preLoaderRoute: typeof InviteTokenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/signup': {
-      id: '/auth/signup'
-      path: '/auth/signup'
-      fullPath: '/auth/signup'
-      preLoaderRoute: typeof AuthSignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/reset-password': {
-      id: '/auth/reset-password'
-      path: '/auth/reset-password'
-      fullPath: '/auth/reset-password'
-      preLoaderRoute: typeof AuthResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/login': {
-      id: '/auth/login'
-      path: '/auth/login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/forgot-password': {
-      id: '/auth/forgot-password'
-      path: '/auth/forgot-password'
-      fullPath: '/auth/forgot-password'
-      preLoaderRoute: typeof AuthForgotPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/teams/$teamId/settings': {
-      id: '/teams/$teamId/settings'
-      path: '/settings'
-      fullPath: '/teams/$teamId/settings'
-      preLoaderRoute: typeof TeamsTeamIdSettingsRouteImport
-      parentRoute: typeof TeamsTeamIdRoute
-    }
-    '/teams/$teamId/schedule': {
-      id: '/teams/$teamId/schedule'
-      path: '/schedule'
-      fullPath: '/teams/$teamId/schedule'
-      preLoaderRoute: typeof TeamsTeamIdScheduleRouteImport
-      parentRoute: typeof TeamsTeamIdRoute
-    }
-    '/teams/$teamId/roster': {
-      id: '/teams/$teamId/roster'
-      path: '/roster'
-      fullPath: '/teams/$teamId/roster'
-      preLoaderRoute: typeof TeamsTeamIdRosterRouteImport
+    '/teams/$teamId/announcements': {
+      id: '/teams/$teamId/announcements'
+      path: '/announcements'
+      fullPath: '/teams/$teamId/announcements'
+      preLoaderRoute: typeof TeamsTeamIdAnnouncementsRouteImport
       parentRoute: typeof TeamsTeamIdRoute
     }
     '/teams/$teamId/payments': {
@@ -321,11 +307,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamsTeamIdPaymentsRouteImport
       parentRoute: typeof TeamsTeamIdRoute
     }
-    '/teams/$teamId/announcements': {
-      id: '/teams/$teamId/announcements'
-      path: '/announcements'
-      fullPath: '/teams/$teamId/announcements'
-      preLoaderRoute: typeof TeamsTeamIdAnnouncementsRouteImport
+    '/teams/$teamId/roster': {
+      id: '/teams/$teamId/roster'
+      path: '/roster'
+      fullPath: '/teams/$teamId/roster'
+      preLoaderRoute: typeof TeamsTeamIdRosterRouteImport
+      parentRoute: typeof TeamsTeamIdRoute
+    }
+    '/teams/$teamId/schedule': {
+      id: '/teams/$teamId/schedule'
+      path: '/schedule'
+      fullPath: '/teams/$teamId/schedule'
+      preLoaderRoute: typeof TeamsTeamIdScheduleRouteImport
+      parentRoute: typeof TeamsTeamIdRoute
+    }
+    '/teams/$teamId/settings': {
+      id: '/teams/$teamId/settings'
+      path: '/settings'
+      fullPath: '/teams/$teamId/settings'
+      preLoaderRoute: typeof TeamsTeamIdSettingsRouteImport
       parentRoute: typeof TeamsTeamIdRoute
     }
   }
