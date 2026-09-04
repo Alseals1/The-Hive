@@ -49,7 +49,7 @@ export const TeamSettingsPage: FC = () => {
 
     const result = teamNameSchema.safeParse(name);
     if (!result.success) {
-      setNameError(result.error.errors[0]?.message);
+      setNameError(result.error.issues[0]?.message);
       return;
     }
     setNameError(undefined);
