@@ -47,7 +47,7 @@ export const CreateTeamForm: FC<CreateTeamFormProps> = ({ onSuccess, onCancel })
     }
     setFieldErrors({});
     mutate(
-      { name: name.trim(), sport: sport.trim() || null, season: season.trim() || null },
+      { name: name.trim(), sport: sport.trim() || undefined, season: season.trim() || undefined },
       { onSuccess: (team) => onSuccess(team.id) },
     );
   }

@@ -47,11 +47,11 @@ export const AttendanceDetailSheet: FC<AttendanceDetailSheetProps> = ({
   const maybe = (roster ?? []).filter((r) => r.status === "maybe");
   const cantGo = (roster ?? []).filter((r) => r.status === "no");
 
-  const sections: RosterSection[] = [
-    { status: "yes",   label: "Going",     headerClass: "text-field",     entries: going  },
-    { status: "maybe", label: "Maybe",     headerClass: "text-yellow-400", entries: maybe  },
-    { status: "no",    label: "Can't Go",  headerClass: "text-red-400",    entries: cantGo },
-  ].filter((s) => s.entries.length > 0);
+  const sections: RosterSection[] = ([
+    { status: "yes" as const,   label: "Going",    headerClass: "text-field",      entries: going  },
+    { status: "maybe" as const, label: "Maybe",    headerClass: "text-yellow-400", entries: maybe  },
+    { status: "no" as const,    label: "Can't Go", headerClass: "text-red-400",    entries: cantGo },
+  ] satisfies RosterSection[]).filter((s) => s.entries.length > 0);
 
   const hasAnyRsvps = (roster ?? []).length > 0;
 
